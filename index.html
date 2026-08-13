@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cash Flow Management System</title>
+    <title>Advanced Cash Flow Management System</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,70 +20,30 @@
             --success-color: #1cc88a;
             --warning-color: #f6c23e;
             --danger-color: #e74a3b;
+            --info-color: #36b9cc;
             --dark-color: #5a5c69;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fc;
-        }
-        
-        .sidebar {
+            background: #f8f9fc;
             min-height: 100vh;
-            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
-            padding: 0;
         }
         
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 15px 20px;
-            transition: all 0.3s;
-        }
-        
-        .sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-        }
-        
-        .main-content {
-            padding: 20px;
-            max-height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .stat-card {
-            border-left: 4px solid;
-            border-radius: 10px;
-            transition: transform 0.3s;
-            background: white;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-card .icon {
-            font-size: 2rem;
-            opacity: 0.5;
-        }
-        
+        /* Login Styles */
         .login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
         
         .login-card {
@@ -92,7 +52,13 @@
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .login-card .brand {
@@ -101,22 +67,180 @@
         }
         
         .login-card .brand i {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: #4e73df;
+            background: rgba(78, 115, 223, 0.1);
+            padding: 20px;
+            border-radius: 50%;
+        }
+        
+        .login-card .brand h3 {
+            margin-top: 15px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .login-card .brand p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        .login-card .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .login-card .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
+        }
+        
+        .login-card .btn-login {
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .login-card .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .role-badge.admin { background: #e74a3b; color: white; }
+        .role-badge.manager { background: #f6c23e; color: #333; }
+        .role-badge.employee { background: #4e73df; color: white; }
+        
+        /* Sidebar */
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar .user-profile {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .user-profile .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 2rem;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar .user-profile h6 {
+            color: white;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+        
+        .sidebar .user-profile small {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left-color: #4e73df;
+        }
+        
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border-left-color: #4e73df;
+        }
+        
+        .sidebar .nav-link i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 25px;
+            max-height: 100vh;
+            overflow-y: auto;
+            background: #f8f9fc;
+        }
+        
+        .page-content {
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            transition: all 0.3s;
+            border-left: 4px solid;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 2.2rem;
+            opacity: 0.4;
         }
         
         .table-container {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
         }
         
         .status-badge {
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
+            display: inline-block;
         }
         
         .status-pending { background: #f6c23e; color: #fff; }
@@ -125,15 +249,51 @@
         .status-completed { background: #36b9cc; color: #fff; }
         .status-partially_settled { background: #858796; color: #fff; }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        /* Notifications */
+        .notification-badge {
+            position: relative;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .notification-badge .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74a3b;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 7px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
         }
         
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .notification-item:hover {
+            background: #f8f9fc;
+        }
+        
+        .notification-item.unread {
+            background: #ebf4ff;
+            border-left: 3px solid #4e73df;
+        }
+        
+        .notification-item .time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+        
+        /* Toast */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -141,71 +301,148 @@
             z-index: 9999;
         }
         
-        .toast {
-            min-width: 300px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        .toast-custom {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 10px;
+            min-width: 320px;
+            animation: slideInRight 0.4s ease;
+            border-left: 4px solid;
         }
         
-        .modal-backdrop {
-            z-index: 1050 !important;
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         
-        .modal {
-            z-index: 1060 !important;
+        .toast-custom .toast-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
         }
         
+        /* Modal Enhancements */
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding: 20px 25px;
+        }
+        
+        .modal-footer {
+            border-top: 2px solid #f0f0f0;
+            padding: 15px 25px;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 min-height: auto;
-                padding: 10px 0;
-            }
-            
-            .sidebar .nav-link {
-                padding: 10px 15px;
-                font-size: 0.9rem;
+                height: auto;
+                position: relative;
             }
             
             .main-content {
-                padding: 10px;
+                max-height: none;
+                padding: 15px;
             }
             
             .stat-card {
                 margin-bottom: 15px;
             }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
         }
         
-        .user-profile {
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .user-profile .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+        /* Loading Spinner */
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 1.8rem;
-        }
-        
-        .print-only {
+            z-index: 9998;
             display: none;
         }
         
+        /* Print Styles */
         @media print {
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
             .main-content { max-height: none !important; overflow: visible !important; }
+        }
+        
+        .request-form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.08);
+        }
+        
+        .quick-stat-item .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .quick-stat-item .label {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
+
+<!-- Loading Spinner -->
+<div class="spinner-overlay" id="spinnerOverlay">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
@@ -216,30 +453,36 @@
     <div id="loginScreen" class="login-container">
         <div class="login-card">
             <div class="brand">
-                <i class="fas fa-wallet"></i>
-                <h3 class="mt-2">CashFlow Pro</h3>
-                <p class="text-muted">Expense Management System</p>
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>CashFlow Pro</h3>
+                <p>Advanced Expense Management System</p>
             </div>
+            
             <form id="loginForm">
                 <div class="mb-3">
-                    <label class="form-label">Username</label>
+                    <label class="form-label fw-semibold">Employee ID / Username</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter username" required>
+                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Password</label>
+                    <label class="form-label fw-semibold">Password</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="loginPassword" placeholder="Enter password" required>
+                        <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">
+                <button type="submit" class="btn btn-login w-100 text-white">
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
                 <div class="mt-3 text-center">
-                    <small class="text-muted">Demo: admin / admin123</small>
+                    <small class="text-muted">Demo Credentials:</small><br>
+                    <small class="text-muted">
+                        <span class="badge bg-danger">Admin</span> admin / admin123 &nbsp;|&nbsp;
+                        <span class="badge bg-warning text-dark">Manager</span> manager / manager123 &nbsp;|&nbsp;
+                        <span class="badge bg-primary">Employee</span> employee / employee123
+                    </small>
                 </div>
             </form>
         </div>
@@ -247,33 +490,49 @@
 
     <!-- Dashboard Screen -->
     <div id="dashboardScreen" style="display: none;">
-        <div class="container-fluid">
-            <div class="row">
+        <div class="container-fluid p-0">
+            <div class="row g-0">
                 <!-- Sidebar -->
-                <div class="col-md-2 col-lg-2 d-md-block sidebar no-print">
+                <div class="col-md-2 col-lg-2 d-md-block sidebar no-print" style="min-height: 100vh;">
                     <div class="user-profile">
                         <div class="avatar">
                             <i class="fas fa-user-circle"></i>
                         </div>
-                        <div id="userNameDisplay">Admin</div>
-                        <small id="userRoleDisplay" class="text-light-50">Admin</small>
+                        <h6 id="userNameDisplay">User</h6>
+                        <small id="userRoleDisplay">Employee</small>
+                        <div class="mt-2">
+                            <span class="role-badge" id="userRoleBadge">EMPLOYEE</span>
+                        </div>
                     </div>
                     <nav class="nav flex-column">
                         <a class="nav-link active" href="#" onclick="showPage('dashboard')">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('employees')">
-                            <i class="fas fa-users"></i> Employees
+                        <a class="nav-link" href="#" onclick="showPage('request')">
+                            <i class="fas fa-plus-circle"></i> Request Advance
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('transactions')">
-                            <i class="fas fa-money-bill-wave"></i> Transactions
+                        <a class="nav-link" href="#" onclick="showPage('history')">
+                            <i class="fas fa-history"></i> My History
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('reports')">
-                            <i class="fas fa-chart-bar"></i> Reports
-                        </a>
-                        <a class="nav-link" href="#" onclick="showPage('audit')">
-                            <i class="fas fa-history"></i> Audit Logs
-                        </a>
+                        <div id="adminMenu" style="display: none;">
+                            <div class="px-3 py-2 mt-2">
+                                <small class="text-uppercase text-muted" style="color: rgba(255,255,255,0.4) !important; font-size: 0.7rem;">Admin Section</small>
+                            </div>
+                            <a class="nav-link" href="#" onclick="showPage('approvals')">
+                                <i class="fas fa-check-double"></i> Approvals 
+                                <span class="badge bg-danger float-end" id="pendingCount">0</span>
+                            </a>
+                            <a class="nav-link" href="#" onclick="showPage('employees')">
+                                <i class="fas fa-users"></i> Employees
+                            </a>
+                            <a class="nav-link" href="#" onclick="showPage('reports')">
+                                <i class="fas fa-chart-bar"></i> Reports
+                            </a>
+                            <a class="nav-link" href="#" onclick="showPage('audit')">
+                                <i class="fas fa-history"></i> Audit Logs
+                            </a>
+                        </div>
+                        <hr style="border-color: rgba(255,255,255,0.1); margin: 10px 15px;">
                         <a class="nav-link text-danger" href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
@@ -285,80 +544,100 @@
                     <!-- Dashboard Page -->
                     <div id="page-dashboard" class="page-content">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+                            <h4><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard</h4>
                             <span id="currentDateTime" class="text-muted"></span>
                         </div>
 
-                        <!-- Stats -->
+                        <!-- Stats Cards -->
                         <div class="row mb-4" id="statsContainer">
                             <div class="col-xl-3 col-md-6 mb-3">
-                                <div class="stat-card p-3">
+                                <div class="stat-card" style="border-left-color: #4e73df;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="text-muted small">Total Advances</div>
-                                            <h3 id="totalAdvance">₹0</h3>
+                                            <div class="text-muted small text-uppercase fw-semibold">Total Advances</div>
+                                            <h3 class="mb-0" id="totalAdvance">₹0</h3>
                                         </div>
-                                        <div class="icon text-primary">
+                                        <div class="stat-icon text-primary">
                                             <i class="fas fa-money-bill-wave"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6 mb-3">
-                                <div class="stat-card p-3">
+                                <div class="stat-card" style="border-left-color: #f6c23e;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="text-muted small">Pending Approvals</div>
-                                            <h3 id="pendingApprovals">0</h3>
+                                            <div class="text-muted small text-uppercase fw-semibold">Pending</div>
+                                            <h3 class="mb-0" id="pendingCountStat">0</h3>
                                         </div>
-                                        <div class="icon text-warning">
+                                        <div class="stat-icon text-warning">
                                             <i class="fas fa-clock"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6 mb-3">
-                                <div class="stat-card p-3">
+                                <div class="stat-card" style="border-left-color: #1cc88a;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="text-muted small">Completed</div>
-                                            <h3 id="completedTransactions">0</h3>
+                                            <div class="text-muted small text-uppercase fw-semibold">Approved</div>
+                                            <h3 class="mb-0" id="approvedCountStat">0</h3>
                                         </div>
-                                        <div class="icon text-success">
+                                        <div class="stat-icon text-success">
                                             <i class="fas fa-check-circle"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6 mb-3">
-                                <div class="stat-card p-3">
+                                <div class="stat-card" style="border-left-color: #e74a3b;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="text-muted small">Outstanding</div>
-                                            <h3 id="outstandingAmount">₹0</h3>
+                                            <div class="text-muted small text-uppercase fw-semibold">Rejected</div>
+                                            <h3 class="mb-0" id="rejectedCountStat">0</h3>
                                         </div>
-                                        <div class="icon text-danger">
-                                            <i class="fas fa-exclamation-triangle"></i>
+                                        <div class="stat-icon text-danger">
+                                            <i class="fas fa-times-circle"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Charts -->
-                        <div class="row mb-4">
+                        <!-- Quick Stats for Employee -->
+                        <div id="employeeQuickStats" class="quick-stats">
+                            <div class="quick-stat-item">
+                                <div class="number" id="empTotalRequests">0</div>
+                                <div class="label">Total Requests</div>
+                            </div>
+                            <div class="quick-stat-item">
+                                <div class="number text-warning" id="empPendingRequests">0</div>
+                                <div class="label">Pending</div>
+                            </div>
+                            <div class="quick-stat-item">
+                                <div class="number text-success" id="empApprovedRequests">0</div>
+                                <div class="label">Approved</div>
+                            </div>
+                            <div class="quick-stat-item">
+                                <div class="number text-danger" id="empRejectedRequests">0</div>
+                                <div class="label">Rejected</div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="row">
                             <div class="col-md-8">
                                 <div class="table-container">
-                                    <h5>Recent Transactions</h5>
+                                    <h5><i class="fas fa-list me-2"></i>Recent Activity</h5>
                                     <div class="table-responsive">
-                                        <table class="table table-hover" id="recentTransactionsTable">
+                                        <table class="table table-hover table-sm" id="recentTransactionsTable">
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Employee</th>
                                                     <th>Type</th>
                                                     <th>Amount</th>
                                                     <th>Status</th>
+                                                    <th>Date</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="recentTransactionsBody">
@@ -369,30 +648,168 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="table-container">
-                                    <h5>Quick Actions</h5>
-                                    <button class="btn btn-primary w-100 mb-2" onclick="showPage('transactions')">
-                                        <i class="fas fa-plus me-2"></i>New Transaction
-                                    </button>
-                                    <button class="btn btn-success w-100 mb-2" onclick="showPage('employees')">
-                                        <i class="fas fa-user-plus me-2"></i>Add Employee
-                                    </button>
-                                    <button class="btn btn-info w-100" onclick="showPage('reports')">
-                                        <i class="fas fa-file-alt me-2"></i>Generate Report
-                                    </button>
+                                    <h5><i class="fas fa-bell me-2"></i>Notifications</h5>
+                                    <div id="notificationList" style="max-height: 300px; overflow-y: auto;">
+                                        <div class="text-muted text-center py-3">No notifications</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Employees Page -->
-                    <div id="page-employees" class="page-content" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2><i class="fas fa-users me-2"></i>Employees</h2>
-                            <button class="btn btn-primary" onclick="showEmployeeModal()">
-                                <i class="fas fa-plus me-2"></i>Add Employee
-                            </button>
+                    <!-- Request Advance Page -->
+                    <div id="page-request" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-plus-circle me-2 text-primary"></i>Request Advance</h4>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="request-form-section">
+                                    <form id="advanceRequestForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Request Type *</label>
+                                                <select class="form-select" id="reqType" required>
+                                                    <option value="advance">General Advance</option>
+                                                    <option value="travel_advance">Travel Advance</option>
+                                                    <option value="salary_advance">Salary Advance</option>
+                                                    <option value="reimbursement">Reimbursement</option>
+                                                    <option value="petty_cash">Petty Cash</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Amount (₹) *</label>
+                                                <input type="number" class="form-control" id="reqAmount" min="1" placeholder="Enter amount" required>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Category *</label>
+                                                <input type="text" class="form-control" id="reqCategory" placeholder="e.g., Training, Travel, Office Supplies" required>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Purpose *</label>
+                                                <input type="text" class="form-control" id="reqPurpose" placeholder="Brief purpose of the advance" required>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Description</label>
+                                                <textarea class="form-control" id="reqDescription" rows="3" placeholder="Additional details..."></textarea>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Expected Settlement Date</label>
+                                                <input type="date" class="form-control" id="reqDueDate">
+                                            </div>
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                                    <i class="fas fa-paper-plane me-2"></i>Submit Request
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="table-container">
+                                    <h5><i class="fas fa-info-circle me-2"></i>Quick Tips</h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Be specific about the purpose</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Attach supporting documents if needed</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Submit before the due date</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Keep track of your requests</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Approvals usually take 24-48 hours</li>
+                                    </ul>
+                                    <hr>
+                                    <div class="text-center">
+                                        <small class="text-muted">Your request will be reviewed by the management team</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- My History Page -->
+                    <div id="page-history" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-history me-2 text-primary"></i>My Transaction History</h4>
                         <div class="table-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="badge bg-primary" id="historyCount">0</span> transactions found
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-success me-2" onclick="exportMyHistory()">
+                                        <i class="fas fa-file-excel me-1"></i>Export
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="refreshHistory()">
+                                        <i class="fas fa-sync me-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="historyTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Type</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Approvals Page (Admin/Manager only) -->
+                    <div id="page-approvals" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-check-double me-2 text-primary"></i>Pending Approvals</h4>
+                        <div class="table-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="badge bg-warning" id="approvalCount">0</span> pending requests
+                                </div>
+                                <div>
+                                    <select class="form-select form-select-sm" id="approvalFilter" style="width: auto; display: inline-block;" onchange="loadApprovals()">
+                                        <option value="all">All</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="approvalsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Purpose</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="approvalsBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Employees Page (Admin only) -->
+                    <div id="page-employees" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-users me-2 text-primary"></i>Employee Management</h4>
+                        <div class="table-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="badge bg-primary" id="employeeCount">0</span> employees
+                                </div>
+                                <button class="btn btn-sm btn-primary" onclick="showEmployeeModal()">
+                                    <i class="fas fa-plus me-1"></i>Add Employee
+                                </button>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover" id="employeesTable">
                                     <thead>
@@ -413,118 +830,51 @@
                         </div>
                     </div>
 
-                    <!-- Transactions Page -->
-                    <div id="page-transactions" class="page-content" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2><i class="fas fa-money-bill-wave me-2"></i>Transactions</h2>
-                            <button class="btn btn-primary" onclick="showTransactionModal()">
-                                <i class="fas fa-plus me-2"></i>New Transaction
-                            </button>
-                        </div>
-                        
-                        <!-- Filters -->
-                        <div class="table-container mb-4">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" id="filterEmployee" placeholder="Search by employee...">
+                    <!-- Reports Page (Admin/Manager only) -->
+                    <div id="page-reports" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-chart-bar me-2 text-primary"></i>Reports & Analytics</h4>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="table-container">
+                                    <h5>Transaction Status Distribution</h5>
+                                    <canvas id="statusChart"></canvas>
                                 </div>
-                                <div class="col-md-3">
-                                    <select class="form-select" id="filterStatus">
-                                        <option value="">All Status</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="approved">Approved</option>
-                                        <option value="rejected">Rejected</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="partially_settled">Partially Settled</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select" id="filterType">
-                                        <option value="">All Types</option>
-                                        <option value="advance">Advance</option>
-                                        <option value="travel_advance">Travel Advance</option>
-                                        <option value="salary_advance">Salary Advance</option>
-                                        <option value="reimbursement">Reimbursement</option>
-                                        <option value="petty_cash">Petty Cash</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-primary w-100" onclick="applyFilters()">
-                                        <i class="fas fa-search me-2"></i>Apply
-                                    </button>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="table-container">
+                                    <h5>Department-wise Analysis</h5>
+                                    <canvas id="departmentChart"></canvas>
                                 </div>
                             </div>
                         </div>
-
                         <div class="table-container">
+                            <h5>Full Report</h5>
+                            <button class="btn btn-success btn-sm mb-3" onclick="exportFullReport()">
+                                <i class="fas fa-file-excel me-1"></i>Export Full Report
+                            </button>
                             <div class="table-responsive">
-                                <table class="table table-hover" id="transactionsTable">
+                                <table class="table table-hover" id="reportTable">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Employee</th>
-                                            <th>Type</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>Actions</th>
+                                            <th>Department</th>
+                                            <th>Total Requests</th>
+                                            <th>Total Amount</th>
+                                            <th>Approved</th>
+                                            <th>Rejected</th>
+                                            <th>Pending</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="transactionsBody">
+                                    <tbody id="reportBody">
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Reports Page -->
-                    <div id="page-reports" class="page-content" style="display: none;">
-                        <h2><i class="fas fa-chart-bar me-2"></i>Reports</h2>
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <div class="table-container">
-                                    <h5>Transaction Summary</h5>
-                                    <canvas id="transactionChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="table-container">
-                                    <h5>Department Wise</h5>
-                                    <canvas id="departmentChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="table-container">
-                                    <h5>Detailed Report</h5>
-                                    <button class="btn btn-success mb-3" onclick="exportReport()">
-                                        <i class="fas fa-file-excel me-2"></i>Export to Excel
-                                    </button>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover" id="reportTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Employee</th>
-                                                    <th>Department</th>
-                                                    <th>Total Advance</th>
-                                                    <th>Settled</th>
-                                                    <th>Outstanding</th>
-                                                    <th>Transactions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="reportBody">
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Audit Page -->
+                    <!-- Audit Page (Admin only) -->
                     <div id="page-audit" class="page-content" style="display: none;">
-                        <h2><i class="fas fa-history me-2"></i>Audit Logs</h2>
+                        <h4><i class="fas fa-history me-2 text-primary"></i>Audit Logs</h4>
                         <div class="table-container">
                             <div class="table-responsive">
                                 <table class="table table-hover" id="auditTable">
@@ -532,8 +882,8 @@
                                         <tr>
                                             <th>Timestamp</th>
                                             <th>User</th>
+                                            <th>Role</th>
                                             <th>Action</th>
-                                            <th>Entity</th>
                                             <th>Details</th>
                                         </tr>
                                     </thead>
@@ -549,7 +899,7 @@
     </div>
 </div>
 
-<!-- Employee Modal -->
+<!-- Employee Modal (Admin only) -->
 <div class="modal fade" id="employeeModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -561,24 +911,42 @@
                 <form id="employeeForm">
                     <input type="hidden" id="editEmployeeId">
                     <div class="mb-3">
-                        <label class="form-label">Name *</label>
+                        <label class="form-label fw-semibold">Full Name *</label>
                         <input type="text" class="form-control" id="empName" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Email *</label>
+                        <label class="form-label fw-semibold">Email *</label>
                         <input type="email" class="form-control" id="empEmail" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Phone</label>
+                        <label class="form-label fw-semibold">Phone</label>
                         <input type="text" class="form-control" id="empPhone">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Department *</label>
+                        <label class="form-label fw-semibold">Department *</label>
                         <input type="text" class="form-control" id="empDepartment" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Designation *</label>
+                        <label class="form-label fw-semibold">Designation *</label>
                         <input type="text" class="form-control" id="empDesignation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Role</label>
+                        <select class="form-select" id="empRole">
+                            <option value="employee">Employee</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Username *</label>
+                        <input type="text" class="form-control" id="empUsername" required>
+                        <small class="text-muted">Used for login</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password *</label>
+                        <input type="text" class="form-control" id="empPassword" required>
+                        <small class="text-muted">Minimum 6 characters</small>
                     </div>
                 </form>
             </div>
@@ -590,88 +958,45 @@
     </div>
 </div>
 
-<!-- Transaction Modal -->
-<div class="modal fade" id="transactionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">New Transaction</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="transactionForm">
-                    <div class="mb-3">
-                        <label class="form-label">Employee *</label>
-                        <select class="form-select" id="txnEmployee" required>
-                            <option value="">Select Employee</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Type *</label>
-                        <select class="form-select" id="txnType" required>
-                            <option value="advance">Advance</option>
-                            <option value="travel_advance">Travel Advance</option>
-                            <option value="salary_advance">Salary Advance</option>
-                            <option value="reimbursement">Reimbursement</option>
-                            <option value="petty_cash">Petty Cash</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Category *</label>
-                        <input type="text" class="form-control" id="txnCategory" placeholder="e.g., Travel, Training" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Amount (₹) *</label>
-                        <input type="number" class="form-control" id="txnAmount" min="1" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Purpose *</label>
-                        <input type="text" class="form-control" id="txnPurpose" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" id="txnDescription" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Due Date</label>
-                        <input type="date" class="form-control" id="txnDueDate">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveTransaction()">Create Transaction</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Approve Modal -->
-<div class="modal fade" id="approveModal" tabindex="-1">
+<!-- Approval Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Approve Transaction</h5>
+                <h5 class="modal-title">Review Request</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Transaction: <strong id="approveTxnId"></strong></p>
-                <p>Amount: <strong id="approveTxnAmount"></strong></p>
+                <div id="approvalDetails">
+                    <div class="mb-2"><strong>Request ID:</strong> <span id="aprId"></span></div>
+                    <div class="mb-2"><strong>Employee:</strong> <span id="aprEmployee"></span></div>
+                    <div class="mb-2"><strong>Department:</strong> <span id="aprDepartment"></span></div>
+                    <div class="mb-2"><strong>Type:</strong> <span id="aprType"></span></div>
+                    <div class="mb-2"><strong>Amount:</strong> <span id="aprAmount"></span></div>
+                    <div class="mb-2"><strong>Purpose:</strong> <span id="aprPurpose"></span></div>
+                    <div class="mb-2"><strong>Description:</strong> <span id="aprDescription"></span></div>
+                </div>
+                <hr>
                 <div class="mb-3">
-                    <label class="form-label">Action</label>
-                    <select class="form-select" id="approveAction">
-                        <option value="approved">Approve</option>
-                        <option value="rejected">Reject</option>
+                    <label class="form-label fw-semibold">Decision</label>
+                    <select class="form-select" id="aprDecision">
+                        <option value="approved">✅ Approve</option>
+                        <option value="rejected">❌ Reject</option>
                     </select>
                 </div>
-                <div class="mb-3" id="settlementSection">
-                    <label class="form-label">Settlement Amount (₹)</label>
-                    <input type="number" class="form-control" id="settlementAmount" min="0">
+                <div class="mb-3" id="aprSettlementSection">
+                    <label class="form-label fw-semibold">Settlement Amount (₹)</label>
+                    <input type="number" class="form-control" id="aprSettlementAmount" min="0">
+                    <small class="text-muted">Leave as 0 for full amount</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Remarks</label>
+                    <textarea class="form-control" id="aprRemarks" rows="2" placeholder="Add any comments..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="processApproval()">Submit</button>
+                <button type="button" class="btn btn-primary" onclick="processApproval()">Submit Decision</button>
             </div>
         </div>
     </div>
@@ -686,52 +1011,49 @@
 // ============================================
 const Store = {
     getUsers() {
-        const users = localStorage.getItem('cashflow_users');
-        return users ? JSON.parse(users) : [];
+        const data = localStorage.getItem('cashflow_advanced_users');
+        return data ? JSON.parse(data) : [];
     },
-    
     setUsers(users) {
-        localStorage.setItem('cashflow_users', JSON.stringify(users));
+        localStorage.setItem('cashflow_advanced_users', JSON.stringify(users));
     },
-    
     getEmployees() {
-        const employees = localStorage.getItem('cashflow_employees');
-        return employees ? JSON.parse(employees) : [];
+        const data = localStorage.getItem('cashflow_advanced_employees');
+        return data ? JSON.parse(data) : [];
     },
-    
     setEmployees(employees) {
-        localStorage.setItem('cashflow_employees', JSON.stringify(employees));
+        localStorage.setItem('cashflow_advanced_employees', JSON.stringify(employees));
     },
-    
     getTransactions() {
-        const transactions = localStorage.getItem('cashflow_transactions');
-        return transactions ? JSON.parse(transactions) : [];
+        const data = localStorage.getItem('cashflow_advanced_transactions');
+        return data ? JSON.parse(data) : [];
     },
-    
     setTransactions(transactions) {
-        localStorage.setItem('cashflow_transactions', JSON.stringify(transactions));
+        localStorage.setItem('cashflow_advanced_transactions', JSON.stringify(transactions));
     },
-    
+    getNotifications() {
+        const data = localStorage.getItem('cashflow_advanced_notifications');
+        return data ? JSON.parse(data) : [];
+    },
+    setNotifications(notifications) {
+        localStorage.setItem('cashflow_advanced_notifications', JSON.stringify(notifications));
+    },
     getAuditLogs() {
-        const logs = localStorage.getItem('cashflow_audit_logs');
-        return logs ? JSON.parse(logs) : [];
+        const data = localStorage.getItem('cashflow_advanced_audit');
+        return data ? JSON.parse(data) : [];
     },
-    
     setAuditLogs(logs) {
-        localStorage.setItem('cashflow_audit_logs', JSON.stringify(logs));
+        localStorage.setItem('cashflow_advanced_audit', JSON.stringify(logs));
     },
-    
     getCurrentUser() {
-        const user = localStorage.getItem('cashflow_current_user');
-        return user ? JSON.parse(user) : null;
+        const data = localStorage.getItem('cashflow_advanced_current_user');
+        return data ? JSON.parse(data) : null;
     },
-    
     setCurrentUser(user) {
-        localStorage.setItem('cashflow_current_user', JSON.stringify(user));
+        localStorage.setItem('cashflow_advanced_current_user', JSON.stringify(user));
     },
-    
     clearCurrentUser() {
-        localStorage.removeItem('cashflow_current_user');
+        localStorage.removeItem('cashflow_advanced_current_user');
     }
 };
 
@@ -739,16 +1061,18 @@ const Store = {
 // INITIALIZATION
 // ============================================
 function initializeApp() {
-    // Create default admin user if none exists
-    const users = Store.getUsers();
+    // Create default users if none exist
+    let users = Store.getUsers();
     if (users.length === 0) {
-        Store.setUsers([
+        const defaultUsers = [
             {
                 id: 'user_1',
                 username: 'admin',
                 password: 'admin123',
                 fullName: 'Administrator',
                 role: 'admin',
+                department: 'IT',
+                employeeId: 'EMP001',
                 createdAt: new Date().toISOString()
             },
             {
@@ -757,9 +1081,38 @@ function initializeApp() {
                 password: 'manager123',
                 fullName: 'Manager User',
                 role: 'manager',
+                department: 'Finance',
+                employeeId: 'EMP002',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'user_3',
+                username: 'employee',
+                password: 'employee123',
+                fullName: 'Employee User',
+                role: 'employee',
+                department: 'Marketing',
+                employeeId: 'EMP003',
                 createdAt: new Date().toISOString()
             }
-        ]);
+        ];
+        Store.setUsers(defaultUsers);
+        
+        // Also create employee records
+        const employees = defaultUsers.map(u => ({
+            id: u.id,
+            employeeId: u.employeeId,
+            name: u.fullName,
+            email: u.username + '@company.com',
+            phone: '',
+            department: u.department,
+            designation: u.role === 'admin' ? 'System Administrator' : 
+                         u.role === 'manager' ? 'Department Manager' : 'Staff',
+            role: u.role,
+            isActive: true,
+            createdAt: u.createdAt
+        }));
+        Store.setEmployees(employees);
     }
     
     // Check if user is logged in
@@ -771,6 +1124,9 @@ function initializeApp() {
     // Update date/time
     updateDateTime();
     setInterval(updateDateTime, 1000);
+    
+    // Check for pending approvals periodically
+    setInterval(checkPendingApprovals, 30000);
 }
 
 // ============================================
@@ -778,26 +1134,33 @@ function initializeApp() {
 // ============================================
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
     
     const users = Store.getUsers();
     const user = users.find(u => u.username === username && u.password === password);
     
     if (user) {
         Store.setCurrentUser(user);
-        showToast('success', 'Login successful! Welcome back, ' + user.fullName);
+        showToast('success', `Welcome back, ${user.fullName}!`);
         showDashboard();
+        addAuditLog('LOGIN', 'User', user.username);
     } else {
         showToast('danger', 'Invalid username or password');
     }
 });
 
 function logout() {
+    const user = Store.getCurrentUser();
+    if (user) {
+        addAuditLog('LOGOUT', 'User', user.username);
+    }
     Store.clearCurrentUser();
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     showToast('info', 'Logged out successfully');
+    // Reset login form
+    document.getElementById('loginForm').reset();
 }
 
 function showDashboard() {
@@ -808,12 +1171,23 @@ function showDashboard() {
     if (user) {
         document.getElementById('userNameDisplay').textContent = user.fullName;
         document.getElementById('userRoleDisplay').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        document.getElementById('userRoleBadge').textContent = user.role.toUpperCase();
+        document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
+        
+        // Show admin menu based on role
+        if (user.role === 'admin' || user.role === 'manager') {
+            document.getElementById('adminMenu').style.display = 'block';
+        } else {
+            document.getElementById('adminMenu').style.display = 'none';
+        }
+        
+        // Show employee quick stats
+        document.getElementById('employeeQuickStats').style.display = user.role === 'employee' ? 'grid' : 'none';
     }
     
     updateDashboard();
-    loadEmployees();
-    loadTransactions();
-    loadAuditLogs();
+    loadNotifications();
+    checkPendingApprovals();
 }
 
 // ============================================
@@ -830,80 +1204,447 @@ function showPage(page) {
         pageEl.classList.add('fade-in');
     }
     
-    // Update sidebar active state
+    // Update sidebar
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.sidebar .nav-link[onclick*="${page}"]`)?.classList.add('active');
+    const link = document.querySelector(`.sidebar .nav-link[onclick*="${page}"]`);
+    if (link) link.classList.add('active');
     
     // Load data for specific pages
-    if (page === 'dashboard') updateDashboard();
-    if (page === 'reports') generateReports();
-    if (page === 'employees') loadEmployees();
-    if (page === 'transactions') loadTransactions();
-    if (page === 'audit') loadAuditLogs();
+    switch(page) {
+        case 'dashboard': updateDashboard(); break;
+        case 'request': loadRequestForm(); break;
+        case 'history': loadMyHistory(); break;
+        case 'approvals': loadApprovals(); break;
+        case 'employees': loadEmployees(); break;
+        case 'reports': generateReports(); break;
+        case 'audit': loadAuditLogs(); break;
+    }
 }
 
 // ============================================
 // DASHBOARD
 // ============================================
 function updateDashboard() {
+    const user = Store.getCurrentUser();
     const transactions = Store.getTransactions();
     const employees = Store.getEmployees();
     
+    // Filter transactions for current user if employee
+    let userTransactions = transactions;
+    if (user && user.role === 'employee') {
+        userTransactions = transactions.filter(t => t.employeeId === user.id);
+    }
+    
     // Stats
-    const totalAdvance = transactions.reduce((sum, t) => sum + t.amount, 0);
-    const pendingApprovals = transactions.filter(t => t.status === 'pending').length;
-    const completedTransactions = transactions.filter(t => t.status === 'completed').length;
-    const outstanding = transactions
-        .filter(t => t.status === 'approved' || t.status === 'partially_settled')
-        .reduce((sum, t) => sum + (t.remainingAmount || 0), 0);
+    const totalAdvance = userTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
+    const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
+    const rejectedCount = userTransactions.filter(t => t.status === 'rejected').length;
     
     document.getElementById('totalAdvance').textContent = '₹' + totalAdvance.toLocaleString();
-    document.getElementById('pendingApprovals').textContent = pendingApprovals;
-    document.getElementById('completedTransactions').textContent = completedTransactions;
-    document.getElementById('outstandingAmount').textContent = '₹' + outstanding.toLocaleString();
+    document.getElementById('pendingCountStat').textContent = pendingCount;
+    document.getElementById('approvedCountStat').textContent = approvedCount;
+    document.getElementById('rejectedCountStat').textContent = rejectedCount;
     
-    // Recent Transactions
-    const recent = transactions.slice(-5).reverse();
+    // Employee quick stats
+    if (user && user.role === 'employee') {
+        document.getElementById('empTotalRequests').textContent = userTransactions.length;
+        document.getElementById('empPendingRequests').textContent = pendingCount;
+        document.getElementById('empApprovedRequests').textContent = approvedCount;
+        document.getElementById('empRejectedRequests').textContent = rejectedCount;
+    }
+    
+    // Recent transactions
+    const recent = userTransactions.slice(-5).reverse();
     const tbody = document.getElementById('recentTransactionsBody');
-    tbody.innerHTML = recent.map(t => `
-        <tr>
-            <td><code>${t.id}</code></td>
-            <td>${t.employeeName}</td>
-            <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
-            <td>₹${t.amount.toLocaleString()}</td>
-            <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
-        </tr>
-    `).join('');
+    if (recent.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No transactions found</td></tr>`;
+    } else {
+        tbody.innerHTML = recent.map(t => `
+            <tr>
+                <td><code>${t.id}</code></td>
+                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
+                <td>₹${t.amount.toLocaleString()}</td>
+                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
+                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+    }
+    
+    // Update pending count badge
+    const allPending = transactions.filter(t => t.status === 'pending').length;
+    document.getElementById('pendingCount').textContent = allPending;
+}
+
+function checkPendingApprovals() {
+    const user = Store.getCurrentUser();
+    if (!user) return;
+    
+    const transactions = Store.getTransactions();
+    const pending = transactions.filter(t => t.status === 'pending');
+    
+    // Update badge
+    document.getElementById('pendingCount').textContent = pending.length;
+    
+    // Check for new notifications
+    const notifications = Store.getNotifications();
+    const unread = notifications.filter(n => !n.read).length;
+    
+    // Update notification badge if exists
+    // (We'll use the pending count for now)
 }
 
 // ============================================
-// EMPLOYEES
+// REQUEST ADVANCE
+// ============================================
+function loadRequestForm() {
+    const user = Store.getCurrentUser();
+    if (!user) return;
+    
+    // Pre-fill employee info if needed
+    document.getElementById('advanceRequestForm').reset();
+}
+
+document.getElementById('advanceRequestForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const user = Store.getCurrentUser();
+    if (!user) {
+        showToast('warning', 'Please login first');
+        return;
+    }
+    
+    const type = document.getElementById('reqType').value;
+    const amount = parseFloat(document.getElementById('reqAmount').value);
+    const category = document.getElementById('reqCategory').value;
+    const purpose = document.getElementById('reqPurpose').value;
+    const description = document.getElementById('reqDescription').value;
+    const dueDate = document.getElementById('reqDueDate').value;
+    
+    if (!type || !amount || !category || !purpose) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    // Get employee details
+    const employees = Store.getEmployees();
+    const employee = employees.find(e => e.id === user.id);
+    if (!employee) {
+        showToast('danger', 'Employee record not found');
+        return;
+    }
+    
+    const transaction = {
+        id: 'TXN_' + Date.now(),
+        employeeId: user.id,
+        employeeName: user.fullName,
+        employeeDepartment: employee.department || 'N/A',
+        type: type,
+        category: category,
+        amount: amount,
+        purpose: purpose,
+        description: description || '',
+        dueDate: dueDate || null,
+        status: 'pending',
+        settlementAmount: 0,
+        remainingAmount: amount,
+        createdBy: user.username,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        approvedBy: null,
+        approvalDate: null,
+        remarks: ''
+    };
+    
+    const transactions = Store.getTransactions();
+    transactions.push(transaction);
+    Store.setTransactions(transactions);
+    
+    // Add notification for admins
+    addNotification(
+        'NEW_REQUEST',
+        `New advance request from ${user.fullName}`,
+        `${user.fullName} requested ₹${amount.toLocaleString()} for ${purpose}`,
+        transaction.id,
+        'info'
+    );
+    
+    addAuditLog('CREATE_REQUEST', 'Transaction', transaction.id);
+    
+    document.getElementById('advanceRequestForm').reset();
+    showToast('success', 'Request submitted successfully! You will be notified once reviewed.');
+    
+    // Update dashboard
+    updateDashboard();
+});
+
+// ============================================
+// MY HISTORY
+// ============================================
+function loadMyHistory() {
+    const user = Store.getCurrentUser();
+    if (!user) return;
+    
+    const transactions = Store.getTransactions();
+    const myTxns = transactions.filter(t => t.employeeId === user.id).reverse();
+    
+    document.getElementById('historyCount').textContent = myTxns.length;
+    
+    const tbody = document.getElementById('historyBody');
+    if (myTxns.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions found</td></tr>`;
+    } else {
+        tbody.innerHTML = myTxns.map(t => `
+            <tr>
+                <td><code>${t.id}</code></td>
+                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
+                <td>${t.category}</td>
+                <td>₹${t.amount.toLocaleString()}</td>
+                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
+                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+                <td>${t.remarks || '-'}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+function refreshHistory() {
+    loadMyHistory();
+    showToast('info', 'History refreshed');
+}
+
+function exportMyHistory() {
+    const user = Store.getCurrentUser();
+    if (!user) return;
+    
+    const transactions = Store.getTransactions();
+    const myTxns = transactions.filter(t => t.employeeId === user.id);
+    
+    if (myTxns.length === 0) {
+        showToast('warning', 'No transactions to export');
+        return;
+    }
+    
+    let csv = 'ID,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
+    myTxns.forEach(t => {
+        csv += `${t.id},${t.type},${t.category},${t.amount},${t.status},${t.purpose},${new Date(t.createdAt).toLocaleDateString()},${t.remarks || ''}\n`;
+    });
+    
+    downloadCSV(csv, `my_transactions_${new Date().toISOString().slice(0,10)}.csv`);
+    showToast('success', 'Export started');
+}
+
+// ============================================
+// APPROVALS (Admin/Manager)
+// ============================================
+function loadApprovals() {
+    const user = Store.getCurrentUser();
+    if (!user || (user.role !== 'admin' && user.role !== 'manager')) return;
+    
+    const transactions = Store.getTransactions();
+    const filter = document.getElementById('approvalFilter')?.value || 'all';
+    
+    let filtered = transactions;
+    if (filter !== 'all') {
+        filtered = transactions.filter(t => t.status === filter);
+    }
+    
+    // Show pending first
+    filtered.sort((a, b) => {
+        if (a.status === 'pending' && b.status !== 'pending') return -1;
+        if (a.status !== 'pending' && b.status === 'pending') return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    
+    document.getElementById('approvalCount').textContent = transactions.filter(t => t.status === 'pending').length;
+    
+    const tbody = document.getElementById('approvalsBody');
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No transactions found</td></tr>`;
+    } else {
+        tbody.innerHTML = filtered.map(t => `
+            <tr class="${t.status === 'pending' ? 'table-warning' : ''}">
+                <td><code>${t.id}</code></td>
+                <td><strong>${t.employeeName}</strong></td>
+                <td>${t.employeeDepartment || 'N/A'}</td>
+                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
+                <td>₹${t.amount.toLocaleString()}</td>
+                <td>${t.purpose}</td>
+                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
+                <td>
+                    ${t.status === 'pending' ? `
+                        <button class="btn btn-sm btn-success me-1" onclick="showApprovalModal('${t.id}')">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    ` : `
+                        <button class="btn btn-sm btn-outline-info" onclick="viewTransactionDetails('${t.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    `}
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function showApprovalModal(id) {
+    const transactions = Store.getTransactions();
+    const t = transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    document.getElementById('aprId').textContent = t.id;
+    document.getElementById('aprEmployee').textContent = t.employeeName;
+    document.getElementById('aprDepartment').textContent = t.employeeDepartment || 'N/A';
+    document.getElementById('aprType').textContent = t.type.replace('_', ' ');
+    document.getElementById('aprAmount').textContent = '₹' + t.amount.toLocaleString();
+    document.getElementById('aprPurpose').textContent = t.purpose;
+    document.getElementById('aprDescription').textContent = t.description || 'No description provided';
+    document.getElementById('aprSettlementAmount').value = t.amount;
+    document.getElementById('aprSettlementAmount').max = t.amount;
+    document.getElementById('aprRemarks').value = '';
+    document.getElementById('aprDecision').value = 'approved';
+    document.getElementById('approvalModal').dataset.txnId = id;
+    
+    // Show/hide settlement section based on decision
+    document.getElementById('aprDecision').onchange = function() {
+        document.getElementById('aprSettlementSection').style.display = 
+            this.value === 'approved' ? 'block' : 'none';
+    };
+    document.getElementById('aprSettlementSection').style.display = 'block';
+    
+    new bootstrap.Modal(document.getElementById('approvalModal')).show();
+}
+
+function processApproval() {
+    const id = document.getElementById('approvalModal').dataset.txnId;
+    const decision = document.getElementById('aprDecision').value;
+    const settlementAmount = parseFloat(document.getElementById('aprSettlementAmount').value) || 0;
+    const remarks = document.getElementById('aprRemarks').value || '';
+    
+    const transactions = Store.getTransactions();
+    const index = transactions.findIndex(t => t.id === id);
+    if (index === -1) return;
+    
+    const t = transactions[index];
+    const user = Store.getCurrentUser();
+    
+    if (decision === 'approved') {
+        t.status = 'approved';
+        t.approvalDate = new Date().toISOString();
+        t.approvedBy = user.username;
+        t.remarks = remarks || 'Approved';
+        
+        if (settlementAmount > 0 && settlementAmount <= t.amount) {
+            t.settlementAmount = settlementAmount;
+            t.remainingAmount = t.amount - settlementAmount;
+            if (t.remainingAmount === 0) {
+                t.status = 'completed';
+                t.settlementDate = new Date().toISOString();
+            } else if (settlementAmount > 0) {
+                t.status = 'partially_settled';
+            }
+        }
+        
+        // Notify employee
+        addNotification(
+            'REQUEST_APPROVED',
+            `Your request ${t.id} was approved`,
+            `Amount: ₹${t.amount.toLocaleString()} - ${t.purpose}`,
+            t.id,
+            'success'
+        );
+        
+    } else {
+        t.status = 'rejected';
+        t.approvalDate = new Date().toISOString();
+        t.approvedBy = user.username;
+        t.remarks = remarks || 'Rejected';
+        
+        // Notify employee
+        addNotification(
+            'REQUEST_REJECTED',
+            `Your request ${t.id} was rejected`,
+            `Amount: ₹${t.amount.toLocaleString()} - ${t.purpose}`,
+            t.id,
+            'danger'
+        );
+    }
+    
+    t.updatedAt = new Date().toISOString();
+    transactions[index] = t;
+    Store.setTransactions(transactions);
+    
+    bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
+    loadApprovals();
+    updateDashboard();
+    showToast('success', `Request ${decision} successfully`);
+    addAuditLog('PROCESS_APPROVAL', 'Transaction', id);
+}
+
+function viewTransactionDetails(id) {
+    const transactions = Store.getTransactions();
+    const t = transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    const details = `
+        <div class="row">
+            <div class="col-6"><strong>ID:</strong></div>
+            <div class="col-6">${t.id}</div>
+            <div class="col-6"><strong>Employee:</strong></div>
+            <div class="col-6">${t.employeeName}</div>
+            <div class="col-6"><strong>Type:</strong></div>
+            <div class="col-6">${t.type.replace('_', ' ')}</div>
+            <div class="col-6"><strong>Amount:</strong></div>
+            <div class="col-6">₹${t.amount.toLocaleString()}</div>
+            <div class="col-6"><strong>Status:</strong></div>
+            <div class="col-6"><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></div>
+            <div class="col-6"><strong>Purpose:</strong></div>
+            <div class="col-6">${t.purpose}</div>
+            <div class="col-6"><strong>Remarks:</strong></div>
+            <div class="col-6">${t.remarks || 'N/A'}</div>
+            <div class="col-6"><strong>Date:</strong></div>
+            <div class="col-6">${new Date(t.createdAt).toLocaleString()}</div>
+        </div>
+    `;
+    
+    showCustomModal('Transaction Details', details);
+}
+
+// ============================================
+// EMPLOYEES (Admin only)
 // ============================================
 function loadEmployees() {
     const employees = Store.getEmployees();
+    const users = Store.getUsers();
+    
+    document.getElementById('employeeCount').textContent = employees.length;
+    
     const tbody = document.getElementById('employeesBody');
-    tbody.innerHTML = employees.map(emp => `
-        <tr>
-            <td><code>${emp.id}</code></td>
-            <td>${emp.name}</td>
-            <td>${emp.email}</td>
-            <td>${emp.department}</td>
-            <td>${emp.designation}</td>
-            <td>
-                <span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">
-                    ${emp.isActive ? 'Active' : 'Inactive'}
-                </span>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = employees.map(emp => {
+        const user = users.find(u => u.id === emp.id);
+        return `
+            <tr>
+                <td><code>${emp.employeeId || emp.id}</code></td>
+                <td>${emp.name}</td>
+                <td>${emp.email}</td>
+                <td>${emp.department}</td>
+                <td>${emp.designation}</td>
+                <td>
+                    <span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">
+                        ${emp.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    ${emp.role ? `<span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span>` : ''}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function showEmployeeModal(employeeId = null) {
@@ -912,11 +1653,15 @@ function showEmployeeModal(employeeId = null) {
     form.reset();
     document.getElementById('editEmployeeId').value = '';
     document.getElementById('employeeModalTitle').textContent = 'Add Employee';
+    document.getElementById('empPassword').required = true;
     
     if (employeeId) {
         const employees = Store.getEmployees();
+        const users = Store.getUsers();
         const emp = employees.find(e => e.id === employeeId);
-        if (emp) {
+        const user = users.find(u => u.id === employeeId);
+        
+        if (emp && user) {
             document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
             document.getElementById('editEmployeeId').value = emp.id;
             document.getElementById('empName').value = emp.name;
@@ -924,6 +1669,11 @@ function showEmployeeModal(employeeId = null) {
             document.getElementById('empPhone').value = emp.phone || '';
             document.getElementById('empDepartment').value = emp.department;
             document.getElementById('empDesignation').value = emp.designation;
+            document.getElementById('empRole').value = emp.role || 'employee';
+            document.getElementById('empUsername').value = user.username;
+            document.getElementById('empPassword').value = '';
+            document.getElementById('empPassword').required = false;
+            document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
         }
     }
     
@@ -937,38 +1687,73 @@ function saveEmployee() {
     const phone = document.getElementById('empPhone').value;
     const department = document.getElementById('empDepartment').value;
     const designation = document.getElementById('empDesignation').value;
+    const role = document.getElementById('empRole').value;
+    const username = document.getElementById('empUsername').value;
+    const password = document.getElementById('empPassword').value;
     
-    if (!name || !email || !department || !designation) {
+    if (!name || !email || !department || !designation || !username) {
         showToast('warning', 'Please fill all required fields');
         return;
     }
     
     let employees = Store.getEmployees();
+    let users = Store.getUsers();
     
     if (id) {
         // Edit existing
-        const index = employees.findIndex(e => e.id === id);
-        if (index !== -1) {
-            employees[index] = { ...employees[index], name, email, phone, department, designation };
-            showToast('success', 'Employee updated successfully');
+        const empIndex = employees.findIndex(e => e.id === id);
+        const userIndex = users.findIndex(u => u.id === id);
+        
+        if (empIndex !== -1) {
+            employees[empIndex] = { 
+                ...employees[empIndex], 
+                name, email, phone, department, designation, role 
+            };
         }
+        if (userIndex !== -1) {
+            const updatedUser = { 
+                ...users[userIndex], 
+                username, 
+                fullName: name,
+                department 
+            };
+            if (password) updatedUser.password = password;
+            users[userIndex] = updatedUser;
+        }
+        showToast('success', 'Employee updated successfully');
     } else {
         // Add new
+        const newId = 'user_' + Date.now();
         const newEmployee = {
-            id: 'EMP_' + Date.now(),
+            id: newId,
+            employeeId: 'EMP' + Date.now().toString().slice(-6),
             name,
             email,
             phone,
             department,
             designation,
+            role: role || 'employee',
             isActive: true,
             createdAt: new Date().toISOString()
         };
         employees.push(newEmployee);
+        
+        const newUser = {
+            id: newId,
+            username: username,
+            password: password || 'password123',
+            fullName: name,
+            role: role || 'employee',
+            department: department,
+            employeeId: newEmployee.employeeId,
+            createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
         showToast('success', 'Employee added successfully');
     }
     
     Store.setEmployees(employees);
+    Store.setUsers(users);
     loadEmployees();
     bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
     addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
@@ -979,348 +1764,79 @@ function editEmployee(id) {
 }
 
 function deleteEmployee(id) {
-    if (confirm('Are you sure you want to delete this employee?')) {
-        let employees = Store.getEmployees();
-        employees = employees.filter(e => e.id !== id);
-        Store.setEmployees(employees);
-        loadEmployees();
-        showToast('success', 'Employee deleted successfully');
-        addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
-    }
-}
-
-// ============================================
-// TRANSACTIONS
-// ============================================
-function loadTransactions() {
-    const transactions = Store.getTransactions();
-    const employees = Store.getEmployees();
+    if (!confirm('Are you sure you want to delete this employee?')) return;
     
-    // Populate employee dropdown in transaction modal
-    const txnEmployee = document.getElementById('txnEmployee');
-    txnEmployee.innerHTML = '<option value="">Select Employee</option>' + 
-        employees.filter(e => e.isActive).map(e => 
-            `<option value="${e.id}">${e.name} (${e.id})</option>`
-        ).join('');
+    let employees = Store.getEmployees();
+    employees = employees.filter(e => e.id !== id);
+    Store.setEmployees(employees);
     
-    // Load transactions table
-    const tbody = document.getElementById('transactionsBody');
-    const filtered = applyFiltersToTransactions(transactions);
+    // Also remove user account
+    let users = Store.getUsers();
+    users = users.filter(u => u.id !== id);
+    Store.setUsers(users);
     
-    tbody.innerHTML = filtered.map(t => {
-        const canApprove = (Store.getCurrentUser()?.role === 'admin' || Store.getCurrentUser()?.role === 'manager') && t.status === 'pending';
-        return `
-            <tr>
-                <td><code>${t.id}</code></td>
-                <td>${t.employeeName}</td>
-                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
-                <td>₹${t.amount.toLocaleString()}</td>
-                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
-                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-info me-1" onclick="viewTransaction('${t.id}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    ${canApprove ? `
-                        <button class="btn btn-sm btn-success me-1" onclick="showApproveModal('${t.id}')">
-                            <i class="fas fa-check"></i>
-                        </button>
-                    ` : ''}
-                    ${t.status === 'approved' ? `
-                        <button class="btn btn-sm btn-primary" onclick="settleTransaction('${t.id}')">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </button>
-                    ` : ''}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-function applyFilters() {
-    loadTransactions();
-}
-
-function applyFiltersToTransactions(transactions) {
-    const employeeFilter = document.getElementById('filterEmployee')?.value?.toLowerCase() || '';
-    const statusFilter = document.getElementById('filterStatus')?.value || '';
-    const typeFilter = document.getElementById('filterType')?.value || '';
-    
-    return transactions.filter(t => {
-        const matchEmployee = t.employeeName.toLowerCase().includes(employeeFilter);
-        const matchStatus = !statusFilter || t.status === statusFilter;
-        const matchType = !typeFilter || t.type === typeFilter;
-        return matchEmployee && matchStatus && matchType;
-    });
-}
-
-function showTransactionModal() {
-    const modal = new bootstrap.Modal(document.getElementById('transactionModal'));
-    document.getElementById('transactionForm').reset();
-    loadEmployeesForDropdown();
-    modal.show();
-}
-
-function loadEmployeesForDropdown() {
-    const employees = Store.getEmployees();
-    const select = document.getElementById('txnEmployee');
-    select.innerHTML = '<option value="">Select Employee</option>' + 
-        employees.filter(e => e.isActive).map(e => 
-            `<option value="${e.id}">${e.name} (${e.id})</option>`
-        ).join('');
-}
-
-function saveTransaction() {
-    const employeeId = document.getElementById('txnEmployee').value;
-    const type = document.getElementById('txnType').value;
-    const category = document.getElementById('txnCategory').value;
-    const amount = parseFloat(document.getElementById('txnAmount').value);
-    const purpose = document.getElementById('txnPurpose').value;
-    const description = document.getElementById('txnDescription').value;
-    const dueDate = document.getElementById('txnDueDate').value;
-    
-    if (!employeeId || !type || !category || !amount || !purpose) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    const employees = Store.getEmployees();
-    const employee = employees.find(e => e.id === employeeId);
-    if (!employee) {
-        showToast('danger', 'Employee not found');
-        return;
-    }
-    
-    const transaction = {
-        id: 'TXN_' + Date.now(),
-        employeeId: employee.id,
-        employeeName: employee.name,
-        type,
-        category,
-        amount,
-        purpose,
-        description,
-        dueDate: dueDate || null,
-        status: 'pending',
-        settlementAmount: 0,
-        remainingAmount: amount,
-        createdBy: Store.getCurrentUser()?.username || 'system',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    };
-    
-    const transactions = Store.getTransactions();
-    transactions.push(transaction);
-    Store.setTransactions(transactions);
-    
-    bootstrap.Modal.getInstance(document.getElementById('transactionModal')).hide();
-    loadTransactions();
-    updateDashboard();
-    showToast('success', 'Transaction created successfully');
-    addAuditLog('CREATE_TRANSACTION', 'Transaction', transaction.id);
-}
-
-function viewTransaction(id) {
-    const transactions = Store.getTransactions();
-    const t = transactions.find(t => t.id === id);
-    if (!t) return;
-    
-    const details = `
-        <strong>ID:</strong> ${t.id}<br>
-        <strong>Employee:</strong> ${t.employeeName}<br>
-        <strong>Type:</strong> ${t.type.replace('_', ' ')}<br>
-        <strong>Category:</strong> ${t.category}<br>
-        <strong>Amount:</strong> ₹${t.amount.toLocaleString()}<br>
-        <strong>Status:</strong> ${t.status.replace('_', ' ')}<br>
-        <strong>Purpose:</strong> ${t.purpose}<br>
-        <strong>Description:</strong> ${t.description || 'N/A'}<br>
-        <strong>Settled:</strong> ₹${t.settlementAmount?.toLocaleString() || 0}<br>
-        <strong>Remaining:</strong> ₹${t.remainingAmount?.toLocaleString() || 0}<br>
-        <strong>Date:</strong> ${new Date(t.createdAt).toLocaleString()}
-    `;
-    
-    // Show in a simple alert or modal - using a custom alert
-    const modal = new bootstrap.Modal(document.createElement('div'));
-    const modalHtml = `
-        <div class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Transaction Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">${details}</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    const modalEl = document.createElement('div');
-    modalEl.innerHTML = modalHtml;
-    document.body.appendChild(modalEl);
-    const bsModal = new bootstrap.Modal(modalEl.querySelector('.modal'));
-    bsModal.show();
-    modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
-}
-
-function showApproveModal(id) {
-    const transactions = Store.getTransactions();
-    const t = transactions.find(t => t.id === id);
-    if (!t) return;
-    
-    document.getElementById('approveTxnId').textContent = t.id;
-    document.getElementById('approveTxnAmount').textContent = '₹' + t.amount.toLocaleString();
-    document.getElementById('settlementAmount').value = t.amount;
-    document.getElementById('settlementAmount').max = t.amount;
-    document.getElementById('approveModal').dataset.txnId = id;
-    
-    // Show/hide settlement section based on action
-    document.getElementById('approveAction').addEventListener('change', function() {
-        document.getElementById('settlementSection').style.display = this.value === 'approved' ? 'block' : 'none';
-    });
-    document.getElementById('settlementSection').style.display = 'block';
-    
-    new bootstrap.Modal(document.getElementById('approveModal')).show();
-}
-
-function processApproval() {
-    const id = document.getElementById('approveModal').dataset.txnId;
-    const action = document.getElementById('approveAction').value;
-    const settlementAmount = parseFloat(document.getElementById('settlementAmount').value) || 0;
-    
-    const transactions = Store.getTransactions();
-    const index = transactions.findIndex(t => t.id === id);
-    if (index === -1) return;
-    
-    const t = transactions[index];
-    
-    if (action === 'approved') {
-        t.status = 'approved';
-        t.approvalDate = new Date().toISOString();
-        t.approvedBy = Store.getCurrentUser()?.username || 'system';
-        
-        if (settlementAmount > 0 && settlementAmount <= t.amount) {
-            t.settlementAmount = settlementAmount;
-            t.remainingAmount = t.amount - settlementAmount;
-            if (t.remainingAmount === 0) {
-                t.status = 'completed';
-                t.settlementDate = new Date().toISOString();
-            } else if (settlementAmount > 0) {
-                t.status = 'partially_settled';
-            }
-        }
-    } else {
-        t.status = 'rejected';
-        t.approvalDate = new Date().toISOString();
-        t.approvedBy = Store.getCurrentUser()?.username || 'system';
-    }
-    
-    t.updatedAt = new Date().toISOString();
-    transactions[index] = t;
-    Store.setTransactions(transactions);
-    
-    bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
-    loadTransactions();
-    updateDashboard();
-    showToast('success', `Transaction ${action} successfully`);
-    addAuditLog('APPROVE_TRANSACTION', 'Transaction', id);
-}
-
-function settleTransaction(id) {
-    const amount = prompt('Enter settlement amount (₹):');
-    if (amount === null) return;
-    
-    const settlementAmount = parseFloat(amount);
-    if (isNaN(settlementAmount) || settlementAmount <= 0) {
-        showToast('warning', 'Invalid amount');
-        return;
-    }
-    
-    const transactions = Store.getTransactions();
-    const index = transactions.findIndex(t => t.id === id);
-    if (index === -1) return;
-    
-    const t = transactions[index];
-    
-    if (settlementAmount > t.remainingAmount) {
-        showToast('warning', 'Settlement amount exceeds remaining amount');
-        return;
-    }
-    
-    t.settlementAmount = (t.settlementAmount || 0) + settlementAmount;
-    t.remainingAmount = t.amount - t.settlementAmount;
-    
-    if (t.remainingAmount === 0) {
-        t.status = 'completed';
-        t.settlementDate = new Date().toISOString();
-    } else {
-        t.status = 'partially_settled';
-    }
-    
-    t.updatedAt = new Date().toISOString();
-    transactions[index] = t;
-    Store.setTransactions(transactions);
-    
-    loadTransactions();
-    updateDashboard();
-    showToast('success', `Settlement of ₹${settlementAmount} added successfully`);
-    addAuditLog('SETTLE_TRANSACTION', 'Transaction', id);
+    loadEmployees();
+    showToast('success', 'Employee deleted successfully');
+    addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
 }
 
 // ============================================
 // REPORTS
 // ============================================
-let transactionChartInstance = null;
+let statusChartInstance = null;
 let departmentChartInstance = null;
 
 function generateReports() {
     const transactions = Store.getTransactions();
     const employees = Store.getEmployees();
     
-    // Summary by employee
+    // Employee report
     const reportData = employees.map(emp => {
         const empTxns = transactions.filter(t => t.employeeId === emp.id);
-        const totalAdvance = empTxns.reduce((sum, t) => sum + t.amount, 0);
-        const totalSettled = empTxns.reduce((sum, t) => sum + (t.settlementAmount || 0), 0);
-        const outstanding = empTxns.reduce((sum, t) => sum + (t.remainingAmount || 0), 0);
+        const total = empTxns.reduce((sum, t) => sum + t.amount, 0);
+        const approved = empTxns.filter(t => t.status === 'approved' || t.status === 'completed').length;
+        const rejected = empTxns.filter(t => t.status === 'rejected').length;
+        const pending = empTxns.filter(t => t.status === 'pending').length;
         
         return {
             employee: emp.name,
             department: emp.department,
-            totalAdvance,
-            totalSettled,
-            outstanding,
-            count: empTxns.length
+            totalRequests: empTxns.length,
+            totalAmount: total,
+            approved,
+            rejected,
+            pending
         };
-    }).filter(r => r.count > 0);
+    }).filter(r => r.totalRequests > 0);
     
     const tbody = document.getElementById('reportBody');
-    tbody.innerHTML = reportData.map(r => `
-        <tr>
-            <td>${r.employee}</td>
-            <td>${r.department}</td>
-            <td>₹${r.totalAdvance.toLocaleString()}</td>
-            <td>₹${r.totalSettled.toLocaleString()}</td>
-            <td>₹${r.outstanding.toLocaleString()}</td>
-            <td>${r.count}</td>
-        </tr>
-    `).join('');
+    if (reportData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data available</td></tr>`;
+    } else {
+        tbody.innerHTML = reportData.map(r => `
+            <tr>
+                <td>${r.employee}</td>
+                <td>${r.department}</td>
+                <td>${r.totalRequests}</td>
+                <td>₹${r.totalAmount.toLocaleString()}</td>
+                <td><span class="text-success">${r.approved}</span></td>
+                <td><span class="text-danger">${r.rejected}</span></td>
+                <td><span class="text-warning">${r.pending}</span></td>
+            </tr>
+        `).join('');
+    }
     
     // Charts
-    updateTransactionChart(transactions);
+    updateStatusChart(transactions);
     updateDepartmentChart(transactions, employees);
 }
 
-function updateTransactionChart(transactions) {
-    const ctx = document.getElementById('transactionChart').getContext('2d');
+function updateStatusChart(transactions) {
+    const ctx = document.getElementById('statusChart').getContext('2d');
     
-    if (transactionChartInstance) {
-        transactionChartInstance.destroy();
-    }
+    if (statusChartInstance) statusChartInstance.destroy();
     
-    const statusCounts = {
+    const counts = {
         pending: transactions.filter(t => t.status === 'pending').length,
         approved: transactions.filter(t => t.status === 'approved').length,
         rejected: transactions.filter(t => t.status === 'rejected').length,
@@ -1328,21 +1844,20 @@ function updateTransactionChart(transactions) {
         partially_settled: transactions.filter(t => t.status === 'partially_settled').length
     };
     
-    transactionChartInstance = new Chart(ctx, {
+    statusChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Pending', 'Approved', 'Rejected', 'Completed', 'Partially Settled'],
             datasets: [{
-                data: Object.values(statusCounts),
-                backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b', '#36b9cc', '#858796']
+                data: Object.values(counts),
+                backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b', '#36b9cc', '#858796'],
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    position: 'bottom'
-                }
+                legend: { position: 'bottom' }
             }
         }
     });
@@ -1351,9 +1866,7 @@ function updateTransactionChart(transactions) {
 function updateDepartmentChart(transactions, employees) {
     const ctx = document.getElementById('departmentChart').getContext('2d');
     
-    if (departmentChartInstance) {
-        departmentChartInstance.destroy();
-    }
+    if (departmentChartInstance) departmentChartInstance.destroy();
     
     const deptData = {};
     employees.forEach(emp => {
@@ -1379,9 +1892,7 @@ function updateDepartmentChart(transactions, employees) {
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    display: false
-                }
+                legend: { display: false }
             },
             scales: {
                 y: {
@@ -1397,31 +1908,73 @@ function updateDepartmentChart(transactions, employees) {
     });
 }
 
-function exportReport() {
+function exportFullReport() {
     const transactions = Store.getTransactions();
     if (transactions.length === 0) {
-        showToast('warning', 'No transactions to export');
+        showToast('warning', 'No data to export');
         return;
     }
     
-    // Create CSV
-    let csv = 'Transaction ID,Employee,Type,Category,Amount,Status,Purpose,Date\n';
+    let csv = 'ID,Employee,Department,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
     transactions.forEach(t => {
-        csv += `${t.id},${t.employeeName},${t.type},${t.category},${t.amount},${t.status},${t.purpose},${new Date(t.createdAt).toLocaleDateString()}\n`;
+        csv += `${t.id},${t.employeeName},${t.employeeDepartment || 'N/A'},${t.type},${t.category},${t.amount},${t.status},${t.purpose},${new Date(t.createdAt).toLocaleDateString()},${t.remarks || ''}\n`;
     });
     
-    // Download
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `transactions_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
+    downloadCSV(csv, `full_report_${new Date().toISOString().slice(0,10)}.csv`);
     showToast('success', 'Report exported successfully');
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+function addNotification(type, title, message, entityId, severity = 'info') {
+    const notifications = Store.getNotifications();
+    notifications.push({
+        id: 'NOTIF_' + Date.now(),
+        type: type,
+        title: title,
+        message: message,
+        entityId: entityId,
+        severity: severity,
+        read: false,
+        createdAt: new Date().toISOString()
+    });
+    Store.setNotifications(notifications);
+    loadNotifications();
+}
+
+function loadNotifications() {
+    const notifications = Store.getNotifications();
+    const unread = notifications.filter(n => !n.read);
+    const container = document.getElementById('notificationList');
+    
+    if (notifications.length === 0) {
+        container.innerHTML = `<div class="text-muted text-center py-3">No notifications</div>`;
+        return;
+    }
+    
+    container.innerHTML = notifications.slice(-5).reverse().map(n => `
+        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fw-semibold">${n.title}</div>
+                    <small class="text-muted">${n.message}</small>
+                </div>
+                <span class="badge bg-${n.severity === 'success' ? 'success' : n.severity === 'danger' ? 'danger' : 'info'}">${n.type.replace('_', ' ')}</span>
+            </div>
+            <div class="time">${new Date(n.createdAt).toLocaleString()}</div>
+        </div>
+    `).join('');
+}
+
+function markNotificationRead(id) {
+    const notifications = Store.getNotifications();
+    const index = notifications.findIndex(n => n.id === id);
+    if (index !== -1) {
+        notifications[index].read = true;
+        Store.setNotifications(notifications);
+        loadNotifications();
+    }
 }
 
 // ============================================
@@ -1434,10 +1987,11 @@ function addAuditLog(action, entityType, entityId) {
         id: 'AUD_' + Date.now(),
         timestamp: new Date().toISOString(),
         user: user?.username || 'system',
-        action,
-        entityType,
-        entityId,
-        details: `${action} on ${entityType}`
+        role: user?.role || 'system',
+        action: action,
+        entityType: entityType,
+        entityId: entityId,
+        details: `${action} on ${entityType}: ${entityId}`
     });
     Store.setAuditLogs(logs);
 }
@@ -1445,15 +1999,20 @@ function addAuditLog(action, entityType, entityId) {
 function loadAuditLogs() {
     const logs = Store.getAuditLogs();
     const tbody = document.getElementById('auditBody');
-    tbody.innerHTML = logs.slice(-50).reverse().map(log => `
-        <tr>
-            <td>${new Date(log.timestamp).toLocaleString()}</td>
-            <td><strong>${log.user}</strong></td>
-            <td><span class="badge bg-secondary">${log.action}</span></td>
-            <td>${log.entityType}</td>
-            <td><code>${log.details}</code></td>
-        </tr>
-    `).join('');
+    
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`;
+    } else {
+        tbody.innerHTML = logs.slice(-50).reverse().map(log => `
+            <tr>
+                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td><strong>${log.user}</strong></td>
+                <td><span class="badge bg-secondary">${log.role}</span></td>
+                <td><span class="badge bg-primary">${log.action}</span></td>
+                <td><code>${log.details}</code></td>
+            </tr>
+        `).join('');
+    }
 }
 
 // ============================================
@@ -1461,61 +2020,129 @@ function loadAuditLogs() {
 // ============================================
 function updateDateTime() {
     const now = new Date();
-    document.getElementById('currentDateTime').textContent = now.toLocaleString();
+    document.getElementById('currentDateTime').textContent = now.toLocaleString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
 }
 
 function showToast(type, message) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-white bg-${type} border-0 show`;
-    toast.role = 'alert';
+    toast.className = `toast-custom border-${type}`;
+    const icons = {
+        success: 'fa-check-circle text-success',
+        danger: 'fa-exclamation-circle text-danger',
+        warning: 'fa-exclamation-triangle text-warning',
+        info: 'fa-info-circle text-info'
+    };
     toast.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                ${message}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        <div class="d-flex align-items-center">
+            <div class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></div>
+            <div class="flex-grow-1">${message}</div>
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
         </div>
     `;
     container.appendChild(toast);
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+function showCustomModal(title, content) {
+    const modal = new bootstrap.Modal(document.createElement('div'));
+    const modalHtml = `
+        <div class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">${content}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    const modalEl = document.createElement('div');
+    modalEl.innerHTML = modalHtml;
+    document.body.appendChild(modalEl);
+    const bsModal = new bootstrap.Modal(modalEl.querySelector('.modal'));
+    bsModal.show();
+    modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+}
+
+function downloadCSV(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function showLoading(show) {
+    document.getElementById('spinnerOverlay').style.display = show ? 'flex' : 'none';
 }
 
 // ============================================
 // KEYBOARD SHORTCUTS
 // ============================================
 document.addEventListener('keydown', function(e) {
-    // Ctrl+1 = Dashboard, Ctrl+2 = Employees, Ctrl+3 = Transactions, Ctrl+4 = Reports
     if (e.ctrlKey) {
         switch(e.key) {
             case '1': showPage('dashboard'); e.preventDefault(); break;
-            case '2': showPage('employees'); e.preventDefault(); break;
-            case '3': showPage('transactions'); e.preventDefault(); break;
-            case '4': showPage('reports'); e.preventDefault(); break;
+            case '2': showPage('request'); e.preventDefault(); break;
+            case '3': showPage('history'); e.preventDefault(); break;
+            case '4': 
+                const user = Store.getCurrentUser();
+                if (user && (user.role === 'admin' || user.role === 'manager')) {
+                    showPage('approvals'); 
+                }
+                e.preventDefault(); 
+                break;
         }
     }
 });
+
+// ============================================
+// AUTO-SAVE & NOTIFICATION CHECK
+// ============================================
+setInterval(function() {
+    // Check for new notifications
+    const user = Store.getCurrentUser();
+    if (user) {
+        const notifications = Store.getNotifications();
+        const unread = notifications.filter(n => !n.read);
+        if (unread.length > 0) {
+            // Update badge or show toast for new notifications
+            console.log(`📬 ${unread.length} unread notifications`);
+        }
+    }
+}, 30000);
 
 // ============================================
 // INITIALIZE APP
 // ============================================
 initializeApp();
 
-// ============================================
-// AUTO-SAVE DATA (every 30 seconds)
-// ============================================
-setInterval(function() {
-    // Data is already saved in localStorage with each operation
-    console.log('Data auto-saved');
-}, 30000);
-
-console.log('💰 Cash Flow Management System loaded successfully!');
+console.log('💰 Advanced Cash Flow Management System loaded!');
 console.log('📊 Data stored in localStorage');
-console.log('👤 Demo Users: admin/admin123, manager/manager123');
-console.log('⌨️ Keyboard shortcuts: Ctrl+1=Dashboard, Ctrl+2=Employees, Ctrl+3=Transactions, Ctrl+4=Reports');
+console.log('👤 Demo Users:');
+console.log('   Admin: admin / admin123 (Full access)');
+console.log('   Manager: manager / manager123 (Approvals & Reports)');
+console.log('   Employee: employee / employee123 (Request & History only)');
+console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals');
+console.log('🔔 Notifications are checked every 30 seconds');
 </script>
 
 </body>
