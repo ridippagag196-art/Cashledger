@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Cash Flow Management System</title>
+    <title>Enterprise Cash Flow Management</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,14 +21,9 @@
             --warning-color: #f6c23e;
             --danger-color: #e74a3b;
             --info-color: #36b9cc;
-            --dark-color: #5a5c69;
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -36,7 +31,6 @@
             min-height: 100vh;
         }
         
-        /* Login Styles */
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -52,7 +46,7 @@
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             animation: slideUp 0.6s ease;
         }
         
@@ -111,19 +105,18 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
         
-        .role-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        .login-card .setup-info {
+            background: #f8f9fc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .login-card .setup-info h6 {
+            color: #2d3748;
             font-weight: 600;
         }
         
-        .role-badge.admin { background: #e74a3b; color: white; }
-        .role-badge.manager { background: #f6c23e; color: #333; }
-        .role-badge.employee { background: #4e73df; color: white; }
-        
-        /* Sidebar */
         .sidebar {
             min-height: 100vh;
             background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
@@ -190,7 +183,19 @@
             margin-right: 10px;
         }
         
-        /* Main Content */
+        .role-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .role-badge.admin { background: #e74a3b; color: white; }
+        .role-badge.manager { background: #f6c23e; color: #333; }
+        .role-badge.employee { background: #4e73df; color: white; }
+        
         .main-content {
             padding: 25px;
             max-height: 100vh;
@@ -207,7 +212,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Cards */
         .stat-card {
             background: white;
             border-radius: 12px;
@@ -249,51 +253,6 @@
         .status-completed { background: #36b9cc; color: #fff; }
         .status-partially_settled { background: #858796; color: #fff; }
         
-        /* Notifications */
-        .notification-badge {
-            position: relative;
-        }
-        
-        .notification-badge .badge-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #e74a3b;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 7px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
-        
-        .notification-item:hover {
-            background: #f8f9fc;
-        }
-        
-        .notification-item.unread {
-            background: #ebf4ff;
-            border-left: 3px solid #4e73df;
-        }
-        
-        .notification-item .time {
-            font-size: 0.7rem;
-            color: #999;
-        }
-        
-        /* Toast */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -322,7 +281,6 @@
             margin-right: 12px;
         }
         
-        /* Modal Enhancements */
         .modal-content {
             border-radius: 16px;
             border: none;
@@ -339,72 +297,25 @@
             padding: 15px 25px;
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+            cursor: pointer;
         }
         
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .notification-item:hover {
+            background: #f8f9fc;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
+        .notification-item.unread {
+            background: #ebf4ff;
+            border-left: 3px solid #4e73df;
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                min-height: auto;
-                height: auto;
-                position: relative;
-            }
-            
-            .main-content {
-                max-height: none;
-                padding: 15px;
-            }
-            
-            .stat-card {
-                margin-bottom: 15px;
-            }
-            
-            .login-card {
-                padding: 30px 20px;
-            }
-        }
-        
-        /* Loading Spinner */
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9998;
-            display: none;
-        }
-        
-        /* Print Styles */
-        @media print {
-            .no-print { display: none !important; }
-            .main-content { max-height: none !important; overflow: visible !important; }
-        }
-        
-        .request-form-section {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        .notification-item .time {
+            font-size: 0.7rem;
+            color: #999;
         }
         
         .quick-stats {
@@ -433,6 +344,66 @@
             color: #718096;
             margin-top: 5px;
         }
+        
+        .notification-settings {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .notification-settings .form-check {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                max-height: none;
+                padding: 15px;
+            }
+            .stat-card {
+                margin-bottom: 15px;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+        
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+        }
+        
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .text-muted-light {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .badge-notification {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
     </style>
 </head>
 <body>
@@ -455,15 +426,15 @@
             <div class="brand">
                 <i class="fas fa-hand-holding-usd"></i>
                 <h3>CashFlow Pro</h3>
-                <p>Advanced Expense Management System</p>
+                <p>Enterprise Expense Management</p>
             </div>
             
             <form id="loginForm">
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Employee ID / Username</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required>
+                        <span class="input-group-text bg-light"><i class="fas fa-id-badge"></i></span>
+                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter your employee ID" required>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -476,15 +447,64 @@
                 <button type="submit" class="btn btn-login w-100 text-white">
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
-                <div class="mt-3 text-center">
-                    <small class="text-muted">Demo Credentials:</small><br>
-                    <small class="text-muted">
-                        <span class="badge bg-danger">Admin</span> admin / admin123 &nbsp;|&nbsp;
-                        <span class="badge bg-warning text-dark">Manager</span> manager / manager123 &nbsp;|&nbsp;
-                        <span class="badge bg-primary">Employee</span> employee / employee123
+                
+                <div class="setup-info mt-3">
+                    <h6><i class="fas fa-info-circle me-2"></i>First Time Setup</h6>
+                    <small>
+                        No default accounts. The first user to register becomes the <strong>Admin</strong>.
+                        Click below to create your account.
                     </small>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="showRegistration()">
+                        <i class="fas fa-user-plus me-2"></i>Register New Account
+                    </button>
                 </div>
             </form>
+            
+            <!-- Registration Form -->
+            <div id="registrationForm" style="display: none; margin-top: 20px;">
+                <hr>
+                <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Register New Employee</h6>
+                <form id="registerForm">
+                    <div class="mb-2">
+                        <label class="form-label small">Employee ID *</label>
+                        <input type="text" class="form-control form-control-sm" id="regEmployeeId" placeholder="e.g., EMP001" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Full Name *</label>
+                        <input type="text" class="form-control form-control-sm" id="regFullName" placeholder="John Doe" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Email *</label>
+                        <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="john@company.com" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Mobile Number *</label>
+                        <input type="tel" class="form-control form-control-sm" id="regMobile" placeholder="+91 9876543210" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Department *</label>
+                        <input type="text" class="form-control form-control-sm" id="regDepartment" placeholder="e.g., IT, Finance" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Designation *</label>
+                        <input type="text" class="form-control form-control-sm" id="regDesignation" placeholder="e.g., Software Engineer" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Username *</label>
+                        <input type="text" class="form-control form-control-sm" id="regUsername" placeholder="Choose a username" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Password *</label>
+                        <input type="password" class="form-control form-control-sm" id="regPassword" placeholder="Min 6 characters" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-sm w-100">
+                        <i class="fas fa-check me-2"></i>Register
+                    </button>
+                    <button type="button" class="btn btn-link btn-sm w-100 mt-1" onclick="hideRegistration()">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Login
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -493,15 +513,16 @@
         <div class="container-fluid p-0">
             <div class="row g-0">
                 <!-- Sidebar -->
-                <div class="col-md-2 col-lg-2 d-md-block sidebar no-print" style="min-height: 100vh;">
+                <div class="col-md-2 col-lg-2 d-md-block sidebar no-print">
                     <div class="user-profile">
                         <div class="avatar">
                             <i class="fas fa-user-circle"></i>
                         </div>
                         <h6 id="userNameDisplay">User</h6>
-                        <small id="userRoleDisplay">Employee</small>
+                        <small id="userDeptDisplay">Department</small>
                         <div class="mt-2">
                             <span class="role-badge" id="userRoleBadge">EMPLOYEE</span>
+                            <span class="badge bg-secondary ms-1" id="userEmpIdDisplay">EMP001</span>
                         </div>
                     </div>
                     <nav class="nav flex-column">
@@ -516,14 +537,14 @@
                         </a>
                         <div id="adminMenu" style="display: none;">
                             <div class="px-3 py-2 mt-2">
-                                <small class="text-uppercase text-muted" style="color: rgba(255,255,255,0.4) !important; font-size: 0.7rem;">Admin Section</small>
+                                <small class="text-uppercase" style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">Administration</small>
                             </div>
                             <a class="nav-link" href="#" onclick="showPage('approvals')">
-                                <i class="fas fa-check-double"></i> Approvals 
+                                <i class="fas fa-check-double"></i> Approvals
                                 <span class="badge bg-danger float-end" id="pendingCount">0</span>
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('employees')">
-                                <i class="fas fa-users"></i> Employees
+                                <i class="fas fa-users"></i> Manage Employees
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('reports')">
                                 <i class="fas fa-chart-bar"></i> Reports
@@ -548,7 +569,6 @@
                             <span id="currentDateTime" class="text-muted"></span>
                         </div>
 
-                        <!-- Stats Cards -->
                         <div class="row mb-4" id="statsContainer">
                             <div class="col-xl-3 col-md-6 mb-3">
                                 <div class="stat-card" style="border-left-color: #4e73df;">
@@ -604,7 +624,6 @@
                             </div>
                         </div>
 
-                        <!-- Quick Stats for Employee -->
                         <div id="employeeQuickStats" class="quick-stats">
                             <div class="quick-stat-item">
                                 <div class="number" id="empTotalRequests">0</div>
@@ -624,7 +643,6 @@
                             </div>
                         </div>
 
-                        <!-- Recent Activity -->
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="table-container">
@@ -662,7 +680,7 @@
                         <h4><i class="fas fa-plus-circle me-2 text-primary"></i>Request Advance</h4>
                         <div class="row">
                             <div class="col-md-8">
-                                <div class="request-form-section">
+                                <div class="table-container">
                                     <form id="advanceRequestForm">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
@@ -706,17 +724,17 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="table-container">
-                                    <h5><i class="fas fa-info-circle me-2"></i>Quick Tips</h5>
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Be specific about the purpose</li>
-                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Attach supporting documents if needed</li>
-                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Submit before the due date</li>
-                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Keep track of your requests</li>
-                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Approvals usually take 24-48 hours</li>
+                                    <h5><i class="fas fa-info-circle me-2"></i>Guidelines</h5>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Be specific about purpose</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Include supporting details</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Submit before deadline</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Track your requests</li>
+                                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Approval takes 24-48 hours</li>
                                     </ul>
                                     <hr>
                                     <div class="text-center">
-                                        <small class="text-muted">Your request will be reviewed by the management team</small>
+                                        <small class="text-muted">You'll receive notifications via email and SMS</small>
                                     </div>
                                 </div>
                             </div>
@@ -760,7 +778,7 @@
                         </div>
                     </div>
 
-                    <!-- Approvals Page (Admin/Manager only) -->
+                    <!-- Approvals Page -->
                     <div id="page-approvals" class="page-content" style="display: none;">
                         <h4><i class="fas fa-check-double me-2 text-primary"></i>Pending Approvals</h4>
                         <div class="table-container">
@@ -806,9 +824,12 @@
                                 <div>
                                     <span class="badge bg-primary" id="employeeCount">0</span> employees
                                 </div>
-                                <button class="btn btn-sm btn-primary" onclick="showEmployeeModal()">
-                                    <i class="fas fa-plus me-1"></i>Add Employee
-                                </button>
+                                <div>
+                                    <span id="employeeRoleIndicator" class="badge bg-info">Admin Only</span>
+                                    <button class="btn btn-sm btn-primary ms-2" onclick="showEmployeeModal()" id="addEmployeeBtn">
+                                        <i class="fas fa-plus me-1"></i>Add Employee
+                                    </button>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover" id="employeesTable">
@@ -817,8 +838,10 @@
                                             <th>ID</th>
                                             <th>Name</th>
                                             <th>Email</th>
+                                            <th>Mobile</th>
                                             <th>Department</th>
                                             <th>Designation</th>
+                                            <th>Role</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -830,7 +853,7 @@
                         </div>
                     </div>
 
-                    <!-- Reports Page (Admin/Manager only) -->
+                    <!-- Reports Page -->
                     <div id="page-reports" class="page-content" style="display: none;">
                         <h4><i class="fas fa-chart-bar me-2 text-primary"></i>Reports & Analytics</h4>
                         <div class="row mb-4">
@@ -872,7 +895,7 @@
                         </div>
                     </div>
 
-                    <!-- Audit Page (Admin only) -->
+                    <!-- Audit Page -->
                     <div id="page-audit" class="page-content" style="display: none;">
                         <h4><i class="fas fa-history me-2 text-primary"></i>Audit Logs</h4>
                         <div class="table-container">
@@ -899,7 +922,7 @@
     </div>
 </div>
 
-<!-- Employee Modal (Admin only) -->
+<!-- Employee Modal -->
 <div class="modal fade" id="employeeModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -910,49 +933,51 @@
             <div class="modal-body">
                 <form id="employeeForm">
                     <input type="hidden" id="editEmployeeId">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Full Name *</label>
-                        <input type="text" class="form-control" id="empName" required>
+                    <div class="mb-2">
+                        <label class="form-label small">Employee ID *</label>
+                        <input type="text" class="form-control form-control-sm" id="empEmployeeId" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Email *</label>
-                        <input type="email" class="form-control" id="empEmail" required>
+                    <div class="mb-2">
+                        <label class="form-label small">Full Name *</label>
+                        <input type="text" class="form-control form-control-sm" id="empName" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Phone</label>
-                        <input type="text" class="form-control" id="empPhone">
+                    <div class="mb-2">
+                        <label class="form-label small">Email *</label>
+                        <input type="email" class="form-control form-control-sm" id="empEmail" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Department *</label>
-                        <input type="text" class="form-control" id="empDepartment" required>
+                    <div class="mb-2">
+                        <label class="form-label small">Mobile Number *</label>
+                        <input type="tel" class="form-control form-control-sm" id="empMobile" placeholder="+91 9876543210" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Designation *</label>
-                        <input type="text" class="form-control" id="empDesignation" required>
+                    <div class="mb-2">
+                        <label class="form-label small">Department *</label>
+                        <input type="text" class="form-control form-control-sm" id="empDepartment" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Role</label>
-                        <select class="form-select" id="empRole">
+                    <div class="mb-2">
+                        <label class="form-label small">Designation *</label>
+                        <input type="text" class="form-control form-control-sm" id="empDesignation" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Role</label>
+                        <select class="form-select form-select-sm" id="empRole">
                             <option value="employee">Employee</option>
                             <option value="manager">Manager</option>
                             <option value="admin">Admin</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Username *</label>
-                        <input type="text" class="form-control" id="empUsername" required>
-                        <small class="text-muted">Used for login</small>
+                    <div class="mb-2">
+                        <label class="form-label small">Username *</label>
+                        <input type="text" class="form-control form-control-sm" id="empUsername" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password *</label>
-                        <input type="text" class="form-control" id="empPassword" required>
-                        <small class="text-muted">Minimum 6 characters</small>
+                    <div class="mb-2">
+                        <label class="form-label small">Password *</label>
+                        <input type="text" class="form-control form-control-sm" id="empPassword" placeholder="Min 6 characters" required minlength="6">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveEmployee()">Save</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveEmployee()">Save</button>
             </div>
         </div>
     </div>
@@ -967,36 +992,36 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div id="approvalDetails">
-                    <div class="mb-2"><strong>Request ID:</strong> <span id="aprId"></span></div>
-                    <div class="mb-2"><strong>Employee:</strong> <span id="aprEmployee"></span></div>
-                    <div class="mb-2"><strong>Department:</strong> <span id="aprDepartment"></span></div>
-                    <div class="mb-2"><strong>Type:</strong> <span id="aprType"></span></div>
-                    <div class="mb-2"><strong>Amount:</strong> <span id="aprAmount"></span></div>
-                    <div class="mb-2"><strong>Purpose:</strong> <span id="aprPurpose"></span></div>
-                    <div class="mb-2"><strong>Description:</strong> <span id="aprDescription"></span></div>
+                <div id="approvalDetails" class="small">
+                    <div class="mb-1"><strong>Request ID:</strong> <span id="aprId"></span></div>
+                    <div class="mb-1"><strong>Employee:</strong> <span id="aprEmployee"></span></div>
+                    <div class="mb-1"><strong>Department:</strong> <span id="aprDepartment"></span></div>
+                    <div class="mb-1"><strong>Type:</strong> <span id="aprType"></span></div>
+                    <div class="mb-1"><strong>Amount:</strong> <span id="aprAmount"></span></div>
+                    <div class="mb-1"><strong>Purpose:</strong> <span id="aprPurpose"></span></div>
+                    <div class="mb-1"><strong>Description:</strong> <span id="aprDescription"></span></div>
                 </div>
                 <hr>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Decision</label>
-                    <select class="form-select" id="aprDecision">
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold">Decision</label>
+                    <select class="form-select form-select-sm" id="aprDecision">
                         <option value="approved">✅ Approve</option>
                         <option value="rejected">❌ Reject</option>
                     </select>
                 </div>
-                <div class="mb-3" id="aprSettlementSection">
-                    <label class="form-label fw-semibold">Settlement Amount (₹)</label>
-                    <input type="number" class="form-control" id="aprSettlementAmount" min="0">
+                <div class="mb-2" id="aprSettlementSection">
+                    <label class="form-label small fw-semibold">Settlement Amount (₹)</label>
+                    <input type="number" class="form-control form-control-sm" id="aprSettlementAmount" min="0">
                     <small class="text-muted">Leave as 0 for full amount</small>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Remarks</label>
-                    <textarea class="form-control" id="aprRemarks" rows="2" placeholder="Add any comments..."></textarea>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold">Remarks</label>
+                    <textarea class="form-control form-control-sm" id="aprRemarks" rows="2" placeholder="Add any comments..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="processApproval()">Submit Decision</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="processApproval()">Submit Decision</button>
             </div>
         </div>
     </div>
@@ -1011,49 +1036,169 @@
 // ============================================
 const Store = {
     getUsers() {
-        const data = localStorage.getItem('cashflow_advanced_users');
+        const data = localStorage.getItem('cf_users');
         return data ? JSON.parse(data) : [];
     },
     setUsers(users) {
-        localStorage.setItem('cashflow_advanced_users', JSON.stringify(users));
+        localStorage.setItem('cf_users', JSON.stringify(users));
     },
     getEmployees() {
-        const data = localStorage.getItem('cashflow_advanced_employees');
+        const data = localStorage.getItem('cf_employees');
         return data ? JSON.parse(data) : [];
     },
     setEmployees(employees) {
-        localStorage.setItem('cashflow_advanced_employees', JSON.stringify(employees));
+        localStorage.setItem('cf_employees', JSON.stringify(employees));
     },
     getTransactions() {
-        const data = localStorage.getItem('cashflow_advanced_transactions');
+        const data = localStorage.getItem('cf_transactions');
         return data ? JSON.parse(data) : [];
     },
     setTransactions(transactions) {
-        localStorage.setItem('cashflow_advanced_transactions', JSON.stringify(transactions));
+        localStorage.setItem('cf_transactions', JSON.stringify(transactions));
     },
     getNotifications() {
-        const data = localStorage.getItem('cashflow_advanced_notifications');
+        const data = localStorage.getItem('cf_notifications');
         return data ? JSON.parse(data) : [];
     },
     setNotifications(notifications) {
-        localStorage.setItem('cashflow_advanced_notifications', JSON.stringify(notifications));
+        localStorage.setItem('cf_notifications', JSON.stringify(notifications));
     },
     getAuditLogs() {
-        const data = localStorage.getItem('cashflow_advanced_audit');
+        const data = localStorage.getItem('cf_audit');
         return data ? JSON.parse(data) : [];
     },
     setAuditLogs(logs) {
-        localStorage.setItem('cashflow_advanced_audit', JSON.stringify(logs));
+        localStorage.setItem('cf_audit', JSON.stringify(logs));
     },
     getCurrentUser() {
-        const data = localStorage.getItem('cashflow_advanced_current_user');
+        const data = localStorage.getItem('cf_current_user');
         return data ? JSON.parse(data) : null;
     },
     setCurrentUser(user) {
-        localStorage.setItem('cashflow_advanced_current_user', JSON.stringify(user));
+        localStorage.setItem('cf_current_user', JSON.stringify(user));
     },
     clearCurrentUser() {
-        localStorage.removeItem('cashflow_advanced_current_user');
+        localStorage.removeItem('cf_current_user');
+    }
+};
+
+// ============================================
+// NOTIFICATION ENGINE - Email & SMS
+// ============================================
+const NotificationEngine = {
+    // Send Email Notification (Simulated - In production, use Email API)
+    sendEmail: function(to, subject, message) {
+        console.log('📧 EMAIL SENT:');
+        console.log('   To:', to);
+        console.log('   Subject:', subject);
+        console.log('   Message:', message);
+        
+        // In production, integrate with:
+        // - SendGrid, Mailgun, AWS SES, etc.
+        // Example: SendGrid API call
+        /*
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        const msg = {
+            to: to,
+            from: 'noreply@cashflow.com',
+            subject: subject,
+            text: message,
+            html: `<p>${message}</p>`
+        };
+        sgMail.send(msg);
+        */
+        
+        return true;
+    },
+    
+    // Send SMS Notification (Simulated - In production, use SMS API)
+    sendSMS: function(phone, message) {
+        console.log('📱 SMS SENT:');
+        console.log('   To:', phone);
+        console.log('   Message:', message);
+        
+        // In production, integrate with:
+        // - Twilio, AWS SNS, etc.
+        // Example: Twilio API call
+        /*
+        const twilio = require('twilio');
+        const client = twilio(accountSid, authToken);
+        client.messages.create({
+            body: message,
+            to: phone,
+            from: '+1234567890'
+        });
+        */
+        
+        return true;
+    },
+    
+    // Send combined notification
+    send: function(employee, title, message, type = 'info') {
+        const result = {
+            emailSent: false,
+            smsSent: false,
+            error: null
+        };
+        
+        try {
+            // Send Email
+            if (employee.email) {
+                const emailSubject = `[CashFlow Pro] ${title}`;
+                const emailBody = `
+                    Dear ${employee.name},
+                    
+                    ${message}
+                    
+                    Request ID: ${employee.requestId || 'N/A'}
+                    Date: ${new Date().toLocaleString()}
+                    
+                    ---
+                    This is an automated notification from CashFlow Pro.
+                    For any queries, please contact your manager.
+                `;
+                this.sendEmail(employee.email, emailSubject, emailBody);
+                result.emailSent = true;
+            }
+            
+            // Send SMS
+            if (employee.mobile) {
+                const smsBody = `CashFlow Pro: ${title}. ${message}`;
+                this.sendSMS(employee.mobile, smsBody);
+                result.smsSent = true;
+            }
+            
+        } catch (error) {
+            result.error = error.message;
+            console.error('Notification Error:', error);
+        }
+        
+        return result;
+    },
+    
+    // Bulk notification to all admins/managers
+    notifyAdmins: function(title, message, type = 'info') {
+        const users = Store.getUsers();
+        const admins = users.filter(u => u.role === 'admin' || u.role === 'manager');
+        const employees = Store.getEmployees();
+        
+        admins.forEach(admin => {
+            const emp = employees.find(e => e.id === admin.id);
+            if (emp) {
+                this.send(emp, title, message, type);
+            }
+        });
+    },
+    
+    // Notify specific employee
+    notifyEmployee: function(employeeId, title, message, type = 'info') {
+        const employees = Store.getEmployees();
+        const emp = employees.find(e => e.id === employeeId);
+        if (emp) {
+            return this.send(emp, title, message, type);
+        }
+        return null;
     }
 };
 
@@ -1061,73 +1206,121 @@ const Store = {
 // INITIALIZATION
 // ============================================
 function initializeApp() {
-    // Create default users if none exist
-    let users = Store.getUsers();
+    const users = Store.getUsers();
     if (users.length === 0) {
-        const defaultUsers = [
-            {
-                id: 'user_1',
-                username: 'admin',
-                password: 'admin123',
-                fullName: 'Administrator',
-                role: 'admin',
-                department: 'IT',
-                employeeId: 'EMP001',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'user_2',
-                username: 'manager',
-                password: 'manager123',
-                fullName: 'Manager User',
-                role: 'manager',
-                department: 'Finance',
-                employeeId: 'EMP002',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'user_3',
-                username: 'employee',
-                password: 'employee123',
-                fullName: 'Employee User',
-                role: 'employee',
-                department: 'Marketing',
-                employeeId: 'EMP003',
-                createdAt: new Date().toISOString()
-            }
-        ];
-        Store.setUsers(defaultUsers);
-        
-        // Also create employee records
-        const employees = defaultUsers.map(u => ({
-            id: u.id,
-            employeeId: u.employeeId,
-            name: u.fullName,
-            email: u.username + '@company.com',
-            phone: '',
-            department: u.department,
-            designation: u.role === 'admin' ? 'System Administrator' : 
-                         u.role === 'manager' ? 'Department Manager' : 'Staff',
-            role: u.role,
-            isActive: true,
-            createdAt: u.createdAt
-        }));
-        Store.setEmployees(employees);
+        console.log('📝 No users found. First registration will be Admin.');
     }
     
-    // Check if user is logged in
     const currentUser = Store.getCurrentUser();
     if (currentUser) {
-        showDashboard();
+        const userExists = users.find(u => u.id === currentUser.id);
+        if (userExists) {
+            showDashboard();
+        } else {
+            Store.clearCurrentUser();
+        }
     }
     
-    // Update date/time
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
-    // Check for pending approvals periodically
-    setInterval(checkPendingApprovals, 30000);
 }
+
+// ============================================
+// REGISTRATION
+// ============================================
+function showRegistration() {
+    document.querySelector('#loginForm').style.display = 'none';
+    document.getElementById('registrationForm').style.display = 'block';
+}
+
+function hideRegistration() {
+    document.querySelector('#loginForm').style.display = 'block';
+    document.getElementById('registrationForm').style.display = 'none';
+}
+
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const employeeId = document.getElementById('regEmployeeId').value.trim();
+    const fullName = document.getElementById('regFullName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const mobile = document.getElementById('regMobile').value.trim();
+    const department = document.getElementById('regDepartment').value.trim();
+    const designation = document.getElementById('regDesignation').value.trim();
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    
+    if (!employeeId || !fullName || !email || !mobile || !department || !designation || !username || !password) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showToast('warning', 'Password must be at least 6 characters');
+        return;
+    }
+    
+    const users = Store.getUsers();
+    const employees = Store.getEmployees();
+    
+    if (users.find(u => u.username === username)) {
+        showToast('danger', 'Username already exists');
+        return;
+    }
+    if (employees.find(e => e.employeeId === employeeId)) {
+        showToast('danger', 'Employee ID already exists');
+        return;
+    }
+    if (employees.find(e => e.email === email)) {
+        showToast('danger', 'Email already registered');
+        return;
+    }
+    if (employees.find(e => e.mobile === mobile)) {
+        showToast('danger', 'Mobile number already registered');
+        return;
+    }
+    
+    const isFirstUser = users.length === 0;
+    const role = isFirstUser ? 'admin' : 'employee';
+    
+    const newId = 'user_' + Date.now();
+    const newUser = {
+        id: newId,
+        username: username,
+        password: password,
+        fullName: fullName,
+        role: role,
+        department: department,
+        employeeId: employeeId,
+        createdAt: new Date().toISOString()
+    };
+    users.push(newUser);
+    Store.setUsers(users);
+    
+    const newEmployee = {
+        id: newId,
+        employeeId: employeeId,
+        name: fullName,
+        email: email,
+        mobile: mobile,
+        department: department,
+        designation: designation,
+        role: role,
+        isActive: true,
+        createdAt: new Date().toISOString()
+    };
+    employees.push(newEmployee);
+    Store.setEmployees(employees);
+    
+    addAuditLog('REGISTER', 'User', fullName);
+    
+    showToast('success', `Registration successful! ${isFirstUser ? 'You are the Admin.' : 'You can now login.'}`);
+    
+    Store.setCurrentUser(newUser);
+    hideRegistration();
+    document.querySelector('#loginForm').reset();
+    showDashboard();
+});
 
 // ============================================
 // AUTHENTICATION
@@ -1143,8 +1336,8 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     if (user) {
         Store.setCurrentUser(user);
         showToast('success', `Welcome back, ${user.fullName}!`);
-        showDashboard();
         addAuditLog('LOGIN', 'User', user.username);
+        showDashboard();
     } else {
         showToast('danger', 'Invalid username or password');
     }
@@ -1159,7 +1352,6 @@ function logout() {
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     showToast('info', 'Logged out successfully');
-    // Reset login form
     document.getElementById('loginForm').reset();
 }
 
@@ -1170,49 +1362,57 @@ function showDashboard() {
     const user = Store.getCurrentUser();
     if (user) {
         document.getElementById('userNameDisplay').textContent = user.fullName;
-        document.getElementById('userRoleDisplay').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        document.getElementById('userDeptDisplay').textContent = user.department || 'No Department';
         document.getElementById('userRoleBadge').textContent = user.role.toUpperCase();
         document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
+        document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
         
-        // Show admin menu based on role
-        if (user.role === 'admin' || user.role === 'manager') {
-            document.getElementById('adminMenu').style.display = 'block';
-        } else {
-            document.getElementById('adminMenu').style.display = 'none';
-        }
+        const isAdmin = user.role === 'admin' || user.role === 'manager';
+        document.getElementById('adminMenu').style.display = isAdmin ? 'block' : 'none';
         
-        // Show employee quick stats
+        // Show/hide employee quick stats
         document.getElementById('employeeQuickStats').style.display = user.role === 'employee' ? 'grid' : 'none';
+        
+        // Show/hide add employee button based on role
+        const addBtn = document.getElementById('addEmployeeBtn');
+        const roleIndicator = document.getElementById('employeeRoleIndicator');
+        if (user.role === 'admin') {
+            addBtn.style.display = 'inline-block';
+            roleIndicator.textContent = 'Admin Only - Full Access';
+            roleIndicator.className = 'badge bg-success';
+        } else if (user.role === 'manager') {
+            addBtn.style.display = 'none';
+            roleIndicator.textContent = 'Manager - View Only';
+            roleIndicator.className = 'badge bg-info';
+        } else {
+            addBtn.style.display = 'none';
+            roleIndicator.textContent = 'Employee - No Access';
+            roleIndicator.className = 'badge bg-secondary';
+        }
     }
     
     updateDashboard();
     loadNotifications();
-    checkPendingApprovals();
 }
 
 // ============================================
 // NAVIGATION
 // ============================================
 function showPage(page) {
-    // Hide all pages
     document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
     
-    // Show selected page
     const pageEl = document.getElementById('page-' + page);
     if (pageEl) {
         pageEl.style.display = 'block';
         pageEl.classList.add('fade-in');
     }
     
-    // Update sidebar
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
     const link = document.querySelector(`.sidebar .nav-link[onclick*="${page}"]`);
     if (link) link.classList.add('active');
     
-    // Load data for specific pages
     switch(page) {
         case 'dashboard': updateDashboard(); break;
-        case 'request': loadRequestForm(); break;
         case 'history': loadMyHistory(); break;
         case 'approvals': loadApprovals(); break;
         case 'employees': loadEmployees(); break;
@@ -1227,15 +1427,12 @@ function showPage(page) {
 function updateDashboard() {
     const user = Store.getCurrentUser();
     const transactions = Store.getTransactions();
-    const employees = Store.getEmployees();
     
-    // Filter transactions for current user if employee
     let userTransactions = transactions;
     if (user && user.role === 'employee') {
         userTransactions = transactions.filter(t => t.employeeId === user.id);
     }
     
-    // Stats
     const totalAdvance = userTransactions.reduce((sum, t) => sum + t.amount, 0);
     const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
     const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
@@ -1246,7 +1443,6 @@ function updateDashboard() {
     document.getElementById('approvedCountStat').textContent = approvedCount;
     document.getElementById('rejectedCountStat').textContent = rejectedCount;
     
-    // Employee quick stats
     if (user && user.role === 'employee') {
         document.getElementById('empTotalRequests').textContent = userTransactions.length;
         document.getElementById('empPendingRequests').textContent = pendingCount;
@@ -1254,11 +1450,10 @@ function updateDashboard() {
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
     
-    // Recent transactions
     const recent = userTransactions.slice(-5).reverse();
     const tbody = document.getElementById('recentTransactionsBody');
     if (recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No transactions found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No transactions</td></tr>`;
     } else {
         tbody.innerHTML = recent.map(t => `
             <tr>
@@ -1271,40 +1466,13 @@ function updateDashboard() {
         `).join('');
     }
     
-    // Update pending count badge
     const allPending = transactions.filter(t => t.status === 'pending').length;
     document.getElementById('pendingCount').textContent = allPending;
-}
-
-function checkPendingApprovals() {
-    const user = Store.getCurrentUser();
-    if (!user) return;
-    
-    const transactions = Store.getTransactions();
-    const pending = transactions.filter(t => t.status === 'pending');
-    
-    // Update badge
-    document.getElementById('pendingCount').textContent = pending.length;
-    
-    // Check for new notifications
-    const notifications = Store.getNotifications();
-    const unread = notifications.filter(n => !n.read).length;
-    
-    // Update notification badge if exists
-    // (We'll use the pending count for now)
 }
 
 // ============================================
 // REQUEST ADVANCE
 // ============================================
-function loadRequestForm() {
-    const user = Store.getCurrentUser();
-    if (!user) return;
-    
-    // Pre-fill employee info if needed
-    document.getElementById('advanceRequestForm').reset();
-}
-
 document.getElementById('advanceRequestForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const user = Store.getCurrentUser();
@@ -1325,19 +1493,17 @@ document.getElementById('advanceRequestForm').addEventListener('submit', functio
         return;
     }
     
-    // Get employee details
     const employees = Store.getEmployees();
     const employee = employees.find(e => e.id === user.id);
-    if (!employee) {
-        showToast('danger', 'Employee record not found');
-        return;
-    }
     
     const transaction = {
         id: 'TXN_' + Date.now(),
         employeeId: user.id,
         employeeName: user.fullName,
-        employeeDepartment: employee.department || 'N/A',
+        employeeDepartment: employee?.department || user.department || 'N/A',
+        employeeEmpId: user.employeeId || 'N/A',
+        employeeEmail: employee?.email || '',
+        employeeMobile: employee?.mobile || '',
         type: type,
         category: category,
         amount: amount,
@@ -1359,10 +1525,24 @@ document.getElementById('advanceRequestForm').addEventListener('submit', functio
     transactions.push(transaction);
     Store.setTransactions(transactions);
     
-    // Add notification for admins
+    // Send email and SMS notifications to admins
+    const admins = Store.getUsers().filter(u => u.role === 'admin' || u.role === 'manager');
+    admins.forEach(admin => {
+        const adminEmp = employees.find(e => e.id === admin.id);
+        if (adminEmp) {
+            NotificationEngine.send(
+                adminEmp,
+                `New Request from ${user.fullName}`,
+                `Employee: ${user.fullName} (${user.employeeId})\nType: ${type}\nAmount: ₹${amount.toLocaleString()}\nPurpose: ${purpose}\nRequest ID: ${transaction.id}`,
+                'info'
+            );
+        }
+    });
+    
+    // Add notification in app
     addNotification(
         'NEW_REQUEST',
-        `New advance request from ${user.fullName}`,
+        `New request from ${user.fullName}`,
         `${user.fullName} requested ₹${amount.toLocaleString()} for ${purpose}`,
         transaction.id,
         'info'
@@ -1371,9 +1551,7 @@ document.getElementById('advanceRequestForm').addEventListener('submit', functio
     addAuditLog('CREATE_REQUEST', 'Transaction', transaction.id);
     
     document.getElementById('advanceRequestForm').reset();
-    showToast('success', 'Request submitted successfully! You will be notified once reviewed.');
-    
-    // Update dashboard
+    showToast('success', 'Request submitted! Admins have been notified via email and SMS.');
     updateDashboard();
 });
 
@@ -1391,7 +1569,7 @@ function loadMyHistory() {
     
     const tbody = document.getElementById('historyBody');
     if (myTxns.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions</td></tr>`;
     } else {
         tbody.innerHTML = myTxns.map(t => `
             <tr>
@@ -1407,10 +1585,7 @@ function loadMyHistory() {
     }
 }
 
-function refreshHistory() {
-    loadMyHistory();
-    showToast('info', 'History refreshed');
-}
+function refreshHistory() { loadMyHistory(); showToast('info', 'Refreshed'); }
 
 function exportMyHistory() {
     const user = Store.getCurrentUser();
@@ -1434,7 +1609,7 @@ function exportMyHistory() {
 }
 
 // ============================================
-// APPROVALS (Admin/Manager)
+// APPROVALS
 // ============================================
 function loadApprovals() {
     const user = Store.getCurrentUser();
@@ -1448,7 +1623,6 @@ function loadApprovals() {
         filtered = transactions.filter(t => t.status === filter);
     }
     
-    // Show pending first
     filtered.sort((a, b) => {
         if (a.status === 'pending' && b.status !== 'pending') return -1;
         if (a.status !== 'pending' && b.status === 'pending') return 1;
@@ -1459,7 +1633,7 @@ function loadApprovals() {
     
     const tbody = document.getElementById('approvalsBody');
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No transactions found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No transactions</td></tr>`;
     } else {
         tbody.innerHTML = filtered.map(t => `
             <tr class="${t.status === 'pending' ? 'table-warning' : ''}">
@@ -1497,14 +1671,13 @@ function showApprovalModal(id) {
     document.getElementById('aprType').textContent = t.type.replace('_', ' ');
     document.getElementById('aprAmount').textContent = '₹' + t.amount.toLocaleString();
     document.getElementById('aprPurpose').textContent = t.purpose;
-    document.getElementById('aprDescription').textContent = t.description || 'No description provided';
+    document.getElementById('aprDescription').textContent = t.description || 'No description';
     document.getElementById('aprSettlementAmount').value = t.amount;
     document.getElementById('aprSettlementAmount').max = t.amount;
     document.getElementById('aprRemarks').value = '';
     document.getElementById('aprDecision').value = 'approved';
     document.getElementById('approvalModal').dataset.txnId = id;
     
-    // Show/hide settlement section based on decision
     document.getElementById('aprDecision').onchange = function() {
         document.getElementById('aprSettlementSection').style.display = 
             this.value === 'approved' ? 'block' : 'none';
@@ -1526,6 +1699,10 @@ function processApproval() {
     
     const t = transactions[index];
     const user = Store.getCurrentUser();
+    const employees = Store.getEmployees();
+    
+    // Get employee details for notification
+    const employee = employees.find(e => e.id === t.employeeId);
     
     if (decision === 'approved') {
         t.status = 'approved';
@@ -1544,7 +1721,23 @@ function processApproval() {
             }
         }
         
-        // Notify employee
+        // Send notification to employee via Email & SMS
+        if (employee) {
+            NotificationEngine.send(
+                employee,
+                `Request ${t.id} Approved`,
+                `Your request for ₹${t.amount.toLocaleString()} (${t.type}) has been approved.\nPurpose: ${t.purpose}\nRemarks: ${remarks}`,
+                'success'
+            );
+        }
+        
+        // Send notification to all admins
+        NotificationEngine.notifyAdmins(
+            `Request ${t.id} Approved by ${user.fullName}`,
+            `Employee: ${t.employeeName}\nAmount: ₹${t.amount.toLocaleString()}\nType: ${t.type}\nPurpose: ${t.purpose}`,
+            'info'
+        );
+        
         addNotification(
             'REQUEST_APPROVED',
             `Your request ${t.id} was approved`,
@@ -1559,7 +1752,23 @@ function processApproval() {
         t.approvedBy = user.username;
         t.remarks = remarks || 'Rejected';
         
-        // Notify employee
+        // Send notification to employee via Email & SMS
+        if (employee) {
+            NotificationEngine.send(
+                employee,
+                `Request ${t.id} Rejected`,
+                `Your request for ₹${t.amount.toLocaleString()} (${t.type}) has been rejected.\nPurpose: ${t.purpose}\nReason: ${remarks}`,
+                'danger'
+            );
+        }
+        
+        // Send notification to all admins
+        NotificationEngine.notifyAdmins(
+            `Request ${t.id} Rejected by ${user.fullName}`,
+            `Employee: ${t.employeeName}\nAmount: ₹${t.amount.toLocaleString()}\nType: ${t.type}\nPurpose: ${t.purpose}\nReason: ${remarks}`,
+            'danger'
+        );
+        
         addNotification(
             'REQUEST_REJECTED',
             `Your request ${t.id} was rejected`,
@@ -1576,81 +1785,90 @@ function processApproval() {
     bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
     loadApprovals();
     updateDashboard();
-    showToast('success', `Request ${decision} successfully`);
+    showToast('success', `Request ${decision}. Email & SMS notifications sent.`);
     addAuditLog('PROCESS_APPROVAL', 'Transaction', id);
 }
 
-function viewTransactionDetails(id) {
-    const transactions = Store.getTransactions();
-    const t = transactions.find(t => t.id === id);
-    if (!t) return;
-    
-    const details = `
-        <div class="row">
-            <div class="col-6"><strong>ID:</strong></div>
-            <div class="col-6">${t.id}</div>
-            <div class="col-6"><strong>Employee:</strong></div>
-            <div class="col-6">${t.employeeName}</div>
-            <div class="col-6"><strong>Type:</strong></div>
-            <div class="col-6">${t.type.replace('_', ' ')}</div>
-            <div class="col-6"><strong>Amount:</strong></div>
-            <div class="col-6">₹${t.amount.toLocaleString()}</div>
-            <div class="col-6"><strong>Status:</strong></div>
-            <div class="col-6"><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></div>
-            <div class="col-6"><strong>Purpose:</strong></div>
-            <div class="col-6">${t.purpose}</div>
-            <div class="col-6"><strong>Remarks:</strong></div>
-            <div class="col-6">${t.remarks || 'N/A'}</div>
-            <div class="col-6"><strong>Date:</strong></div>
-            <div class="col-6">${new Date(t.createdAt).toLocaleString()}</div>
-        </div>
-    `;
-    
-    showCustomModal('Transaction Details', details);
-}
-
 // ============================================
-// EMPLOYEES (Admin only)
+// EMPLOYEES (Admin only for delete)
 // ============================================
 function loadEmployees() {
+    const user = Store.getCurrentUser();
     const employees = Store.getEmployees();
-    const users = Store.getUsers();
-    
     document.getElementById('employeeCount').textContent = employees.length;
     
     const tbody = document.getElementById('employeesBody');
-    tbody.innerHTML = employees.map(emp => {
-        const user = users.find(u => u.id === emp.id);
-        return `
+    if (employees.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees</td></tr>`;
+    } else {
+        const isAdmin = user && user.role === 'admin';
+        const isManager = user && user.role === 'manager';
+        
+        tbody.innerHTML = employees.map(emp => `
             <tr>
                 <td><code>${emp.employeeId || emp.id}</code></td>
                 <td>${emp.name}</td>
                 <td>${emp.email}</td>
+                <td>${emp.mobile || 'N/A'}</td>
                 <td>${emp.department}</td>
                 <td>${emp.designation}</td>
+                <td><span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span></td>
                 <td>
                     <span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">
                         ${emp.isActive ? 'Active' : 'Inactive'}
                     </span>
-                    ${emp.role ? `<span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span>` : ''}
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${isAdmin ? `
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : isManager ? `
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee('${emp.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <span class="badge bg-secondary">View Only</span>
+                    ` : `
+                        <span class="badge bg-secondary">No Access</span>
+                    `}
                 </td>
             </tr>
-        `;
-    }).join('');
+        `).join('');
+    }
+}
+
+function viewEmployee(id) {
+    const employees = Store.getEmployees();
+    const emp = employees.find(e => e.id === id);
+    if (!emp) return;
+    
+    const details = `
+        <div class="row small">
+            <div class="col-5"><strong>Employee ID:</strong></div><div class="col-7">${emp.employeeId}</div>
+            <div class="col-5"><strong>Name:</strong></div><div class="col-7">${emp.name}</div>
+            <div class="col-5"><strong>Email:</strong></div><div class="col-7">${emp.email}</div>
+            <div class="col-5"><strong>Mobile:</strong></div><div class="col-7">${emp.mobile || 'N/A'}</div>
+            <div class="col-5"><strong>Department:</strong></div><div class="col-7">${emp.department}</div>
+            <div class="col-5"><strong>Designation:</strong></div><div class="col-7">${emp.designation}</div>
+            <div class="col-5"><strong>Role:</strong></div><div class="col-7"><span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span></div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">${emp.isActive ? 'Active' : 'Inactive'}</span></div>
+        </div>
+    `;
+    showCustomModal('Employee Details', details);
 }
 
 function showEmployeeModal(employeeId = null) {
+    const user = Store.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can add/edit employees');
+        return;
+    }
+    
     const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
-    const form = document.getElementById('employeeForm');
-    form.reset();
+    document.getElementById('employeeForm').reset();
     document.getElementById('editEmployeeId').value = '';
     document.getElementById('employeeModalTitle').textContent = 'Add Employee';
     document.getElementById('empPassword').required = true;
@@ -1659,18 +1877,19 @@ function showEmployeeModal(employeeId = null) {
         const employees = Store.getEmployees();
         const users = Store.getUsers();
         const emp = employees.find(e => e.id === employeeId);
-        const user = users.find(u => u.id === employeeId);
+        const userData = users.find(u => u.id === employeeId);
         
-        if (emp && user) {
+        if (emp && userData) {
             document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
             document.getElementById('editEmployeeId').value = emp.id;
+            document.getElementById('empEmployeeId').value = emp.employeeId;
             document.getElementById('empName').value = emp.name;
             document.getElementById('empEmail').value = emp.email;
-            document.getElementById('empPhone').value = emp.phone || '';
+            document.getElementById('empMobile').value = emp.mobile || '';
             document.getElementById('empDepartment').value = emp.department;
             document.getElementById('empDesignation').value = emp.designation;
             document.getElementById('empRole').value = emp.role || 'employee';
-            document.getElementById('empUsername').value = user.username;
+            document.getElementById('empUsername').value = userData.username;
             document.getElementById('empPassword').value = '';
             document.getElementById('empPassword').required = false;
             document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
@@ -1681,17 +1900,24 @@ function showEmployeeModal(employeeId = null) {
 }
 
 function saveEmployee() {
+    const user = Store.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can add/edit employees');
+        return;
+    }
+    
     const id = document.getElementById('editEmployeeId').value;
-    const name = document.getElementById('empName').value;
-    const email = document.getElementById('empEmail').value;
-    const phone = document.getElementById('empPhone').value;
-    const department = document.getElementById('empDepartment').value;
-    const designation = document.getElementById('empDesignation').value;
+    const employeeId = document.getElementById('empEmployeeId').value.trim();
+    const name = document.getElementById('empName').value.trim();
+    const email = document.getElementById('empEmail').value.trim();
+    const mobile = document.getElementById('empMobile').value.trim();
+    const department = document.getElementById('empDepartment').value.trim();
+    const designation = document.getElementById('empDesignation').value.trim();
     const role = document.getElementById('empRole').value;
-    const username = document.getElementById('empUsername').value;
+    const username = document.getElementById('empUsername').value.trim();
     const password = document.getElementById('empPassword').value;
     
-    if (!name || !email || !department || !designation || !username) {
+    if (!employeeId || !name || !email || !mobile || !department || !designation || !username) {
         showToast('warning', 'Please fill all required fields');
         return;
     }
@@ -1700,14 +1926,13 @@ function saveEmployee() {
     let users = Store.getUsers();
     
     if (id) {
-        // Edit existing
         const empIndex = employees.findIndex(e => e.id === id);
         const userIndex = users.findIndex(u => u.id === id);
         
         if (empIndex !== -1) {
             employees[empIndex] = { 
                 ...employees[empIndex], 
-                name, email, phone, department, designation, role 
+                employeeId, name, email, mobile, department, designation, role 
             };
         }
         if (userIndex !== -1) {
@@ -1715,23 +1940,49 @@ function saveEmployee() {
                 ...users[userIndex], 
                 username, 
                 fullName: name,
-                department 
+                department,
+                employeeId
             };
-            if (password) updatedUser.password = password;
+            if (password && password.length >= 6) updatedUser.password = password;
             users[userIndex] = updatedUser;
         }
-        showToast('success', 'Employee updated successfully');
+        
+        // Send notification to employee about profile update
+        const emp = employees[empIndex];
+        NotificationEngine.send(
+            emp,
+            'Profile Updated',
+            `Your profile has been updated by Admin.\nPlease verify your details.\nDepartment: ${emp.department}\nDesignation: ${emp.designation}`,
+            'info'
+        );
+        
+        showToast('success', 'Employee updated. Notification sent.');
     } else {
-        // Add new
+        if (employees.find(e => e.employeeId === employeeId)) {
+            showToast('danger', 'Employee ID already exists');
+            return;
+        }
+        if (employees.find(e => e.email === email)) {
+            showToast('danger', 'Email already registered');
+            return;
+        }
+        if (employees.find(e => e.mobile === mobile)) {
+            showToast('danger', 'Mobile already registered');
+            return;
+        }
+        if (users.find(u => u.username === username)) {
+            showToast('danger', 'Username already exists');
+            return;
+        }
+        if (!password || password.length < 6) {
+            showToast('warning', 'Password must be at least 6 characters');
+            return;
+        }
+        
         const newId = 'user_' + Date.now();
         const newEmployee = {
             id: newId,
-            employeeId: 'EMP' + Date.now().toString().slice(-6),
-            name,
-            email,
-            phone,
-            department,
-            designation,
+            employeeId, name, email, mobile, department, designation,
             role: role || 'employee',
             isActive: true,
             createdAt: new Date().toISOString()
@@ -1740,16 +1991,24 @@ function saveEmployee() {
         
         const newUser = {
             id: newId,
-            username: username,
-            password: password || 'password123',
+            username, password,
             fullName: name,
             role: role || 'employee',
-            department: department,
-            employeeId: newEmployee.employeeId,
+            department,
+            employeeId,
             createdAt: new Date().toISOString()
         };
         users.push(newUser);
-        showToast('success', 'Employee added successfully');
+        
+        // Send welcome notification to new employee
+        NotificationEngine.send(
+            newEmployee,
+            'Welcome to CashFlow Pro!',
+            `Your account has been created.\nUsername: ${username}\nDepartment: ${department}\nDesignation: ${designation}\n\nPlease login and update your profile.`,
+            'success'
+        );
+        
+        showToast('success', 'Employee added. Welcome email sent.');
     }
     
     Store.setEmployees(employees);
@@ -1760,24 +2019,46 @@ function saveEmployee() {
 }
 
 function editEmployee(id) {
+    const user = Store.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can edit employees');
+        return;
+    }
     showEmployeeModal(id);
 }
 
 function deleteEmployee(id) {
-    if (!confirm('Are you sure you want to delete this employee?')) return;
+    const user = Store.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can delete employees');
+        return;
+    }
     
-    let employees = Store.getEmployees();
-    employees = employees.filter(e => e.id !== id);
-    Store.setEmployees(employees);
+    if (!confirm('⚠️ WARNING: This will permanently delete this employee and all their data. Continue?')) return;
     
-    // Also remove user account
+    const employees = Store.getEmployees();
+    const emp = employees.find(e => e.id === id);
+    
+    // Send notification before deletion
+    if (emp) {
+        NotificationEngine.send(
+            emp,
+            'Account Deletion Notice',
+            `Your account has been deleted by Admin.\nEmployee ID: ${emp.employeeId}\nIf this was a mistake, please contact your administrator.`,
+            'danger'
+        );
+    }
+    
+    let updatedEmployees = employees.filter(e => e.id !== id);
+    Store.setEmployees(updatedEmployees);
+    
     let users = Store.getUsers();
     users = users.filter(u => u.id !== id);
     Store.setUsers(users);
     
     loadEmployees();
-    showToast('success', 'Employee deleted successfully');
-    addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
+    showToast('success', 'Employee deleted. Notification sent.');
+    addAuditLog('DELETE_EMPLOYEE', 'Employee', emp?.name || id);
 }
 
 // ============================================
@@ -1790,28 +2071,24 @@ function generateReports() {
     const transactions = Store.getTransactions();
     const employees = Store.getEmployees();
     
-    // Employee report
     const reportData = employees.map(emp => {
         const empTxns = transactions.filter(t => t.employeeId === emp.id);
         const total = empTxns.reduce((sum, t) => sum + t.amount, 0);
         const approved = empTxns.filter(t => t.status === 'approved' || t.status === 'completed').length;
         const rejected = empTxns.filter(t => t.status === 'rejected').length;
         const pending = empTxns.filter(t => t.status === 'pending').length;
-        
         return {
             employee: emp.name,
             department: emp.department,
             totalRequests: empTxns.length,
             totalAmount: total,
-            approved,
-            rejected,
-            pending
+            approved, rejected, pending
         };
     }).filter(r => r.totalRequests > 0);
     
     const tbody = document.getElementById('reportBody');
     if (reportData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data available</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data</td></tr>`;
     } else {
         tbody.innerHTML = reportData.map(r => `
             <tr>
@@ -1819,21 +2096,19 @@ function generateReports() {
                 <td>${r.department}</td>
                 <td>${r.totalRequests}</td>
                 <td>₹${r.totalAmount.toLocaleString()}</td>
-                <td><span class="text-success">${r.approved}</span></td>
-                <td><span class="text-danger">${r.rejected}</span></td>
-                <td><span class="text-warning">${r.pending}</span></td>
+                <td class="text-success">${r.approved}</td>
+                <td class="text-danger">${r.rejected}</td>
+                <td class="text-warning">${r.pending}</td>
             </tr>
         `).join('');
     }
     
-    // Charts
     updateStatusChart(transactions);
     updateDepartmentChart(transactions, employees);
 }
 
 function updateStatusChart(transactions) {
     const ctx = document.getElementById('statusChart').getContext('2d');
-    
     if (statusChartInstance) statusChartInstance.destroy();
     
     const counts = {
@@ -1854,18 +2129,12 @@ function updateStatusChart(transactions) {
                 borderWidth: 2
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
 }
 
 function updateDepartmentChart(transactions, employees) {
     const ctx = document.getElementById('departmentChart').getContext('2d');
-    
     if (departmentChartInstance) departmentChartInstance.destroy();
     
     const deptData = {};
@@ -1891,17 +2160,11 @@ function updateDepartmentChart(transactions, employees) {
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₹' + value.toLocaleString();
-                        }
-                    }
+                    ticks: { callback: function(value) { return '₹' + value.toLocaleString(); } }
                 }
             }
         }
@@ -1921,7 +2184,7 @@ function exportFullReport() {
     });
     
     downloadCSV(csv, `full_report_${new Date().toISOString().slice(0,10)}.csv`);
-    showToast('success', 'Report exported successfully');
+    showToast('success', 'Report exported');
 }
 
 // ============================================
@@ -1931,11 +2194,7 @@ function addNotification(type, title, message, entityId, severity = 'info') {
     const notifications = Store.getNotifications();
     notifications.push({
         id: 'NOTIF_' + Date.now(),
-        type: type,
-        title: title,
-        message: message,
-        entityId: entityId,
-        severity: severity,
+        type, title, message, entityId, severity,
         read: false,
         createdAt: new Date().toISOString()
     });
@@ -1945,7 +2204,6 @@ function addNotification(type, title, message, entityId, severity = 'info') {
 
 function loadNotifications() {
     const notifications = Store.getNotifications();
-    const unread = notifications.filter(n => !n.read);
     const container = document.getElementById('notificationList');
     
     if (notifications.length === 0) {
@@ -1960,7 +2218,7 @@ function loadNotifications() {
                     <div class="fw-semibold">${n.title}</div>
                     <small class="text-muted">${n.message}</small>
                 </div>
-                <span class="badge bg-${n.severity === 'success' ? 'success' : n.severity === 'danger' ? 'danger' : 'info'}">${n.type.replace('_', ' ')}</span>
+                <span class="badge bg-${n.severity}">${n.type.replace('_', ' ')}</span>
             </div>
             <div class="time">${new Date(n.createdAt).toLocaleString()}</div>
         </div>
@@ -2001,7 +2259,7 @@ function loadAuditLogs() {
     const tbody = document.getElementById('auditBody');
     
     if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs</td></tr>`;
     } else {
         tbody.innerHTML = logs.slice(-50).reverse().map(log => `
             <tr>
@@ -2021,13 +2279,8 @@ function loadAuditLogs() {
 function updateDateTime() {
     const now = new Date();
     document.getElementById('currentDateTime').textContent = now.toLocaleString('en-US', { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
 }
 
@@ -2052,20 +2305,34 @@ function showToast(type, message) {
     setTimeout(() => toast.remove(), 5000);
 }
 
+function viewTransactionDetails(id) {
+    const transactions = Store.getTransactions();
+    const t = transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    const details = `
+        <div class="row small">
+            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${t.id}</div>
+            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${t.employeeName}</div>
+            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${t.type.replace('_', ' ')}</div>
+            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${t.amount.toLocaleString()}</div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></div>
+            <div class="col-5"><strong>Purpose:</strong></div><div class="col-7">${t.purpose}</div>
+            <div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${t.remarks || 'N/A'}</div>
+            <div class="col-5"><strong>Date:</strong></div><div class="col-7">${new Date(t.createdAt).toLocaleString()}</div>
+        </div>
+    `;
+    showCustomModal('Transaction Details', details);
+}
+
 function showCustomModal(title, content) {
-    const modal = new bootstrap.Modal(document.createElement('div'));
     const modalHtml = `
         <div class="modal fade" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">${title}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+                    <div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                     <div class="modal-body">${content}</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button></div>
                 </div>
             </div>
         </div>
@@ -2090,10 +2357,6 @@ function downloadCSV(csv, filename) {
     window.URL.revokeObjectURL(url);
 }
 
-function showLoading(show) {
-    document.getElementById('spinnerOverlay').style.display = show ? 'flex' : 'none';
-}
-
 // ============================================
 // KEYBOARD SHORTCUTS
 // ============================================
@@ -2115,34 +2378,18 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================
-// AUTO-SAVE & NOTIFICATION CHECK
-// ============================================
-setInterval(function() {
-    // Check for new notifications
-    const user = Store.getCurrentUser();
-    if (user) {
-        const notifications = Store.getNotifications();
-        const unread = notifications.filter(n => !n.read);
-        if (unread.length > 0) {
-            // Update badge or show toast for new notifications
-            console.log(`📬 ${unread.length} unread notifications`);
-        }
-    }
-}, 30000);
-
-// ============================================
-// INITIALIZE APP
+// INITIALIZE
 // ============================================
 initializeApp();
 
-console.log('💰 Advanced Cash Flow Management System loaded!');
-console.log('📊 Data stored in localStorage');
-console.log('👤 Demo Users:');
-console.log('   Admin: (Full access)');
-console.log('   Manager: (Approvals & Reports)');
-console.log('   Employee: (Request & History only)');
+console.log('💰 CashFlow Pro - Enterprise Edition with Real Notifications');
+console.log('📧 Email & SMS notifications are simulated. In production, integrate with:');
+console.log('   - Email: SendGrid, Mailgun, AWS SES');
+console.log('   - SMS: Twilio, AWS SNS, Vonage');
+console.log('📝 First user registration becomes Admin');
+console.log('🔑 Managers have View-Only access to employees (no delete)');
+console.log('🔔 All actions trigger email & SMS notifications');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals');
-console.log('🔔 Notifications are checked every 30 seconds');
 </script>
 
 </body>
