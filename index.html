@@ -666,7 +666,7 @@
                             </div>
                         </div>
 
-                        <!-- NEW: Branch Account Balance Cards -->
+                        <!-- Branch Account Balance Cards -->
                         <div class="row mb-4">
                             <div class="col-md-3 mb-3">
                                 <div class="balance-card" style="border-top: 4px solid #4e73df;">
@@ -864,7 +864,6 @@
                     <div id="page-cashflow" class="page-content" style="display: none;">
                         <h4><i class="fas fa-money-bill-wave me-2 text-primary"></i>Cash Flow Management</h4>
                         
-                        <!-- Month Selector -->
                         <div class="month-selector">
                             <div class="row align-items-center">
                                 <div class="col-md-4">
@@ -892,7 +891,6 @@
                             </div>
                         </div>
 
-                        <!-- Cash Flow Summary -->
                         <div class="row mb-4">
                             <div class="col-md-3">
                                 <div class="cashflow-card" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);">
@@ -924,7 +922,6 @@
                             </div>
                         </div>
 
-                        <!-- Credit History -->
                         <div class="table-container">
                             <h5><i class="fas fa-history me-2"></i>Credit History</h5>
                             <div class="credit-history" id="creditHistoryList">
@@ -932,7 +929,6 @@
                             </div>
                         </div>
 
-                        <!-- Expense Breakdown -->
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <div class="table-container">
@@ -1639,7 +1635,6 @@ async function initializeApp() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
     
-    // Set default month
     const now = new Date();
     const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
     document.getElementById('cashflowMonth').value = defaultMonth;
@@ -1883,11 +1878,14 @@ function setupRealtimeListeners() {
         loadNotifications();
     });
     
-    // Listen to credits for branch balance
+    // ✅ FIX: Listen to ALL credits for branch balance calculation
     const branch = user.department || 'Mumbai';
     const currentMonth = new Date().toISOString().slice(0, 7);
+    
+    // Listen to credits for the branch
     CloudStore.listenToCredits(branch, currentMonth, (credits) => {
         appState.credits = credits;
+        console.log('💳 Credits loaded:', credits.length, 'for branch:', branch);
         updateDashboard();
     });
     
@@ -1900,7 +1898,7 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD - WITH BRANCH BALANCE
+// UPDATE DASHBOARD - FIXED BRANCH BALANCE
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
@@ -1934,15 +1932,21 @@ function updateDashboard() {
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
     
-    // ✅ NEW: Branch Cash Flow Summary
+    // ✅ FIXED: Branch Cash Flow Summary - CORRECTLY CALCULATED
     const branch = user?.department || 'Mumbai';
     const currentMonth = new Date().toISOString().slice(0, 7);
     
-    // Get credits for this month
+    console.log('🏦 Calculating for branch:', branch, 'month:', currentMonth);
+    console.log('📊 Credits data:', credits);
+    
+    // Get credits for this month and branch
     const monthCredits = credits.filter(c => 
         c.month === currentMonth && c.branch === branch
     );
+    console.log('💳 Filtered credits:', monthCredits);
+    
     const totalCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    console.log('💰 Total Credits:', totalCredits);
     
     // Get expenses (approved/completed transactions for this branch)
     const monthExpenses = transactions.filter(t => {
@@ -1952,6 +1956,7 @@ function updateDashboard() {
                (t.status === 'approved' || t.status === 'completed');
     });
     const totalExpenses = monthExpenses.reduce((sum, t) => sum + (t.amount || 0), 0);
+    console.log('💸 Total Expenses:', totalExpenses);
     
     // Calculate balances
     const branchBalance = totalCredits;
@@ -1959,7 +1964,11 @@ function updateDashboard() {
     const availableBalance = branchBalance - utilizedAmount;
     const utilizationRate = branchBalance > 0 ? (utilizedAmount / branchBalance) * 100 : 0;
     
-    // Update UI with new metrics
+    console.log('📊 Branch Balance:', branchBalance);
+    console.log('📊 Utilized:', utilizedAmount);
+    console.log('📊 Available:', availableBalance);
+    
+    // Update UI
     document.getElementById('branchBalance').textContent = '₹' + branchBalance.toLocaleString();
     document.getElementById('utilizedAmount').textContent = '₹' + utilizedAmount.toLocaleString();
     document.getElementById('availableBalance').textContent = '₹' + availableBalance.toLocaleString();
@@ -2251,6 +2260,7 @@ async function saveCredit() {
         bootstrap.Modal.getInstance(document.getElementById('creditModal')).hide();
         showToast('success', `✅ ₹${amount.toLocaleString()} added as credit for ${branch}`);
         loadCashFlow();
+        updateDashboard();
     } catch (error) {
         showToast('danger', 'Failed to add credit: ' + error.message);
         console.error(error);
@@ -3178,14 +3188,15 @@ console.log('💰 CashFlow Pro - Complete Financial Management');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
-console.log('   - Branch Account Balance');
-console.log('   - Utilized Amount Tracking');
-console.log('   - Available Balance');
+console.log('   - Branch Account Balance (from credits)');
+console.log('   - Utilized Amount (approved expenses)');
+console.log('   - Available Balance (balance - utilized)');
 console.log('   - Utilization Rate');
 console.log('   - Monthly Cash Flow Tracking');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
+console.log('📌 To fix balance: Add credits in Cash Flow page');
 </script>
 
 </body>
