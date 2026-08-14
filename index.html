@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* All styles remain the same */
+        /* All styles remain the same as before */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -1931,35 +1931,33 @@ function updateDashboard() {
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
     
-    // ✅ FIXED: Branch Cash Flow - CORRECT CALCULATION
+    // Branch Cash Flow - CORRECT CALCULATION
     const branch = user?.department || 'Mumbai';
     const currentMonth = new Date().toISOString().slice(0, 7);
     
     console.log('🏦 Branch:', branch, 'Month:', currentMonth);
     console.log('💳 All Credits:', credits);
     
-    // ✅ FIX: Get credits for this branch
+    // Get credits for this branch
     const branchCredits = credits.filter(c => c.branch === branch);
     console.log('💳 Branch Credits:', branchCredits);
     
-    // ✅ FIX: Calculate total credits for this branch (ALL months, not just current)
-    // For Branch Account Balance, we want ALL credits for this branch
+    // Total Branch Credits (ALL months)
     const totalBranchCredits = branchCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
     console.log('💰 Total Branch Credits:', totalBranchCredits);
     
-    // ✅ FIX: Get credits for current month only (for Monthly Credit display)
+    // Monthly Credits (current month only)
     const monthCredits = branchCredits.filter(c => c.month === currentMonth);
     const monthlyCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
     
-    // ✅ FIX: Get ALL approved/completed transactions (NOT filtered by department)
-    // For Utilized Amount, we want ALL approved expenses across the company
+    // ALL Approved/Completed transactions (across the company)
     const allApproved = transactions.filter(t => 
         t.status === 'approved' || t.status === 'completed'
     );
     const totalUtilized = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
     console.log('💰 Total Utilized (All Approved):', totalUtilized);
     
-    // ✅ FIX: Calculate available balance
+    // Calculate balances
     const branchBalance = totalBranchCredits;
     const utilizedAmount = totalUtilized;
     const availableBalance = branchBalance - utilizedAmount;
@@ -2010,32 +2008,32 @@ function updateDashboard() {
 }
 
 // ============================================
-// CASH FLOW FUNCTIONS
+// CASH FLOW FUNCTIONS - UPDATED
 // ============================================
 function updateCashFlowSummary() {
     const month = document.getElementById('cashflowMonth').value || new Date().toISOString().slice(0, 7);
     const branch = document.getElementById('cashflowBranch').value || 'Mumbai';
     
     const transactions = appState.transactions;
-    const monthTransactions = transactions.filter(t => {
-        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-        return tMonth === month && t.employeeDepartment === branch;
-    });
     
-    const totalExpenses = monthTransactions
-        .filter(t => t.status === 'approved' || t.status === 'completed')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    // ✅ FIX: Get ALL approved expenses (not filtered by branch)
+    const allApproved = transactions.filter(t => 
+        t.status === 'approved' || t.status === 'completed'
+    );
+    const totalExpenses = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
     
+    // Get credits for this month and branch
     const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
     const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
     
+    // Calculate opening balance from previous month
     const prevMonth = getPreviousMonth(month);
     const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
     const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
     const prevExpenses = appState.transactions
         .filter(t => {
             const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-            return tMonth === prevMonth && t.employeeDepartment === branch && (t.status === 'approved' || t.status === 'completed');
+            return tMonth === prevMonth && (t.status === 'approved' || t.status === 'completed');
         })
         .reduce((sum, t) => sum + (t.amount || 0), 0);
     
@@ -2046,6 +2044,12 @@ function updateCashFlowSummary() {
     document.getElementById('monthlyCredit').textContent = '₹' + totalCredits.toLocaleString();
     document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
     document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString();
+    
+    // Also update Cash Flow page
+    document.getElementById('cfOpeningBalance').textContent = '₹' + openingBalance.toLocaleString();
+    document.getElementById('cfTotalCredits').textContent = '₹' + totalCredits.toLocaleString();
+    document.getElementById('cfTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+    document.getElementById('cfClosingBalance').textContent = '₹' + closingBalance.toLocaleString();
 }
 
 function getPreviousMonth(month) {
@@ -2078,16 +2082,12 @@ function loadCashFlow() {
 function displayCashFlowData(month, branch) {
     const transactions = appState.transactions;
     const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
-    const cashflow = appState.cashflow.find(c => c.month === month && c.branch === branch);
     
-    const monthTransactions = transactions.filter(t => {
-        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-        return tMonth === month && t.employeeDepartment === branch;
-    });
-    
-    const totalExpenses = monthTransactions
-        .filter(t => t.status === 'approved' || t.status === 'completed')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    // ✅ FIX: Get ALL approved expenses
+    const allApproved = transactions.filter(t => 
+        t.status === 'approved' || t.status === 'completed'
+    );
+    const totalExpenses = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
     
     const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
     
@@ -2097,7 +2097,7 @@ function displayCashFlowData(month, branch) {
     const prevExpenses = appState.transactions
         .filter(t => {
             const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-            return tMonth === prevMonth && t.employeeDepartment === branch && (t.status === 'approved' || t.status === 'completed');
+            return tMonth === prevMonth && (t.status === 'approved' || t.status === 'completed');
         })
         .reduce((sum, t) => sum + (t.amount || 0), 0);
     
@@ -2113,7 +2113,7 @@ function displayCashFlowData(month, branch) {
     
     displayCreditHistory(credits);
     displayMonthlySummary(month, branch, openingBalance, totalCredits, totalExpenses, closingBalance);
-    updateExpenseChart(monthTransactions);
+    updateExpenseChart(allApproved);
 }
 
 function displayCreditHistory(credits) {
@@ -2187,12 +2187,10 @@ function updateExpenseChart(transactions) {
     }
     
     const categories = {};
-    transactions
-        .filter(t => t.status === 'approved' || t.status === 'completed')
-        .forEach(t => {
-            const cat = t.category || 'Other';
-            categories[cat] = (categories[cat] || 0) + (t.amount || 0);
-        });
+    transactions.forEach(t => {
+        const cat = t.category || 'Other';
+        categories[cat] = (categories[cat] || 0) + (t.amount || 0);
+    });
     
     window.expenseChartInstance = new Chart(ctx, {
         type: 'pie',
@@ -3198,8 +3196,7 @@ console.log('   - Monthly Cash Flow Tracking');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
-console.log('📌 NOTE: Branch Account Balance shows ALL credits for the branch');
-console.log('📌 Utilized Amount shows ALL approved expenses across the company');
+console.log('📌 Total Expenses now shows ALL approved expenses across the company');
 </script>
 
 </body>
