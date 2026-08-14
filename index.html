@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* All styles remain the same */
+        /* All styles remain the same as before */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -1120,7 +1120,6 @@ const CloudStore = {
         return null;
     },
     
-    // EMPLOYEE LISTENERS
     listenToEmployees(callback) {
         const listener = this.employeesCollection
             .orderBy('name')
@@ -1130,11 +1129,8 @@ const CloudStore = {
                     employees.push({ id: doc.id, ...doc.data() });
                 });
                 callback(employees);
-                
-                // Update badge count
                 const badge = document.getElementById('employeeCountBadge');
                 if (badge) badge.textContent = employees.length;
-                
                 const statusEl = document.getElementById('syncStatus');
                 if (statusEl) {
                     statusEl.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Synced';
@@ -1205,7 +1201,6 @@ const CloudStore = {
         return listener;
     },
     
-    // CRUD OPERATIONS
     async addUser(userData) {
         const docRef = await this.usersCollection.add(userData);
         return { id: docRef.id, ...userData };
@@ -1279,7 +1274,6 @@ async function initializeApp() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
     
-    // Check for cached session
     const userId = localStorage.getItem('cf_user_id');
     if (userId) {
         try {
@@ -1527,7 +1521,7 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD
+// UPDATE DASHBOARD - FIXED!
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
@@ -1538,7 +1532,12 @@ function updateDashboard() {
         userTransactions = transactions.filter(t => t.employeeId === user.id);
     }
     
-    const totalAdvance = userTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+    // ✅ FIX: Only include APPROVED and COMPLETED transactions for Total Advances
+    const activeTransactions = userTransactions.filter(t => 
+        t.status === 'approved' || t.status === 'completed'
+    );
+    
+    const totalAdvance = activeTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
     const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
     const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
     const rejectedCount = userTransactions.filter(t => t.status === 'rejected').length;
@@ -1947,7 +1946,6 @@ function loadEmployees() {
 
 function refreshEmployees() {
     showToast('info', 'Refreshing employee list from cloud...');
-    // Force a refresh by re-querying
     CloudStore.employeesCollection.get().then((snapshot) => {
         const employees = [];
         snapshot.forEach(doc => {
@@ -2050,7 +2048,6 @@ async function saveEmployee() {
     showLoading(true);
     try {
         if (id) {
-            // Update existing employee
             await CloudStore.updateEmployee(id, {
                 employeeId, name, email, mobile, department, designation,
                 location, role, updatedAt: new Date().toISOString()
@@ -2067,7 +2064,6 @@ async function saveEmployee() {
             
             showToast('success', '✅ Employee updated successfully');
         } else {
-            // Check if employee ID exists
             const empSnapshot = await CloudStore.employeesCollection
                 .where('employeeId', '==', employeeId)
                 .get();
@@ -2490,11 +2486,10 @@ initializeApp();
 console.log('💰 CashFlow Pro - Cloud Edition');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
+console.log('✅ FIXED: Total Advances only includes APPROVED and COMPLETED transactions');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals');
-console.log('🔄 Real-time sync enabled - changes appear instantly');
-console.log('📋 To add employees, click "Add Employee" button');
 </script>
 
 </body>
