@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* All styles remain the same as before */
+        /* All styles remain the same - keeping it compact for the response */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -483,6 +483,17 @@
         .credit-item .amount.debit {
             color: #e74a3b;
         }
+        
+        .branch-selector {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .branch-selector select {
+            border-radius: 8px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -663,6 +674,16 @@
                             <small id="currentDateTime" class="text-muted"></small>
                             <div class="float-end">
                                 <span class="badge bg-success" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
+                                <!-- Branch Selector for Dashboard -->
+                                <span class="branch-selector">
+                                    <select id="dashboardBranch" onchange="updateDashboard()" class="form-select form-select-sm" style="display: inline-block; width: auto;">
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Bangalore">Bangalore</option>
+                                        <option value="Chennai">Chennai</option>
+                                        <option value="Hyderabad">Hyderabad</option>
+                                    </select>
+                                </span>
                             </div>
                         </div>
 
@@ -872,7 +893,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="fw-semibold">Branch:</label>
-                                    <select class="form-select" id="cashflowBranch">
+                                    <select class="form-select" id="cashflowBranch" onchange="loadCashFlow()">
                                         <option value="Mumbai">Mumbai</option>
                                         <option value="Delhi">Delhi</option>
                                         <option value="Bangalore">Bangalore</option>
@@ -1878,15 +1899,18 @@ function setupRealtimeListeners() {
         loadNotifications();
     });
     
-    // Listen to credits for branch balance
-    const branch = user.department || 'Mumbai';
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    
-    CloudStore.listenToCredits(branch, currentMonth, (credits) => {
-        appState.credits = credits;
-        console.log('💳 Credits loaded:', credits.length, 'for branch:', branch);
-        updateDashboard();
-    });
+    // Listen to ALL credits (not filtered by branch)
+    CloudStore.creditsCollection
+        .orderBy('createdAt', 'desc')
+        .onSnapshot((snapshot) => {
+            const credits = [];
+            snapshot.forEach(doc => {
+                credits.push({ id: doc.id, ...doc.data() });
+            });
+            appState.credits = credits;
+            console.log('💳 All Credits loaded:', credits.length);
+            updateDashboard();
+        });
     
     if (user.role === 'admin') {
         CloudStore.listenToAudit((logs) => {
@@ -1897,13 +1921,87 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD - FIXED
+// UPDATE DASHBOARD - FIXED WITH BRANCH SELECTOR
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
     const transactions = appState.transactions;
     const credits = appState.credits;
     
+    // Get selected branch from dashboard dropdown
+    const selectedBranch = document.getElementById('dashboardBranch')?.value || 'Mumbai';
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    
+    console.log('🏦 Dashboard Branch:', selectedBranch);
+    console.log('💳 Total Credits:', credits.length);
+    
+    // Get credits for the selected branch
+    const branchCredits = credits.filter(c => c.branch === selectedBranch);
+    console.log('💳 Branch Credits:', branchCredits.length);
+    
+    // Total Branch Credits (ALL months)
+    const totalBranchCredits = branchCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    console.log('💰 Total Branch Credits:', totalBranchCredits);
+    
+    // Monthly Credits (current month only)
+    const monthCredits = branchCredits.filter(c => c.month === currentMonth);
+    const monthlyCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    
+    // ALL Approved/Completed transactions
+    const allApproved = transactions.filter(t => 
+        t.status === 'approved' || t.status === 'completed'
+    );
+    const totalUtilized = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
+    console.log('💰 Total Utilized:', totalUtilized);
+    
+    // Calculate balances
+    const branchBalance = totalBranchCredits;
+    const utilizedAmount = totalUtilized;
+    const availableBalance = branchBalance - utilizedAmount;
+    const utilizationRate = branchBalance > 0 ? (utilizedAmount / branchBalance) * 100 : 0;
+    
+    console.log('📊 Branch Balance:', branchBalance);
+    console.log('📊 Utilized:', utilizedAmount);
+    console.log('📊 Available:', availableBalance);
+    console.log('📊 Utilization Rate:', utilizationRate);
+    
+    // Update UI - Dashboard Branch Balance Cards
+    document.getElementById('branchBalance').textContent = '₹' + branchBalance.toLocaleString();
+    document.getElementById('utilizedAmount').textContent = '₹' + utilizedAmount.toLocaleString();
+    document.getElementById('availableBalance').textContent = '₹' + availableBalance.toLocaleString();
+    document.getElementById('utilizationRate').textContent = utilizationRate.toFixed(1) + '%';
+    
+    // Color coding for utilization rate
+    const rateElement = document.getElementById('utilizationRate');
+    if (utilizationRate > 80) {
+        rateElement.style.color = '#e74a3b';
+    } else if (utilizationRate > 50) {
+        rateElement.style.color = '#f6c23e';
+    } else {
+        rateElement.style.color = '#1cc88a';
+    }
+    
+    // Update Cash Flow Summary on Dashboard
+    document.getElementById('monthlyCredit').textContent = '₹' + monthlyCredits.toLocaleString();
+    document.getElementById('totalExpenses').textContent = '₹' + totalUtilized.toLocaleString();
+    
+    // Calculate opening and closing for dashboard
+    const prevMonth = getPreviousMonth(currentMonth);
+    const prevCredits = credits.filter(c => c.month === prevMonth && c.branch === selectedBranch);
+    const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const prevExpenses = transactions
+        .filter(t => {
+            const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+            return tMonth === prevMonth && (t.status === 'approved' || t.status === 'completed');
+        })
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const openingBalance = prevTotalCredits - prevExpenses;
+    const closingBalance = openingBalance + monthlyCredits - totalUtilized;
+    
+    document.getElementById('openingBalance').textContent = '₹' + openingBalance.toLocaleString();
+    document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString();
+    
+    // User transactions for recent activity
     let userTransactions = transactions;
     if (user && user.role === 'employee') {
         userTransactions = transactions.filter(t => t.employeeId === user.id);
@@ -1913,7 +2011,6 @@ function updateDashboard() {
     const activeTransactions = userTransactions.filter(t => 
         t.status === 'approved' || t.status === 'completed'
     );
-    
     const totalAdvance = activeTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
     const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
     const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
@@ -1931,62 +2028,7 @@ function updateDashboard() {
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
     
-    // Branch Cash Flow - CORRECT CALCULATION
-    const branch = user?.department || 'Mumbai';
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    
-    console.log('🏦 Branch:', branch, 'Month:', currentMonth);
-    console.log('💳 All Credits:', credits);
-    
-    // Get credits for this branch
-    const branchCredits = credits.filter(c => c.branch === branch);
-    console.log('💳 Branch Credits:', branchCredits);
-    
-    // Total Branch Credits (ALL months)
-    const totalBranchCredits = branchCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    console.log('💰 Total Branch Credits:', totalBranchCredits);
-    
-    // Monthly Credits (current month only)
-    const monthCredits = branchCredits.filter(c => c.month === currentMonth);
-    const monthlyCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    
-    // ALL Approved/Completed transactions (across the company)
-    const allApproved = transactions.filter(t => 
-        t.status === 'approved' || t.status === 'completed'
-    );
-    const totalUtilized = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
-    console.log('💰 Total Utilized (All Approved):', totalUtilized);
-    
-    // Calculate balances
-    const branchBalance = totalBranchCredits;
-    const utilizedAmount = totalUtilized;
-    const availableBalance = branchBalance - utilizedAmount;
-    const utilizationRate = branchBalance > 0 ? (utilizedAmount / branchBalance) * 100 : 0;
-    
-    console.log('📊 Branch Balance:', branchBalance);
-    console.log('📊 Utilized Amount:', utilizedAmount);
-    console.log('📊 Available Balance:', availableBalance);
-    console.log('📊 Utilization Rate:', utilizationRate);
-    
-    // Update UI
-    document.getElementById('branchBalance').textContent = '₹' + branchBalance.toLocaleString();
-    document.getElementById('utilizedAmount').textContent = '₹' + utilizedAmount.toLocaleString();
-    document.getElementById('availableBalance').textContent = '₹' + availableBalance.toLocaleString();
-    document.getElementById('utilizationRate').textContent = utilizationRate.toFixed(1) + '%';
-    
-    // Color coding for utilization rate
-    const rateElement = document.getElementById('utilizationRate');
-    if (utilizationRate > 80) {
-        rateElement.style.color = '#e74a3b';
-    } else if (utilizationRate > 50) {
-        rateElement.style.color = '#f6c23e';
-    } else {
-        rateElement.style.color = '#1cc88a';
-    }
-    
-    // Update cash flow summary
-    updateCashFlowSummary();
-    
+    // Recent transactions
     const recent = userTransactions.slice(-5).reverse();
     const tbody = document.getElementById('recentTransactionsBody');
     if (recent.length === 0) {
@@ -2007,51 +2049,6 @@ function updateDashboard() {
     document.getElementById('pendingCount').textContent = allPending;
 }
 
-// ============================================
-// CASH FLOW FUNCTIONS - UPDATED
-// ============================================
-function updateCashFlowSummary() {
-    const month = document.getElementById('cashflowMonth').value || new Date().toISOString().slice(0, 7);
-    const branch = document.getElementById('cashflowBranch').value || 'Mumbai';
-    
-    const transactions = appState.transactions;
-    
-    // ✅ FIX: Get ALL approved expenses (not filtered by branch)
-    const allApproved = transactions.filter(t => 
-        t.status === 'approved' || t.status === 'completed'
-    );
-    const totalExpenses = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
-    
-    // Get credits for this month and branch
-    const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
-    const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    
-    // Calculate opening balance from previous month
-    const prevMonth = getPreviousMonth(month);
-    const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
-    const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    const prevExpenses = appState.transactions
-        .filter(t => {
-            const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-            return tMonth === prevMonth && (t.status === 'approved' || t.status === 'completed');
-        })
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-    
-    const openingBalance = prevTotalCredits - prevExpenses;
-    const closingBalance = openingBalance + totalCredits - totalExpenses;
-    
-    document.getElementById('openingBalance').textContent = '₹' + openingBalance.toLocaleString();
-    document.getElementById('monthlyCredit').textContent = '₹' + totalCredits.toLocaleString();
-    document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
-    document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString();
-    
-    // Also update Cash Flow page
-    document.getElementById('cfOpeningBalance').textContent = '₹' + openingBalance.toLocaleString();
-    document.getElementById('cfTotalCredits').textContent = '₹' + totalCredits.toLocaleString();
-    document.getElementById('cfTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
-    document.getElementById('cfClosingBalance').textContent = '₹' + closingBalance.toLocaleString();
-}
-
 function getPreviousMonth(month) {
     const [year, m] = month.split('-').map(Number);
     const d = new Date(year, m - 1, 1);
@@ -2059,6 +2056,9 @@ function getPreviousMonth(month) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
 }
 
+// ============================================
+// CASH FLOW FUNCTIONS
+// ============================================
 function loadCashFlow() {
     const month = document.getElementById('cashflowMonth').value;
     const branch = document.getElementById('cashflowBranch').value;
@@ -2068,22 +2068,13 @@ function loadCashFlow() {
         return;
     }
     
-    CloudStore.listenToCredits(branch, month, (credits) => {
-        appState.credits = credits;
-        displayCashFlowData(month, branch);
-    });
+    // Update dashboard branch to match
+    document.getElementById('dashboardBranch').value = branch;
     
-    CloudStore.listenToCashflow(branch, month, (cashflowData) => {
-        appState.cashflow = cashflowData;
-        displayCashFlowData(month, branch);
-    });
-}
-
-function displayCashFlowData(month, branch) {
-    const transactions = appState.transactions;
     const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
+    const transactions = appState.transactions;
     
-    // ✅ FIX: Get ALL approved expenses
+    // Get ALL approved expenses
     const allApproved = transactions.filter(t => 
         t.status === 'approved' || t.status === 'completed'
     );
@@ -2094,7 +2085,7 @@ function displayCashFlowData(month, branch) {
     const prevMonth = getPreviousMonth(month);
     const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
     const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    const prevExpenses = appState.transactions
+    const prevExpenses = transactions
         .filter(t => {
             const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
             return tMonth === prevMonth && (t.status === 'approved' || t.status === 'completed');
@@ -2114,6 +2105,9 @@ function displayCashFlowData(month, branch) {
     displayCreditHistory(credits);
     displayMonthlySummary(month, branch, openingBalance, totalCredits, totalExpenses, closingBalance);
     updateExpenseChart(allApproved);
+    
+    // Update dashboard
+    updateDashboard();
 }
 
 function displayCreditHistory(credits) {
@@ -2191,6 +2185,24 @@ function updateExpenseChart(transactions) {
         const cat = t.category || 'Other';
         categories[cat] = (categories[cat] || 0) + (t.amount || 0);
     });
+    
+    if (Object.keys(categories).length === 0) {
+        window.expenseChartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['No Data'],
+                datasets: [{ data: [1], backgroundColor: ['#ddd'] }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: function() { return 'No expenses yet'; } } }
+                }
+            }
+        });
+        return;
+    }
     
     window.expenseChartInstance = new Chart(ctx, {
         type: 'pie',
@@ -3188,7 +3200,7 @@ console.log('💰 CashFlow Pro - Complete Financial Management');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
-console.log('   - Branch Account Balance (ALL credits for branch)');
+console.log('   - Branch Account Balance (select branch from dropdown)');
 console.log('   - Utilized Amount (ALL approved expenses)');
 console.log('   - Available Balance (balance - utilized)');
 console.log('   - Utilization Rate');
@@ -3196,7 +3208,6 @@ console.log('   - Monthly Cash Flow Tracking');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
-console.log('📌 Total Expenses now shows ALL approved expenses across the company');
 </script>
 
 </body>
