@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Cash Flow Management</title>
+    <title>CashFlow Pro - Cloud Edition</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,22 +14,19 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
         :root {
-            --primary-color: #4e73df;
-            --success-color: #1cc88a;
-            --warning-color: #f6c23e;
-            --danger-color: #e74a3b;
-            --info-color: #36b9cc;
+            --primary: #4e73df;
+            --success: #1cc88a;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
         }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fc;
-            min-height: 100vh;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fc; min-height: 100vh; }
         
         .login-container {
             min-height: 100vh;
@@ -44,7 +41,7 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 440px;
             animation: slideUp 0.6s ease;
@@ -63,7 +60,7 @@
         .login-card .brand i {
             font-size: 3.5rem;
             color: #4e73df;
-            background: rgba(78, 115, 223, 0.1);
+            background: rgba(78,115,223,0.1);
             padding: 20px;
             border-radius: 50%;
         }
@@ -88,7 +85,7 @@
         
         .login-card .form-control:focus {
             border-color: #4e73df;
-            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
+            box-shadow: 0 0 0 3px rgba(78,115,223,0.1);
         }
         
         .login-card .btn-login {
@@ -98,11 +95,12 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             transition: all 0.3s;
+            color: white;
         }
         
         .login-card .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
         
         .login-card .setup-info {
@@ -110,11 +108,6 @@
             padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
-        }
-        
-        .login-card .setup-info h6 {
-            color: #2d3748;
-            font-weight: 600;
         }
         
         .sidebar {
@@ -130,7 +123,7 @@
         .sidebar .user-profile {
             padding: 25px 20px;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         .sidebar .user-profile .avatar {
@@ -144,7 +137,7 @@
             margin: 0 auto 12px;
             font-size: 2rem;
             color: white;
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255,255,255,0.2);
         }
         
         .sidebar .user-profile h6 {
@@ -154,12 +147,12 @@
         }
         
         .sidebar .user-profile small {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.7);
             font-size: 0.8rem;
         }
         
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.7);
             padding: 12px 20px;
             transition: all 0.3s;
             border-left: 3px solid transparent;
@@ -167,13 +160,13 @@
         }
         
         .sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             color: white;
             border-left-color: #4e73df;
         }
         
         .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.08);
             color: white;
             border-left-color: #4e73df;
         }
@@ -216,7 +209,7 @@
             background: white;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
             transition: all 0.3s;
             border-left: 4px solid;
             height: 100%;
@@ -224,7 +217,7 @@
         
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58,59,69,0.15);
         }
         
         .stat-card .stat-icon {
@@ -236,7 +229,7 @@
             background: white;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
         }
         
         .status-badge {
@@ -264,7 +257,7 @@
             background: white;
             border-radius: 12px;
             padding: 15px 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             margin-bottom: 10px;
             min-width: 320px;
             animation: slideInRight 0.4s ease;
@@ -284,17 +277,7 @@
         .modal-content {
             border-radius: 16px;
             border: none;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modal-header {
-            border-bottom: 2px solid #f0f0f0;
-            padding: 20px 25px;
-        }
-        
-        .modal-footer {
-            border-top: 2px solid #f0f0f0;
-            padding: 15px 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
         
         .notification-item {
@@ -330,7 +313,7 @@
             padding: 15px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.08);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.08);
         }
         
         .quick-stat-item .number {
@@ -343,17 +326,6 @@
             font-size: 0.8rem;
             color: #718096;
             margin-top: 5px;
-        }
-        
-        .notification-settings {
-            background: #f8f9fc;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        
-        .notification-settings .form-check {
-            margin-bottom: 8px;
         }
         
         @media (max-width: 768px) {
@@ -380,7 +352,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255,255,255,0.8);
             display: none;
             align-items: center;
             justify-content: center;
@@ -392,17 +364,23 @@
             padding: 0.25rem 0.5rem;
         }
         
-        .text-muted-light {
-            color: rgba(255, 255, 255, 0.5);
+        .company-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
         
-        .badge-notification {
-            animation: pulse 2s infinite;
+        .sync-indicator {
+            font-size: 0.8rem;
+            color: #1cc88a;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .cloud-badge {
+            background: #4e73df;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
         }
     </style>
 </head>
@@ -424,17 +402,18 @@
     <div id="loginScreen" class="login-container">
         <div class="login-card">
             <div class="brand">
-                <i class="fas fa-hand-holding-usd"></i>
+                <i class="fas fa-cloud-upload-alt"></i>
                 <h3>CashFlow Pro</h3>
-                <p>Enterprise Expense Management</p>
+                <p>Cloud-Based Expense Management</p>
+                <span class="cloud-badge"><i class="fas fa-globe"></i> Synced Across All Branches</span>
             </div>
             
             <form id="loginForm">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Employee ID / Username</label>
+                    <label class="form-label fw-semibold">Username / Employee ID</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light"><i class="fas fa-id-badge"></i></span>
-                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter your employee ID" required>
+                        <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -444,15 +423,15 @@
                         <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-login w-100 text-white">
+                <button type="submit" class="btn btn-login w-100">
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
                 
                 <div class="setup-info mt-3">
-                    <h6><i class="fas fa-info-circle me-2"></i>First Time Setup</h6>
+                    <h6><i class="fas fa-info-circle me-2"></i>Cloud Sync Enabled</h6>
                     <small>
-                        No default accounts. The first user to register becomes the <strong>Admin</strong>.
-                        Click below to create your account.
+                        All data is stored in the cloud. Register once, access from anywhere!
+                        First user becomes Admin.
                     </small>
                     <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="showRegistration()">
                         <i class="fas fa-user-plus me-2"></i>Register New Account
@@ -463,7 +442,7 @@
             <!-- Registration Form -->
             <div id="registrationForm" style="display: none; margin-top: 20px;">
                 <hr>
-                <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Register New Employee</h6>
+                <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Employee Registration</h6>
                 <form id="registerForm">
                     <div class="mb-2">
                         <label class="form-label small">Employee ID *</label>
@@ -490,6 +469,10 @@
                         <input type="text" class="form-control form-control-sm" id="regDesignation" placeholder="e.g., Software Engineer" required>
                     </div>
                     <div class="mb-2">
+                        <label class="form-label small">Location/Branch</label>
+                        <input type="text" class="form-control form-control-sm" id="regLocation" placeholder="e.g., Mumbai, Delhi">
+                    </div>
+                    <div class="mb-2">
                         <label class="form-label small">Username *</label>
                         <input type="text" class="form-control form-control-sm" id="regUsername" placeholder="Choose a username" required>
                     </div>
@@ -498,7 +481,7 @@
                         <input type="password" class="form-control form-control-sm" id="regPassword" placeholder="Min 6 characters" required minlength="6">
                     </div>
                     <button type="submit" class="btn btn-success btn-sm w-100">
-                        <i class="fas fa-check me-2"></i>Register
+                        <i class="fas fa-cloud-upload-alt me-2"></i>Register
                     </button>
                     <button type="button" class="btn btn-link btn-sm w-100 mt-1" onclick="hideRegistration()">
                         <i class="fas fa-arrow-left me-2"></i>Back to Login
@@ -523,6 +506,9 @@
                         <div class="mt-2">
                             <span class="role-badge" id="userRoleBadge">EMPLOYEE</span>
                             <span class="badge bg-secondary ms-1" id="userEmpIdDisplay">EMP001</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-success" id="syncStatus"><i class="fas fa-cloud-upload-alt"></i> Synced</span>
                         </div>
                     </div>
                     <nav class="nav flex-column">
@@ -564,9 +550,12 @@
                 <div class="col-md-10 col-lg-10 main-content">
                     <!-- Dashboard Page -->
                     <div id="page-dashboard" class="page-content">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="company-header">
                             <h4><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard</h4>
-                            <span id="currentDateTime" class="text-muted"></span>
+                            <small id="currentDateTime" class="text-muted"></small>
+                            <div class="float-end">
+                                <span class="badge bg-success" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
+                            </div>
                         </div>
 
                         <div class="row mb-4" id="statsContainer">
@@ -715,7 +704,7 @@
                                             </div>
                                             <div class="col-12">
                                                 <button type="submit" class="btn btn-primary btn-lg w-100">
-                                                    <i class="fas fa-paper-plane me-2"></i>Submit Request
+                                                    <i class="fas fa-cloud-upload-alt me-2"></i>Submit Request
                                                 </button>
                                             </div>
                                         </div>
@@ -734,7 +723,7 @@
                                     </ul>
                                     <hr>
                                     <div class="text-center">
-                                        <small class="text-muted">You'll receive notifications via email and SMS</small>
+                                        <small class="text-muted">Data is synced to cloud automatically</small>
                                     </div>
                                 </div>
                             </div>
@@ -816,16 +805,17 @@
                         </div>
                     </div>
 
-                    <!-- Employees Page (Admin only) -->
+                    <!-- Employees Page -->
                     <div id="page-employees" class="page-content" style="display: none;">
                         <h4><i class="fas fa-users me-2 text-primary"></i>Employee Management</h4>
                         <div class="table-container">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <span class="badge bg-primary" id="employeeCount">0</span> employees
+                                    <span class="badge bg-info ms-2" id="branchCount">0 branches</span>
                                 </div>
                                 <div>
-                                    <span id="employeeRoleIndicator" class="badge bg-info">Admin Only</span>
+                                    <span id="employeeRoleIndicator" class="badge bg-success">Admin</span>
                                     <button class="btn btn-sm btn-primary ms-2" onclick="showEmployeeModal()" id="addEmployeeBtn">
                                         <i class="fas fa-plus me-1"></i>Add Employee
                                     </button>
@@ -843,6 +833,7 @@
                                             <th>Designation</th>
                                             <th>Role</th>
                                             <th>Status</th>
+                                            <th>Location</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -873,8 +864,7 @@
                         <div class="table-container">
                             <h5>Full Report</h5>
                             <button class="btn btn-success btn-sm mb-3" onclick="exportFullReport()">
-                                <i class="fas fa-file-excel me-1"></i>Export Full Report
-                            </button>
+                                <i class="fas fa-file-excel me-1"></i>Export Full Report                            </button>
                             <div class="table-responsive">
                                 <table class="table table-hover" id="reportTable">
                                     <thead>
@@ -958,6 +948,10 @@
                         <input type="text" class="form-control form-control-sm" id="empDesignation" required>
                     </div>
                     <div class="mb-2">
+                        <label class="form-label small">Location/Branch</label>
+                        <input type="text" class="form-control form-control-sm" id="empLocation" placeholder="e.g., Mumbai, Delhi">
+                    </div>
+                    <div class="mb-2">
                         <label class="form-label small">Role</label>
                         <select class="form-select form-select-sm" id="empRole">
                             <option value="employee">Employee</option>
@@ -1032,197 +1026,261 @@
 
 <script>
 // ============================================
-// DATA STORE
+// FIREBASE CONFIGURATION - YOUR CREDENTIALS
 // ============================================
-const Store = {
-    getUsers() {
-        const data = localStorage.getItem('cf_users');
-        return data ? JSON.parse(data) : [];
-    },
-    setUsers(users) {
-        localStorage.setItem('cf_users', JSON.stringify(users));
-    },
-    getEmployees() {
-        const data = localStorage.getItem('cf_employees');
-        return data ? JSON.parse(data) : [];
-    },
-    setEmployees(employees) {
-        localStorage.setItem('cf_employees', JSON.stringify(employees));
-    },
-    getTransactions() {
-        const data = localStorage.getItem('cf_transactions');
-        return data ? JSON.parse(data) : [];
-    },
-    setTransactions(transactions) {
-        localStorage.setItem('cf_transactions', JSON.stringify(transactions));
-    },
-    getNotifications() {
-        const data = localStorage.getItem('cf_notifications');
-        return data ? JSON.parse(data) : [];
-    },
-    setNotifications(notifications) {
-        localStorage.setItem('cf_notifications', JSON.stringify(notifications));
-    },
-    getAuditLogs() {
-        const data = localStorage.getItem('cf_audit');
-        return data ? JSON.parse(data) : [];
-    },
-    setAuditLogs(logs) {
-        localStorage.setItem('cf_audit', JSON.stringify(logs));
-    },
-    getCurrentUser() {
-        const data = localStorage.getItem('cf_current_user');
-        return data ? JSON.parse(data) : null;
-    },
+const firebaseConfig = {
+    apiKey: "AIzaSyAgLXzqiGKiotxlevleo3-2lXGtksBfVd4",
+    authDomain: "cashflowpro-253b0.firebaseapp.com",
+    projectId: "cashflowpro-253b0",
+    storageBucket: "cashflowpro-253b0.firebasestorage.app",
+    messagingSenderId: "75148749502",
+    appId: "1:75148749502:web:41e46dc4da7169ded80cef",
+    measurementId: "G-NPJ6KZYWP3"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Enable offline persistence
+db.enablePersistence()
+    .catch((err) => {
+        console.warn('Firebase persistence error:', err);
+    });
+
+console.log('☁️ Firebase Connected Successfully!');
+console.log('📊 Project ID:', firebaseConfig.projectId);
+
+// ============================================
+// DATA STORE - Cloud Sync
+// ============================================
+const CloudStore = {
+    usersCollection: db.collection('users'),
+    employeesCollection: db.collection('employees'),
+    transactionsCollection: db.collection('transactions'),
+    notificationsCollection: db.collection('notifications'),
+    auditCollection: db.collection('audit'),
+    
+    currentUser: null,
+    listeners: [],
+    
     setCurrentUser(user) {
-        localStorage.setItem('cf_current_user', JSON.stringify(user));
+        this.currentUser = user;
+        if (user) {
+            localStorage.setItem('cf_user_id', user.id);
+        } else {
+            localStorage.removeItem('cf_user_id');
+        }
     },
-    clearCurrentUser() {
-        localStorage.removeItem('cf_current_user');
+    
+    getCurrentUser() {
+        if (this.currentUser) return this.currentUser;
+        const userId = localStorage.getItem('cf_user_id');
+        if (userId) {
+            return null;
+        }
+        return null;
+    },
+    
+    listenToEmployees(callback) {
+        const listener = this.employeesCollection
+            .orderBy('name')
+            .onSnapshot((snapshot) => {
+                const employees = [];
+                snapshot.forEach(doc => {
+                    employees.push({ id: doc.id, ...doc.data() });
+                });
+                callback(employees);
+                document.getElementById('syncStatus').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Synced';
+            }, (error) => {
+                console.error('Error listening to employees:', error);
+                document.getElementById('syncStatus').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Sync Error';
+            });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
+    listenToTransactions(userId, callback) {
+        let query = this.transactionsCollection.orderBy('createdAt', 'desc');
+        if (userId) {
+            query = query.where('employeeId', '==', userId);
+        }
+        const listener = query.onSnapshot((snapshot) => {
+            const transactions = [];
+            snapshot.forEach(doc => {
+                transactions.push({ id: doc.id, ...doc.data() });
+            });
+            callback(transactions);
+        }, (error) => {
+            console.error('Error listening to transactions:', error);
+        });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
+    listenToNotifications(userId, callback) {
+        const listener = this.notificationsCollection
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .onSnapshot((snapshot) => {
+                const notifications = [];
+                snapshot.forEach(doc => {
+                    notifications.push({ id: doc.id, ...doc.data() });
+                });
+                callback(notifications);
+            }, (error) => {
+                console.error('Error listening to notifications:', error);
+            });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
+    listenToAudit(callback) {
+        const listener = this.auditCollection
+            .orderBy('timestamp', 'desc')
+            .limit(100)
+            .onSnapshot((snapshot) => {
+                const logs = [];
+                snapshot.forEach(doc => {
+                    logs.push({ id: doc.id, ...doc.data() });
+                });
+                callback(logs);
+            }, (error) => {
+                console.error('Error listening to audit:', error);
+            });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
+    async addUser(userData) {
+        const docRef = await this.usersCollection.add(userData);
+        return { id: docRef.id, ...userData };
+    },
+    
+    async getUserByUsername(username) {
+        const snapshot = await this.usersCollection
+            .where('username', '==', username)
+            .get();
+        if (snapshot.empty) return null;
+        const doc = snapshot.docs[0];
+        return { id: doc.id, ...doc.data() };
+    },
+    
+    async addEmployee(employeeData) {
+        const docRef = await this.employeesCollection.add(employeeData);
+        return { id: docRef.id, ...employeeData };
+    },
+    
+    async updateEmployee(id, data) {
+        await this.employeesCollection.doc(id).update(data);
+        return { id, ...data };
+    },
+    
+    async deleteEmployee(id) {
+        await this.employeesCollection.doc(id).delete();
+        return id;
+    },
+    
+    async addTransaction(transactionData) {
+        const docRef = await this.transactionsCollection.add(transactionData);
+        return { id: docRef.id, ...transactionData };
+    },
+    
+    async updateTransaction(id, data) {
+        await this.transactionsCollection.doc(id).update(data);
+        return { id, ...data };
+    },
+    
+    async addNotification(notificationData) {
+        const docRef = await this.notificationsCollection.add(notificationData);
+        return { id: docRef.id, ...notificationData };
+    },
+    
+    async addAuditLog(logData) {
+        const docRef = await this.auditCollection.add(logData);
+        return { id: docRef.id, ...logData };
+    },
+    
+    cleanup() {
+        this.listeners.forEach(listener => listener());
+        this.listeners = [];
     }
 };
 
 // ============================================
-// NOTIFICATION ENGINE - Email & SMS
+// APPLICATION STATE
 // ============================================
-const NotificationEngine = {
-    // Send Email Notification (Simulated - In production, use Email API)
-    sendEmail: function(to, subject, message) {
-        console.log('📧 EMAIL SENT:');
-        console.log('   To:', to);
-        console.log('   Subject:', subject);
-        console.log('   Message:', message);
-        
-        // In production, integrate with:
-        // - SendGrid, Mailgun, AWS SES, etc.
-        // Example: SendGrid API call
-        /*
-        const sgMail = require('@sendgrid/mail');
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        const msg = {
-            to: to,
-            from: 'noreply@cashflow.com',
-            subject: subject,
-            text: message,
-            html: `<p>${message}</p>`
-        };
-        sgMail.send(msg);
-        */
-        
-        return true;
-    },
-    
-    // Send SMS Notification (Simulated - In production, use SMS API)
-    sendSMS: function(phone, message) {
-        console.log('📱 SMS SENT:');
-        console.log('   To:', phone);
-        console.log('   Message:', message);
-        
-        // In production, integrate with:
-        // - Twilio, AWS SNS, etc.
-        // Example: Twilio API call
-        /*
-        const twilio = require('twilio');
-        const client = twilio(accountSid, authToken);
-        client.messages.create({
-            body: message,
-            to: phone,
-            from: '+1234567890'
-        });
-        */
-        
-        return true;
-    },
-    
-    // Send combined notification
-    send: function(employee, title, message, type = 'info') {
-        const result = {
-            emailSent: false,
-            smsSent: false,
-            error: null
-        };
-        
-        try {
-            // Send Email
-            if (employee.email) {
-                const emailSubject = `[CashFlow Pro] ${title}`;
-                const emailBody = `
-                    Dear ${employee.name},
-                    
-                    ${message}
-                    
-                    Request ID: ${employee.requestId || 'N/A'}
-                    Date: ${new Date().toLocaleString()}
-                    
-                    ---
-                    This is an automated notification from CashFlow Pro.
-                    For any queries, please contact your manager.
-                `;
-                this.sendEmail(employee.email, emailSubject, emailBody);
-                result.emailSent = true;
-            }
-            
-            // Send SMS
-            if (employee.mobile) {
-                const smsBody = `CashFlow Pro: ${title}. ${message}`;
-                this.sendSMS(employee.mobile, smsBody);
-                result.smsSent = true;
-            }
-            
-        } catch (error) {
-            result.error = error.message;
-            console.error('Notification Error:', error);
-        }
-        
-        return result;
-    },
-    
-    // Bulk notification to all admins/managers
-    notifyAdmins: function(title, message, type = 'info') {
-        const users = Store.getUsers();
-        const admins = users.filter(u => u.role === 'admin' || u.role === 'manager');
-        const employees = Store.getEmployees();
-        
-        admins.forEach(admin => {
-            const emp = employees.find(e => e.id === admin.id);
-            if (emp) {
-                this.send(emp, title, message, type);
-            }
-        });
-    },
-    
-    // Notify specific employee
-    notifyEmployee: function(employeeId, title, message, type = 'info') {
-        const employees = Store.getEmployees();
-        const emp = employees.find(e => e.id === employeeId);
-        if (emp) {
-            return this.send(emp, title, message, type);
-        }
-        return null;
-    }
+let appState = {
+    employees: [],
+    transactions: [],
+    notifications: [],
+    auditLogs: [],
+    currentUser: null
 };
 
 // ============================================
 // INITIALIZATION
 // ============================================
-function initializeApp() {
-    const users = Store.getUsers();
-    if (users.length === 0) {
-        console.log('📝 No users found. First registration will be Admin.');
-    }
-    
-    const currentUser = Store.getCurrentUser();
-    if (currentUser) {
-        const userExists = users.find(u => u.id === currentUser.id);
-        if (userExists) {
-            showDashboard();
-        } else {
-            Store.clearCurrentUser();
-        }
-    }
-    
+async function initializeApp() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
+    
+    const userId = localStorage.getItem('cf_user_id');
+    if (userId) {
+        try {
+            const userDoc = await CloudStore.usersCollection.doc(userId).get();
+            if (userDoc.exists) {
+                const user = { id: userDoc.id, ...userDoc.data() };
+                CloudStore.setCurrentUser(user);
+                showDashboard();
+                return;
+            }
+        } catch (error) {
+            console.error('Error restoring session:', error);
+        }
+    }
+}
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    showLoading(true);
+    try {
+        const user = await CloudStore.getUserByUsername(username);
+        if (user && user.password === password) {
+            CloudStore.setCurrentUser(user);
+            localStorage.setItem('cf_user_id', user.id);
+            showToast('success', `Welcome back, ${user.fullName}!`);
+            await addAuditLog('LOGIN', 'User', user.username);
+            showDashboard();
+        } else {
+            showToast('danger', 'Invalid username or password');
+        }
+    } catch (error) {
+        showToast('danger', 'Error connecting to server');
+        console.error(error);
+    }
+    showLoading(false);
+});
+
+function logout() {
+    const user = CloudStore.getCurrentUser();
+    if (user) {
+        addAuditLog('LOGOUT', 'User', user.username);
+    }
+    CloudStore.setCurrentUser(null);
+    localStorage.removeItem('cf_user_id');
+    CloudStore.cleanup();
+    document.getElementById('dashboardScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    showToast('info', 'Logged out successfully');
+    document.getElementById('loginForm').reset();
 }
 
 // ============================================
@@ -1238,7 +1296,7 @@ function hideRegistration() {
     document.getElementById('registrationForm').style.display = 'none';
 }
 
-document.getElementById('registerForm').addEventListener('submit', function(e) {
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const employeeId = document.getElementById('regEmployeeId').value.trim();
@@ -1247,6 +1305,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     const mobile = document.getElementById('regMobile').value.trim();
     const department = document.getElementById('regDepartment').value.trim();
     const designation = document.getElementById('regDesignation').value.trim();
+    const location = document.getElementById('regLocation').value.trim() || 'Unknown';
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
     
@@ -1260,106 +1319,76 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
         return;
     }
     
-    const users = Store.getUsers();
-    const employees = Store.getEmployees();
-    
-    if (users.find(u => u.username === username)) {
-        showToast('danger', 'Username already exists');
-        return;
-    }
-    if (employees.find(e => e.employeeId === employeeId)) {
-        showToast('danger', 'Employee ID already exists');
-        return;
-    }
-    if (employees.find(e => e.email === email)) {
-        showToast('danger', 'Email already registered');
-        return;
-    }
-    if (employees.find(e => e.mobile === mobile)) {
-        showToast('danger', 'Mobile number already registered');
-        return;
-    }
-    
-    const isFirstUser = users.length === 0;
-    const role = isFirstUser ? 'admin' : 'employee';
-    
-    const newId = 'user_' + Date.now();
-    const newUser = {
-        id: newId,
-        username: username,
-        password: password,
-        fullName: fullName,
-        role: role,
-        department: department,
-        employeeId: employeeId,
-        createdAt: new Date().toISOString()
-    };
-    users.push(newUser);
-    Store.setUsers(users);
-    
-    const newEmployee = {
-        id: newId,
-        employeeId: employeeId,
-        name: fullName,
-        email: email,
-        mobile: mobile,
-        department: department,
-        designation: designation,
-        role: role,
-        isActive: true,
-        createdAt: new Date().toISOString()
-    };
-    employees.push(newEmployee);
-    Store.setEmployees(employees);
-    
-    addAuditLog('REGISTER', 'User', fullName);
-    
-    showToast('success', `Registration successful! ${isFirstUser ? 'You are the Admin.' : 'You can now login.'}`);
-    
-    Store.setCurrentUser(newUser);
-    hideRegistration();
-    document.querySelector('#loginForm').reset();
-    showDashboard();
-});
-
-// ============================================
-// AUTHENTICATION
-// ============================================
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    
-    const users = Store.getUsers();
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-        Store.setCurrentUser(user);
-        showToast('success', `Welcome back, ${user.fullName}!`);
-        addAuditLog('LOGIN', 'User', user.username);
+    showLoading(true);
+    try {
+        const existingUser = await CloudStore.getUserByUsername(username);
+        if (existingUser) {
+            showToast('danger', 'Username already exists');
+            showLoading(false);
+            return;
+        }
+        
+        const empSnapshot = await CloudStore.employeesCollection
+            .where('employeeId', '==', employeeId)
+            .get();
+        if (!empSnapshot.empty) {
+            showToast('danger', 'Employee ID already exists');
+            showLoading(false);
+            return;
+        }
+        
+        const usersSnapshot = await CloudStore.usersCollection.limit(1).get();
+        const isFirstUser = usersSnapshot.empty;
+        const role = isFirstUser ? 'admin' : 'employee';
+        
+        const userData = {
+            username,
+            password,
+            fullName,
+            role,
+            department,
+            employeeId,
+            createdAt: new Date().toISOString()
+        };
+        const user = await CloudStore.addUser(userData);
+        
+        const employeeData = {
+            employeeId,
+            name: fullName,
+            email,
+            mobile,
+            department,
+            designation,
+            location,
+            role,
+            isActive: true,
+            createdAt: new Date().toISOString()
+        };
+        await CloudStore.addEmployee(employeeData);
+        
+        await addAuditLog('REGISTER', 'User', fullName);
+        
+        showToast('success', `Registration successful! ${isFirstUser ? 'You are the Admin.' : 'You can now login.'}`);
+        CloudStore.setCurrentUser({ id: user.id, ...userData });
+        localStorage.setItem('cf_user_id', user.id);
+        hideRegistration();
+        document.querySelector('#loginForm').reset();
         showDashboard();
-    } else {
-        showToast('danger', 'Invalid username or password');
+    } catch (error) {
+        showToast('danger', 'Registration failed: ' + error.message);
+        console.error(error);
     }
+    showLoading(false);
 });
 
-function logout() {
-    const user = Store.getCurrentUser();
-    if (user) {
-        addAuditLog('LOGOUT', 'User', user.username);
-    }
-    Store.clearCurrentUser();
-    document.getElementById('dashboardScreen').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
-    showToast('info', 'Logged out successfully');
-    document.getElementById('loginForm').reset();
-}
-
+// ============================================
+// DASHBOARD
+// ============================================
 function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('dashboardScreen').style.display = 'block';
     
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (user) {
         document.getElementById('userNameDisplay').textContent = user.fullName;
         document.getElementById('userDeptDisplay').textContent = user.department || 'No Department';
@@ -1369,30 +1398,105 @@ function showDashboard() {
         
         const isAdmin = user.role === 'admin' || user.role === 'manager';
         document.getElementById('adminMenu').style.display = isAdmin ? 'block' : 'none';
-        
-        // Show/hide employee quick stats
         document.getElementById('employeeQuickStats').style.display = user.role === 'employee' ? 'grid' : 'none';
         
-        // Show/hide add employee button based on role
-        const addBtn = document.getElementById('addEmployeeBtn');
-        const roleIndicator = document.getElementById('employeeRoleIndicator');
         if (user.role === 'admin') {
-            addBtn.style.display = 'inline-block';
-            roleIndicator.textContent = 'Admin Only - Full Access';
-            roleIndicator.className = 'badge bg-success';
+            document.getElementById('addEmployeeBtn').style.display = 'inline-block';
+            document.getElementById('employeeRoleIndicator').textContent = 'Admin - Full Access';
+            document.getElementById('employeeRoleIndicator').className = 'badge bg-success';
         } else if (user.role === 'manager') {
-            addBtn.style.display = 'none';
-            roleIndicator.textContent = 'Manager - View Only';
-            roleIndicator.className = 'badge bg-info';
+            document.getElementById('addEmployeeBtn').style.display = 'none';
+            document.getElementById('employeeRoleIndicator').textContent = 'Manager - View Only';
+            document.getElementById('employeeRoleIndicator').className = 'badge bg-info';
         } else {
-            addBtn.style.display = 'none';
-            roleIndicator.textContent = 'Employee - No Access';
-            roleIndicator.className = 'badge bg-secondary';
+            document.getElementById('addEmployeeBtn').style.display = 'none';
+            document.getElementById('employeeRoleIndicator').textContent = 'Employee - No Access';
+            document.getElementById('employeeRoleIndicator').className = 'badge bg-secondary';
         }
     }
     
-    updateDashboard();
-    loadNotifications();
+    setupRealtimeListeners();
+}
+
+function setupRealtimeListeners() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    CloudStore.cleanup();
+    
+    CloudStore.listenToEmployees((employees) => {
+        appState.employees = employees;
+        updateDashboard();
+        loadEmployees();
+        loadApprovals();
+        generateReports();
+    });
+    
+    CloudStore.listenToTransactions(null, (transactions) => {
+        appState.transactions = transactions;
+        updateDashboard();
+        loadMyHistory();
+        loadApprovals();
+        generateReports();
+    });
+    
+    CloudStore.listenToNotifications(user.id, (notifications) => {
+        appState.notifications = notifications;
+        loadNotifications();
+    });
+    
+    if (user.role === 'admin') {
+        CloudStore.listenToAudit((logs) => {
+            appState.auditLogs = logs;
+            loadAuditLogs();
+        });
+    }
+}
+
+function updateDashboard() {
+    const user = CloudStore.getCurrentUser();
+    const transactions = appState.transactions;
+    
+    let userTransactions = transactions;
+    if (user && user.role === 'employee') {
+        userTransactions = transactions.filter(t => t.employeeId === user.id);
+    }
+    
+    const totalAdvance = userTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
+    const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
+    const rejectedCount = userTransactions.filter(t => t.status === 'rejected').length;
+    
+    document.getElementById('totalAdvance').textContent = '₹' + totalAdvance.toLocaleString();
+    document.getElementById('pendingCountStat').textContent = pendingCount;
+    document.getElementById('approvedCountStat').textContent = approvedCount;
+    document.getElementById('rejectedCountStat').textContent = rejectedCount;
+    
+    if (user && user.role === 'employee') {
+        document.getElementById('empTotalRequests').textContent = userTransactions.length;
+        document.getElementById('empPendingRequests').textContent = pendingCount;
+        document.getElementById('empApprovedRequests').textContent = approvedCount;
+        document.getElementById('empRejectedRequests').textContent = rejectedCount;
+    }
+    
+    const recent = userTransactions.slice(-5).reverse();
+    const tbody = document.getElementById('recentTransactionsBody');
+    if (recent.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No transactions</td></tr>`;
+    } else {
+        tbody.innerHTML = recent.map(t => `
+            <tr>
+                <td><code>${t.id || 'N/A'}</code></td>
+                <td><span class="badge bg-info">${(t.type || '').replace('_', ' ')}</span></td>
+                <td>₹${(t.amount || 0).toLocaleString()}</td>
+                <td><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></td>
+                <td>${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
+            </tr>
+        `).join('');
+    }
+    
+    const allPending = transactions.filter(t => t.status === 'pending').length;
+    document.getElementById('pendingCount').textContent = allPending;
 }
 
 // ============================================
@@ -1422,60 +1526,11 @@ function showPage(page) {
 }
 
 // ============================================
-// DASHBOARD
-// ============================================
-function updateDashboard() {
-    const user = Store.getCurrentUser();
-    const transactions = Store.getTransactions();
-    
-    let userTransactions = transactions;
-    if (user && user.role === 'employee') {
-        userTransactions = transactions.filter(t => t.employeeId === user.id);
-    }
-    
-    const totalAdvance = userTransactions.reduce((sum, t) => sum + t.amount, 0);
-    const pendingCount = userTransactions.filter(t => t.status === 'pending').length;
-    const approvedCount = userTransactions.filter(t => t.status === 'approved' || t.status === 'completed').length;
-    const rejectedCount = userTransactions.filter(t => t.status === 'rejected').length;
-    
-    document.getElementById('totalAdvance').textContent = '₹' + totalAdvance.toLocaleString();
-    document.getElementById('pendingCountStat').textContent = pendingCount;
-    document.getElementById('approvedCountStat').textContent = approvedCount;
-    document.getElementById('rejectedCountStat').textContent = rejectedCount;
-    
-    if (user && user.role === 'employee') {
-        document.getElementById('empTotalRequests').textContent = userTransactions.length;
-        document.getElementById('empPendingRequests').textContent = pendingCount;
-        document.getElementById('empApprovedRequests').textContent = approvedCount;
-        document.getElementById('empRejectedRequests').textContent = rejectedCount;
-    }
-    
-    const recent = userTransactions.slice(-5).reverse();
-    const tbody = document.getElementById('recentTransactionsBody');
-    if (recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No transactions</td></tr>`;
-    } else {
-        tbody.innerHTML = recent.map(t => `
-            <tr>
-                <td><code>${t.id}</code></td>
-                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
-                <td>₹${t.amount.toLocaleString()}</td>
-                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
-                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
-            </tr>
-        `).join('');
-    }
-    
-    const allPending = transactions.filter(t => t.status === 'pending').length;
-    document.getElementById('pendingCount').textContent = allPending;
-}
-
-// ============================================
 // REQUEST ADVANCE
 // ============================================
-document.getElementById('advanceRequestForm').addEventListener('submit', function(e) {
+document.getElementById('advanceRequestForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (!user) {
         showToast('warning', 'Please login first');
         return;
@@ -1493,77 +1548,75 @@ document.getElementById('advanceRequestForm').addEventListener('submit', functio
         return;
     }
     
-    const employees = Store.getEmployees();
-    const employee = employees.find(e => e.id === user.id);
-    
-    const transaction = {
-        id: 'TXN_' + Date.now(),
-        employeeId: user.id,
-        employeeName: user.fullName,
-        employeeDepartment: employee?.department || user.department || 'N/A',
-        employeeEmpId: user.employeeId || 'N/A',
-        employeeEmail: employee?.email || '',
-        employeeMobile: employee?.mobile || '',
-        type: type,
-        category: category,
-        amount: amount,
-        purpose: purpose,
-        description: description || '',
-        dueDate: dueDate || null,
-        status: 'pending',
-        settlementAmount: 0,
-        remainingAmount: amount,
-        createdBy: user.username,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        approvedBy: null,
-        approvalDate: null,
-        remarks: ''
-    };
-    
-    const transactions = Store.getTransactions();
-    transactions.push(transaction);
-    Store.setTransactions(transactions);
-    
-    // Send email and SMS notifications to admins
-    const admins = Store.getUsers().filter(u => u.role === 'admin' || u.role === 'manager');
-    admins.forEach(admin => {
-        const adminEmp = employees.find(e => e.id === admin.id);
-        if (adminEmp) {
-            NotificationEngine.send(
-                adminEmp,
-                `New Request from ${user.fullName}`,
-                `Employee: ${user.fullName} (${user.employeeId})\nType: ${type}\nAmount: ₹${amount.toLocaleString()}\nPurpose: ${purpose}\nRequest ID: ${transaction.id}`,
-                'info'
-            );
-        }
-    });
-    
-    // Add notification in app
-    addNotification(
-        'NEW_REQUEST',
-        `New request from ${user.fullName}`,
-        `${user.fullName} requested ₹${amount.toLocaleString()} for ${purpose}`,
-        transaction.id,
-        'info'
-    );
-    
-    addAuditLog('CREATE_REQUEST', 'Transaction', transaction.id);
-    
-    document.getElementById('advanceRequestForm').reset();
-    showToast('success', 'Request submitted! Admins have been notified via email and SMS.');
-    updateDashboard();
+    showLoading(true);
+    try {
+        const transaction = {
+            transactionId: 'TXN_' + Date.now(),
+            employeeId: user.id,
+            employeeName: user.fullName,
+            employeeDepartment: user.department || 'N/A',
+            employeeEmpId: user.employeeId || 'N/A',
+            type: type,
+            category: category,
+            amount: amount,
+            purpose: purpose,
+            description: description || '',
+            dueDate: dueDate || null,
+            status: 'pending',
+            settlementAmount: 0,
+            remainingAmount: amount,
+            createdBy: user.username,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            approvedBy: null,
+            approvalDate: null,
+            remarks: ''
+        };
+        
+        await CloudStore.addTransaction(transaction);
+        
+        const usersSnapshot = await CloudStore.usersCollection
+            .where('role', 'in', ['admin', 'manager'])
+            .get();
+        
+        const adminNotifications = [];
+        usersSnapshot.forEach(doc => {
+            const admin = { id: doc.id, ...doc.data() };
+            adminNotifications.push({
+                userId: admin.id,
+                type: 'NEW_REQUEST',
+                title: `New Request from ${user.fullName}`,
+                message: `${user.fullName} requested ₹${amount.toLocaleString()} for ${purpose}`,
+                entityId: transaction.transactionId,
+                severity: 'info',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+        });
+        
+        await Promise.all(adminNotifications.map(n => CloudStore.addNotification(n)));
+        
+        await addAuditLog('CREATE_REQUEST', 'Transaction', transaction.transactionId);
+        
+        document.getElementById('advanceRequestForm').reset();
+        showToast('success', '✅ Request submitted! Admins have been notified.');
+    } catch (error) {
+        showToast('danger', 'Failed to submit request: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
 });
 
 // ============================================
 // MY HISTORY
 // ============================================
 function loadMyHistory() {
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (!user) return;
     
-    const transactions = Store.getTransactions();
-    const myTxns = transactions.filter(t => t.employeeId === user.id).reverse();
+    const myTxns = appState.transactions
+        .filter(t => t.employeeId === user.id)
+        .reverse();
     
     document.getElementById('historyCount').textContent = myTxns.length;
     
@@ -1573,27 +1626,28 @@ function loadMyHistory() {
     } else {
         tbody.innerHTML = myTxns.map(t => `
             <tr>
-                <td><code>${t.id}</code></td>
-                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
-                <td>${t.category}</td>
-                <td>₹${t.amount.toLocaleString()}</td>
-                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
-                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+                <td><code>${t.id || 'N/A'}</code></td>
+                <td><span class="badge bg-info">${(t.type || '').replace('_', ' ')}</span></td>
+                <td>${t.category || 'N/A'}</td>
+                <td>₹${(t.amount || 0).toLocaleString()}</td>
+                <td><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></td>
+                <td>${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
                 <td>${t.remarks || '-'}</td>
             </tr>
         `).join('');
     }
 }
 
-function refreshHistory() { loadMyHistory(); showToast('info', 'Refreshed'); }
+function refreshHistory() {
+    loadMyHistory();
+    showToast('info', 'Refreshed from cloud');
+}
 
 function exportMyHistory() {
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (!user) return;
     
-    const transactions = Store.getTransactions();
-    const myTxns = transactions.filter(t => t.employeeId === user.id);
-    
+    const myTxns = appState.transactions.filter(t => t.employeeId === user.id);
     if (myTxns.length === 0) {
         showToast('warning', 'No transactions to export');
         return;
@@ -1601,7 +1655,7 @@ function exportMyHistory() {
     
     let csv = 'ID,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
     myTxns.forEach(t => {
-        csv += `${t.id},${t.type},${t.category},${t.amount},${t.status},${t.purpose},${new Date(t.createdAt).toLocaleDateString()},${t.remarks || ''}\n`;
+        csv += `${t.id},${t.type || ''},${t.category || ''},${t.amount || 0},${t.status || ''},${t.purpose || ''},${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''},${t.remarks || ''}\n`;
     });
     
     downloadCSV(csv, `my_transactions_${new Date().toISOString().slice(0,10)}.csv`);
@@ -1612,15 +1666,14 @@ function exportMyHistory() {
 // APPROVALS
 // ============================================
 function loadApprovals() {
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (!user || (user.role !== 'admin' && user.role !== 'manager')) return;
     
-    const transactions = Store.getTransactions();
     const filter = document.getElementById('approvalFilter')?.value || 'all';
     
-    let filtered = transactions;
+    let filtered = appState.transactions;
     if (filter !== 'all') {
-        filtered = transactions.filter(t => t.status === filter);
+        filtered = appState.transactions.filter(t => t.status === filter);
     }
     
     filtered.sort((a, b) => {
@@ -1629,7 +1682,7 @@ function loadApprovals() {
         return new Date(b.createdAt) - new Date(a.createdAt);
     });
     
-    document.getElementById('approvalCount').textContent = transactions.filter(t => t.status === 'pending').length;
+    document.getElementById('approvalCount').textContent = appState.transactions.filter(t => t.status === 'pending').length;
     
     const tbody = document.getElementById('approvalsBody');
     if (filtered.length === 0) {
@@ -1637,13 +1690,13 @@ function loadApprovals() {
     } else {
         tbody.innerHTML = filtered.map(t => `
             <tr class="${t.status === 'pending' ? 'table-warning' : ''}">
-                <td><code>${t.id}</code></td>
-                <td><strong>${t.employeeName}</strong></td>
+                <td><code>${t.id || 'N/A'}</code></td>
+                <td><strong>${t.employeeName || 'N/A'}</strong></td>
                 <td>${t.employeeDepartment || 'N/A'}</td>
-                <td><span class="badge bg-info">${t.type.replace('_', ' ')}</span></td>
-                <td>₹${t.amount.toLocaleString()}</td>
-                <td>${t.purpose}</td>
-                <td><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></td>
+                <td><span class="badge bg-info">${(t.type || '').replace('_', ' ')}</span></td>
+                <td>₹${(t.amount || 0).toLocaleString()}</td>
+                <td>${t.purpose || 'N/A'}</td>
+                <td><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></td>
                 <td>
                     ${t.status === 'pending' ? `
                         <button class="btn btn-sm btn-success me-1" onclick="showApprovalModal('${t.id}')">
@@ -1661,19 +1714,18 @@ function loadApprovals() {
 }
 
 function showApprovalModal(id) {
-    const transactions = Store.getTransactions();
-    const t = transactions.find(t => t.id === id);
+    const t = appState.transactions.find(t => t.id === id);
     if (!t) return;
     
-    document.getElementById('aprId').textContent = t.id;
-    document.getElementById('aprEmployee').textContent = t.employeeName;
+    document.getElementById('aprId').textContent = t.id || 'N/A';
+    document.getElementById('aprEmployee').textContent = t.employeeName || 'N/A';
     document.getElementById('aprDepartment').textContent = t.employeeDepartment || 'N/A';
-    document.getElementById('aprType').textContent = t.type.replace('_', ' ');
-    document.getElementById('aprAmount').textContent = '₹' + t.amount.toLocaleString();
-    document.getElementById('aprPurpose').textContent = t.purpose;
+    document.getElementById('aprType').textContent = (t.type || '').replace('_', ' ');
+    document.getElementById('aprAmount').textContent = '₹' + (t.amount || 0).toLocaleString();
+    document.getElementById('aprPurpose').textContent = t.purpose || 'N/A';
     document.getElementById('aprDescription').textContent = t.description || 'No description';
-    document.getElementById('aprSettlementAmount').value = t.amount;
-    document.getElementById('aprSettlementAmount').max = t.amount;
+    document.getElementById('aprSettlementAmount').value = t.amount || 0;
+    document.getElementById('aprSettlementAmount').max = t.amount || 0;
     document.getElementById('aprRemarks').value = '';
     document.getElementById('aprDecision').value = 'approved';
     document.getElementById('approvalModal').dataset.txnId = id;
@@ -1687,137 +1739,108 @@ function showApprovalModal(id) {
     new bootstrap.Modal(document.getElementById('approvalModal')).show();
 }
 
-function processApproval() {
+async function processApproval() {
     const id = document.getElementById('approvalModal').dataset.txnId;
     const decision = document.getElementById('aprDecision').value;
     const settlementAmount = parseFloat(document.getElementById('aprSettlementAmount').value) || 0;
     const remarks = document.getElementById('aprRemarks').value || '';
     
-    const transactions = Store.getTransactions();
-    const index = transactions.findIndex(t => t.id === id);
-    if (index === -1) return;
+    const t = appState.transactions.find(t => t.id === id);
+    if (!t) return;
     
-    const t = transactions[index];
-    const user = Store.getCurrentUser();
-    const employees = Store.getEmployees();
+    const user = CloudStore.getCurrentUser();
     
-    // Get employee details for notification
-    const employee = employees.find(e => e.id === t.employeeId);
-    
-    if (decision === 'approved') {
-        t.status = 'approved';
-        t.approvalDate = new Date().toISOString();
-        t.approvedBy = user.username;
-        t.remarks = remarks || 'Approved';
+    showLoading(true);
+    try {
+        const updateData = {
+            updatedAt: new Date().toISOString(),
+            approvedBy: user.username,
+            approvalDate: new Date().toISOString(),
+            remarks: remarks
+        };
         
-        if (settlementAmount > 0 && settlementAmount <= t.amount) {
-            t.settlementAmount = settlementAmount;
-            t.remainingAmount = t.amount - settlementAmount;
-            if (t.remainingAmount === 0) {
-                t.status = 'completed';
-                t.settlementDate = new Date().toISOString();
+        if (decision === 'approved') {
+            updateData.status = 'approved';
+            updateData.settlementAmount = settlementAmount;
+            updateData.remainingAmount = (t.amount || 0) - settlementAmount;
+            
+            if (updateData.remainingAmount === 0) {
+                updateData.status = 'completed';
+                updateData.settlementDate = new Date().toISOString();
             } else if (settlementAmount > 0) {
-                t.status = 'partially_settled';
+                updateData.status = 'partially_settled';
             }
+            
+            await CloudStore.addNotification({
+                userId: t.employeeId,
+                type: 'REQUEST_APPROVED',
+                title: `✅ Your request was approved`,
+                message: `Amount: ₹${(t.amount || 0).toLocaleString()} - ${t.purpose || ''}`,
+                entityId: t.id,
+                severity: 'success',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+        } else {
+            updateData.status = 'rejected';
+            
+            await CloudStore.addNotification({
+                userId: t.employeeId,
+                type: 'REQUEST_REJECTED',
+                title: `❌ Your request was rejected`,
+                message: `Amount: ₹${(t.amount || 0).toLocaleString()} - ${t.purpose || ''}`,
+                entityId: t.id,
+                severity: 'danger',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
         }
         
-        // Send notification to employee via Email & SMS
-        if (employee) {
-            NotificationEngine.send(
-                employee,
-                `Request ${t.id} Approved`,
-                `Your request for ₹${t.amount.toLocaleString()} (${t.type}) has been approved.\nPurpose: ${t.purpose}\nRemarks: ${remarks}`,
-                'success'
-            );
-        }
+        await CloudStore.updateTransaction(id, updateData);
+        await addAuditLog('PROCESS_APPROVAL', 'Transaction', t.id);
         
-        // Send notification to all admins
-        NotificationEngine.notifyAdmins(
-            `Request ${t.id} Approved by ${user.fullName}`,
-            `Employee: ${t.employeeName}\nAmount: ₹${t.amount.toLocaleString()}\nType: ${t.type}\nPurpose: ${t.purpose}`,
-            'info'
-        );
-        
-        addNotification(
-            'REQUEST_APPROVED',
-            `Your request ${t.id} was approved`,
-            `Amount: ₹${t.amount.toLocaleString()} - ${t.purpose}`,
-            t.id,
-            'success'
-        );
-        
-    } else {
-        t.status = 'rejected';
-        t.approvalDate = new Date().toISOString();
-        t.approvedBy = user.username;
-        t.remarks = remarks || 'Rejected';
-        
-        // Send notification to employee via Email & SMS
-        if (employee) {
-            NotificationEngine.send(
-                employee,
-                `Request ${t.id} Rejected`,
-                `Your request for ₹${t.amount.toLocaleString()} (${t.type}) has been rejected.\nPurpose: ${t.purpose}\nReason: ${remarks}`,
-                'danger'
-            );
-        }
-        
-        // Send notification to all admins
-        NotificationEngine.notifyAdmins(
-            `Request ${t.id} Rejected by ${user.fullName}`,
-            `Employee: ${t.employeeName}\nAmount: ₹${t.amount.toLocaleString()}\nType: ${t.type}\nPurpose: ${t.purpose}\nReason: ${remarks}`,
-            'danger'
-        );
-        
-        addNotification(
-            'REQUEST_REJECTED',
-            `Your request ${t.id} was rejected`,
-            `Amount: ₹${t.amount.toLocaleString()} - ${t.purpose}`,
-            t.id,
-            'danger'
-        );
+        bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
+        showToast('success', `✅ Request ${decision}. Notifications sent.`);
+    } catch (error) {
+        showToast('danger', 'Failed to process: ' + error.message);
+        console.error(error);
     }
-    
-    t.updatedAt = new Date().toISOString();
-    transactions[index] = t;
-    Store.setTransactions(transactions);
-    
-    bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
-    loadApprovals();
-    updateDashboard();
-    showToast('success', `Request ${decision}. Email & SMS notifications sent.`);
-    addAuditLog('PROCESS_APPROVAL', 'Transaction', id);
+    showLoading(false);
 }
 
 // ============================================
-// EMPLOYEES (Admin only for delete)
+// EMPLOYEES
 // ============================================
 function loadEmployees() {
-    const user = Store.getCurrentUser();
-    const employees = Store.getEmployees();
+    const employees = appState.employees;
     document.getElementById('employeeCount').textContent = employees.length;
+    
+    const locations = new Set(employees.map(e => e.location || 'Unknown'));
+    document.getElementById('branchCount').textContent = locations.size + ' branches';
+    
+    const user = CloudStore.getCurrentUser();
+    const isAdmin = user && user.role === 'admin';
+    const isManager = user && user.role === 'manager';
     
     const tbody = document.getElementById('employeesBody');
     if (employees.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">No employees found. Add your first employee!</td></tr>`;
     } else {
-        const isAdmin = user && user.role === 'admin';
-        const isManager = user && user.role === 'manager';
-        
         tbody.innerHTML = employees.map(emp => `
             <tr>
-                <td><code>${emp.employeeId || emp.id}</code></td>
-                <td>${emp.name}</td>
-                <td>${emp.email}</td>
+                <td><code>${emp.employeeId || 'N/A'}</code></td>
+                <td>${emp.name || 'N/A'}</td>
+                <td>${emp.email || 'N/A'}</td>
                 <td>${emp.mobile || 'N/A'}</td>
-                <td>${emp.department}</td>
-                <td>${emp.designation}</td>
-                <td><span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span></td>
+                <td>${emp.department || 'N/A'}</td>
+                <td>${emp.designation || 'N/A'}</td>
+                <td><span class="role-badge ${emp.role || 'employee'}">${(emp.role || 'employee').toUpperCase()}</span></td>
                 <td>
-                    <span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">
-                        ${emp.isActive ? 'Active' : 'Inactive'}
+                    <span class="badge ${emp.isActive !== false ? 'bg-success' : 'bg-danger'}">
+                        ${emp.isActive !== false ? 'Active' : 'Inactive'}
                     </span>
                 </td>
+                <td><span class="badge bg-secondary">${emp.location || 'Unknown'}</span></td>
                 <td>
                     ${isAdmin ? `
                         <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
@@ -1841,27 +1864,27 @@ function loadEmployees() {
 }
 
 function viewEmployee(id) {
-    const employees = Store.getEmployees();
-    const emp = employees.find(e => e.id === id);
+    const emp = appState.employees.find(e => e.id === id);
     if (!emp) return;
     
     const details = `
         <div class="row small">
-            <div class="col-5"><strong>Employee ID:</strong></div><div class="col-7">${emp.employeeId}</div>
-            <div class="col-5"><strong>Name:</strong></div><div class="col-7">${emp.name}</div>
-            <div class="col-5"><strong>Email:</strong></div><div class="col-7">${emp.email}</div>
+            <div class="col-5"><strong>Employee ID:</strong></div><div class="col-7">${emp.employeeId || 'N/A'}</div>
+            <div class="col-5"><strong>Name:</strong></div><div class="col-7">${emp.name || 'N/A'}</div>
+            <div class="col-5"><strong>Email:</strong></div><div class="col-7">${emp.email || 'N/A'}</div>
             <div class="col-5"><strong>Mobile:</strong></div><div class="col-7">${emp.mobile || 'N/A'}</div>
-            <div class="col-5"><strong>Department:</strong></div><div class="col-7">${emp.department}</div>
-            <div class="col-5"><strong>Designation:</strong></div><div class="col-7">${emp.designation}</div>
-            <div class="col-5"><strong>Role:</strong></div><div class="col-7"><span class="role-badge ${emp.role}">${emp.role.toUpperCase()}</span></div>
-            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="badge ${emp.isActive ? 'bg-success' : 'bg-danger'}">${emp.isActive ? 'Active' : 'Inactive'}</span></div>
+            <div class="col-5"><strong>Department:</strong></div><div class="col-7">${emp.department || 'N/A'}</div>
+            <div class="col-5"><strong>Designation:</strong></div><div class="col-7">${emp.designation || 'N/A'}</div>
+            <div class="col-5"><strong>Location:</strong></div><div class="col-7">${emp.location || 'N/A'}</div>
+            <div class="col-5"><strong>Role:</strong></div><div class="col-7"><span class="role-badge ${emp.role || 'employee'}">${(emp.role || 'employee').toUpperCase()}</span></div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="badge ${emp.isActive !== false ? 'bg-success' : 'bg-danger'}">${emp.isActive !== false ? 'Active' : 'Inactive'}</span></div>
         </div>
     `;
     showCustomModal('Employee Details', details);
 }
 
 function showEmployeeModal(employeeId = null) {
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (user.role !== 'admin') {
         showToast('danger', 'Only Admins can add/edit employees');
         return;
@@ -1874,33 +1897,36 @@ function showEmployeeModal(employeeId = null) {
     document.getElementById('empPassword').required = true;
     
     if (employeeId) {
-        const employees = Store.getEmployees();
-        const users = Store.getUsers();
-        const emp = employees.find(e => e.id === employeeId);
-        const userData = users.find(u => u.id === employeeId);
-        
-        if (emp && userData) {
+        const emp = appState.employees.find(e => e.id === employeeId);
+        if (emp) {
             document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
             document.getElementById('editEmployeeId').value = emp.id;
-            document.getElementById('empEmployeeId').value = emp.employeeId;
-            document.getElementById('empName').value = emp.name;
-            document.getElementById('empEmail').value = emp.email;
+            document.getElementById('empEmployeeId').value = emp.employeeId || '';
+            document.getElementById('empName').value = emp.name || '';
+            document.getElementById('empEmail').value = emp.email || '';
             document.getElementById('empMobile').value = emp.mobile || '';
-            document.getElementById('empDepartment').value = emp.department;
-            document.getElementById('empDesignation').value = emp.designation;
+            document.getElementById('empDepartment').value = emp.department || '';
+            document.getElementById('empDesignation').value = emp.designation || '';
+            document.getElementById('empLocation').value = emp.location || '';
             document.getElementById('empRole').value = emp.role || 'employee';
-            document.getElementById('empUsername').value = userData.username;
+            document.getElementById('empUsername').value = '';
             document.getElementById('empPassword').value = '';
             document.getElementById('empPassword').required = false;
             document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+            
+            CloudStore.usersCollection.doc(emp.id).get().then(doc => {
+                if (doc.exists) {
+                    document.getElementById('empUsername').value = doc.data().username || '';
+                }
+            });
         }
     }
     
     modal.show();
 }
 
-function saveEmployee() {
-    const user = Store.getCurrentUser();
+async function saveEmployee() {
+    const user = CloudStore.getCurrentUser();
     if (user.role !== 'admin') {
         showToast('danger', 'Only Admins can add/edit employees');
         return;
@@ -1913,113 +1939,113 @@ function saveEmployee() {
     const mobile = document.getElementById('empMobile').value.trim();
     const department = document.getElementById('empDepartment').value.trim();
     const designation = document.getElementById('empDesignation').value.trim();
+    const location = document.getElementById('empLocation').value.trim() || 'Unknown';
     const role = document.getElementById('empRole').value;
     const username = document.getElementById('empUsername').value.trim();
     const password = document.getElementById('empPassword').value;
     
-    if (!employeeId || !name || !email || !mobile || !department || !designation || !username) {
+    if (!employeeId || !name || !email || !mobile || !department || !designation) {
         showToast('warning', 'Please fill all required fields');
         return;
     }
     
-    let employees = Store.getEmployees();
-    let users = Store.getUsers();
-    
-    if (id) {
-        const empIndex = employees.findIndex(e => e.id === id);
-        const userIndex = users.findIndex(u => u.id === id);
-        
-        if (empIndex !== -1) {
-            employees[empIndex] = { 
-                ...employees[empIndex], 
-                employeeId, name, email, mobile, department, designation, role 
-            };
-        }
-        if (userIndex !== -1) {
-            const updatedUser = { 
-                ...users[userIndex], 
-                username, 
+    showLoading(true);
+    try {
+        if (id) {
+            await CloudStore.updateEmployee(id, {
+                employeeId, name, email, mobile, department, designation,
+                location, role, updatedAt: new Date().toISOString()
+            });
+            
+            if (username) {
+                const userDoc = await CloudStore.usersCollection.doc(id).get();
+                if (userDoc.exists) {
+                    const updateData = { username, fullName: name, department };
+                    if (password && password.length >= 6) updateData.password = password;
+                    await CloudStore.usersCollection.doc(id).update(updateData);
+                }
+            }
+            
+            showToast('success', '✅ Employee updated successfully');
+        } else {
+            const empSnapshot = await CloudStore.employeesCollection
+                .where('employeeId', '==', employeeId)
+                .get();
+            if (!empSnapshot.empty) {
+                showToast('danger', 'Employee ID already exists');
+                showLoading(false);
+                return;
+            }
+            
+            if (username) {
+                const userSnapshot = await CloudStore.usersCollection
+                    .where('username', '==', username)
+                    .get();
+                if (!userSnapshot.empty) {
+                    showToast('danger', 'Username already exists');
+                    showLoading(false);
+                    return;
+                }
+            }
+            
+            if (!password || password.length < 6) {
+                showToast('warning', 'Password must be at least 6 characters');
+                showLoading(false);
+                return;
+            }
+            
+            const newId = 'user_' + Date.now();
+            const userData = {
+                username: username || employeeId.toLowerCase(),
+                password: password,
                 fullName: name,
-                department,
-                employeeId
+                role: role || 'employee',
+                department: department,
+                employeeId: employeeId,
+                createdAt: new Date().toISOString()
             };
-            if (password && password.length >= 6) updatedUser.password = password;
-            users[userIndex] = updatedUser;
+            await CloudStore.usersCollection.doc(newId).set(userData);
+            
+            const employeeData = {
+                id: newId,
+                employeeId,
+                name,
+                email,
+                mobile,
+                department,
+                designation,
+                location: location || 'Unknown',
+                role: role || 'employee',
+                isActive: true,
+                createdAt: new Date().toISOString()
+            };
+            await CloudStore.addEmployee(employeeData);
+            
+            await CloudStore.addNotification({
+                userId: newId,
+                type: 'WELCOME',
+                title: 'Welcome to CashFlow Pro!',
+                message: `Your account has been created. Username: ${username || employeeId.toLowerCase()}`,
+                entityId: newId,
+                severity: 'success',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+            
+            showToast('success', '✅ Employee added successfully');
         }
         
-        // Send notification to employee about profile update
-        const emp = employees[empIndex];
-        NotificationEngine.send(
-            emp,
-            'Profile Updated',
-            `Your profile has been updated by Admin.\nPlease verify your details.\nDepartment: ${emp.department}\nDesignation: ${emp.designation}`,
-            'info'
-        );
-        
-        showToast('success', 'Employee updated. Notification sent.');
-    } else {
-        if (employees.find(e => e.employeeId === employeeId)) {
-            showToast('danger', 'Employee ID already exists');
-            return;
-        }
-        if (employees.find(e => e.email === email)) {
-            showToast('danger', 'Email already registered');
-            return;
-        }
-        if (employees.find(e => e.mobile === mobile)) {
-            showToast('danger', 'Mobile already registered');
-            return;
-        }
-        if (users.find(u => u.username === username)) {
-            showToast('danger', 'Username already exists');
-            return;
-        }
-        if (!password || password.length < 6) {
-            showToast('warning', 'Password must be at least 6 characters');
-            return;
-        }
-        
-        const newId = 'user_' + Date.now();
-        const newEmployee = {
-            id: newId,
-            employeeId, name, email, mobile, department, designation,
-            role: role || 'employee',
-            isActive: true,
-            createdAt: new Date().toISOString()
-        };
-        employees.push(newEmployee);
-        
-        const newUser = {
-            id: newId,
-            username, password,
-            fullName: name,
-            role: role || 'employee',
-            department,
-            employeeId,
-            createdAt: new Date().toISOString()
-        };
-        users.push(newUser);
-        
-        // Send welcome notification to new employee
-        NotificationEngine.send(
-            newEmployee,
-            'Welcome to CashFlow Pro!',
-            `Your account has been created.\nUsername: ${username}\nDepartment: ${department}\nDesignation: ${designation}\n\nPlease login and update your profile.`,
-            'success'
-        );
-        
-        showToast('success', 'Employee added. Welcome email sent.');
+        bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+        await addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
+    } catch (error) {
+        showToast('danger', 'Failed to save: ' + error.message);
+        console.error(error);
     }
-    
-    Store.setEmployees(employees);
-    Store.setUsers(users);
-    loadEmployees();
-    bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
-    addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
+    showLoading(false);
 }
 
 function editEmployee(id) {
-    const user = Store.getCurrentUser();
+    const user = CloudStore.getCurrentUser();
     if (user.role !== 'admin') {
         showToast('danger', 'Only Admins can edit employees');
         return;
@@ -2027,8 +2053,8 @@ function editEmployee(id) {
     showEmployeeModal(id);
 }
 
-function deleteEmployee(id) {
-    const user = Store.getCurrentUser();
+async function deleteEmployee(id) {
+    const user = CloudStore.getCurrentUser();
     if (user.role !== 'admin') {
         showToast('danger', 'Only Admins can delete employees');
         return;
@@ -2036,29 +2062,18 @@ function deleteEmployee(id) {
     
     if (!confirm('⚠️ WARNING: This will permanently delete this employee and all their data. Continue?')) return;
     
-    const employees = Store.getEmployees();
-    const emp = employees.find(e => e.id === id);
-    
-    // Send notification before deletion
-    if (emp) {
-        NotificationEngine.send(
-            emp,
-            'Account Deletion Notice',
-            `Your account has been deleted by Admin.\nEmployee ID: ${emp.employeeId}\nIf this was a mistake, please contact your administrator.`,
-            'danger'
-        );
+    showLoading(true);
+    try {
+        await CloudStore.deleteEmployee(id);
+        await CloudStore.usersCollection.doc(id).delete();
+        
+        showToast('success', '✅ Employee deleted successfully');
+        await addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+        console.error(error);
     }
-    
-    let updatedEmployees = employees.filter(e => e.id !== id);
-    Store.setEmployees(updatedEmployees);
-    
-    let users = Store.getUsers();
-    users = users.filter(u => u.id !== id);
-    Store.setUsers(users);
-    
-    loadEmployees();
-    showToast('success', 'Employee deleted. Notification sent.');
-    addAuditLog('DELETE_EMPLOYEE', 'Employee', emp?.name || id);
+    showLoading(false);
 }
 
 // ============================================
@@ -2068,18 +2083,18 @@ let statusChartInstance = null;
 let departmentChartInstance = null;
 
 function generateReports() {
-    const transactions = Store.getTransactions();
-    const employees = Store.getEmployees();
+    const transactions = appState.transactions;
+    const employees = appState.employees;
     
     const reportData = employees.map(emp => {
         const empTxns = transactions.filter(t => t.employeeId === emp.id);
-        const total = empTxns.reduce((sum, t) => sum + t.amount, 0);
+        const total = empTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
         const approved = empTxns.filter(t => t.status === 'approved' || t.status === 'completed').length;
         const rejected = empTxns.filter(t => t.status === 'rejected').length;
         const pending = empTxns.filter(t => t.status === 'pending').length;
         return {
-            employee: emp.name,
-            department: emp.department,
+            employee: emp.name || 'Unknown',
+            department: emp.department || 'N/A',
             totalRequests: empTxns.length,
             totalAmount: total,
             approved, rejected, pending
@@ -2088,7 +2103,7 @@ function generateReports() {
     
     const tbody = document.getElementById('reportBody');
     if (reportData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data available</td></tr>`;
     } else {
         tbody.innerHTML = reportData.map(r => `
             <tr>
@@ -2140,9 +2155,9 @@ function updateDepartmentChart(transactions, employees) {
     const deptData = {};
     employees.forEach(emp => {
         const empTxns = transactions.filter(t => t.employeeId === emp.id);
-        const total = empTxns.reduce((sum, t) => sum + t.amount, 0);
+        const total = empTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
         if (total > 0) {
-            deptData[emp.department] = (deptData[emp.department] || 0) + total;
+            deptData[emp.department || 'Unknown'] = (deptData[emp.department || 'Unknown'] || 0) + total;
         }
     });
     
@@ -2172,7 +2187,7 @@ function updateDepartmentChart(transactions, employees) {
 }
 
 function exportFullReport() {
-    const transactions = Store.getTransactions();
+    const transactions = appState.transactions;
     if (transactions.length === 0) {
         showToast('warning', 'No data to export');
         return;
@@ -2180,7 +2195,7 @@ function exportFullReport() {
     
     let csv = 'ID,Employee,Department,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
     transactions.forEach(t => {
-        csv += `${t.id},${t.employeeName},${t.employeeDepartment || 'N/A'},${t.type},${t.category},${t.amount},${t.status},${t.purpose},${new Date(t.createdAt).toLocaleDateString()},${t.remarks || ''}\n`;
+        csv += `${t.id || 'N/A'},${t.employeeName || 'N/A'},${t.employeeDepartment || 'N/A'},${t.type || ''},${t.category || ''},${t.amount || 0},${t.status || ''},${t.purpose || ''},${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''},${t.remarks || ''}\n`;
     });
     
     downloadCSV(csv, `full_report_${new Date().toISOString().slice(0,10)}.csv`);
@@ -2190,84 +2205,71 @@ function exportFullReport() {
 // ============================================
 // NOTIFICATIONS
 // ============================================
-function addNotification(type, title, message, entityId, severity = 'info') {
-    const notifications = Store.getNotifications();
-    notifications.push({
-        id: 'NOTIF_' + Date.now(),
-        type, title, message, entityId, severity,
-        read: false,
-        createdAt: new Date().toISOString()
-    });
-    Store.setNotifications(notifications);
-    loadNotifications();
-}
-
 function loadNotifications() {
-    const notifications = Store.getNotifications();
+    const notifications = appState.notifications;
     const container = document.getElementById('notificationList');
     
-    if (notifications.length === 0) {
+    if (!notifications || notifications.length === 0) {
         container.innerHTML = `<div class="text-muted text-center py-3">No notifications</div>`;
         return;
     }
     
-    container.innerHTML = notifications.slice(-5).reverse().map(n => `
+    container.innerHTML = notifications.map(n => `
         <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="fw-semibold">${n.title}</div>
-                    <small class="text-muted">${n.message}</small>
+                    <div class="fw-semibold">${n.title || 'Notification'}</div>
+                    <small class="text-muted">${n.message || ''}</small>
                 </div>
-                <span class="badge bg-${n.severity}">${n.type.replace('_', ' ')}</span>
+                <span class="badge bg-${n.severity || 'info'}">${(n.type || '').replace('_', ' ')}</span>
             </div>
-            <div class="time">${new Date(n.createdAt).toLocaleString()}</div>
+            <div class="time">${n.createdAt ? new Date(n.createdAt).toLocaleString() : ''}</div>
         </div>
     `).join('');
 }
 
-function markNotificationRead(id) {
-    const notifications = Store.getNotifications();
-    const index = notifications.findIndex(n => n.id === id);
-    if (index !== -1) {
-        notifications[index].read = true;
-        Store.setNotifications(notifications);
-        loadNotifications();
+async function markNotificationRead(id) {
+    try {
+        await CloudStore.notificationsCollection.doc(id).update({ read: true });
+    } catch (error) {
+        console.error('Error marking notification read:', error);
     }
 }
 
 // ============================================
 // AUDIT LOGS
 // ============================================
-function addAuditLog(action, entityType, entityId) {
-    const user = Store.getCurrentUser();
-    const logs = Store.getAuditLogs();
-    logs.push({
-        id: 'AUD_' + Date.now(),
-        timestamp: new Date().toISOString(),
-        user: user?.username || 'system',
-        role: user?.role || 'system',
-        action: action,
-        entityType: entityType,
-        entityId: entityId,
-        details: `${action} on ${entityType}: ${entityId}`
-    });
-    Store.setAuditLogs(logs);
+async function addAuditLog(action, entityType, entityId) {
+    const user = CloudStore.getCurrentUser();
+    try {
+        await CloudStore.addAuditLog({
+            timestamp: new Date().toISOString(),
+            user: user?.username || 'system',
+            role: user?.role || 'system',
+            action: action,
+            entityType: entityType,
+            entityId: entityId,
+            details: `${action} on ${entityType}: ${entityId}`
+        });
+    } catch (error) {
+        console.error('Error adding audit log:', error);
+    }
 }
 
 function loadAuditLogs() {
-    const logs = Store.getAuditLogs();
+    const logs = appState.auditLogs;
     const tbody = document.getElementById('auditBody');
     
-    if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs</td></tr>`;
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`;
     } else {
-        tbody.innerHTML = logs.slice(-50).reverse().map(log => `
+        tbody.innerHTML = logs.map(log => `
             <tr>
-                <td>${new Date(log.timestamp).toLocaleString()}</td>
-                <td><strong>${log.user}</strong></td>
-                <td><span class="badge bg-secondary">${log.role}</span></td>
-                <td><span class="badge bg-primary">${log.action}</span></td>
-                <td><code>${log.details}</code></td>
+                <td>${log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A'}</td>
+                <td><strong>${log.user || 'system'}</strong></td>
+                <td><span class="badge bg-secondary">${log.role || 'system'}</span></td>
+                <td><span class="badge bg-primary">${log.action || 'N/A'}</span></td>
+                <td><code>${log.details || 'N/A'}</code></td>
             </tr>
         `).join('');
     }
@@ -2306,20 +2308,19 @@ function showToast(type, message) {
 }
 
 function viewTransactionDetails(id) {
-    const transactions = Store.getTransactions();
-    const t = transactions.find(t => t.id === id);
+    const t = appState.transactions.find(t => t.id === id);
     if (!t) return;
     
     const details = `
         <div class="row small">
-            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${t.id}</div>
-            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${t.employeeName}</div>
-            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${t.type.replace('_', ' ')}</div>
-            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${t.amount.toLocaleString()}</div>
-            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${t.status}">${t.status.replace('_', ' ')}</span></div>
-            <div class="col-5"><strong>Purpose:</strong></div><div class="col-7">${t.purpose}</div>
+            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${t.id || 'N/A'}</div>
+            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${t.employeeName || 'N/A'}</div>
+            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${(t.type || '').replace('_', ' ')}</div>
+            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(t.amount || 0).toLocaleString()}</div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></div>
+            <div class="col-5"><strong>Purpose:</strong></div><div class="col-7">${t.purpose || 'N/A'}</div>
             <div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${t.remarks || 'N/A'}</div>
-            <div class="col-5"><strong>Date:</strong></div><div class="col-7">${new Date(t.createdAt).toLocaleString()}</div>
+            <div class="col-5"><strong>Date:</strong></div><div class="col-7">${t.createdAt ? new Date(t.createdAt).toLocaleString() : 'N/A'}</div>
         </div>
     `;
     showCustomModal('Transaction Details', details);
@@ -2357,6 +2358,10 @@ function downloadCSV(csv, filename) {
     window.URL.revokeObjectURL(url);
 }
 
+function showLoading(show) {
+    document.getElementById('spinnerOverlay').style.display = show ? 'flex' : 'none';
+}
+
 // ============================================
 // KEYBOARD SHORTCUTS
 // ============================================
@@ -2367,7 +2372,7 @@ document.addEventListener('keydown', function(e) {
             case '2': showPage('request'); e.preventDefault(); break;
             case '3': showPage('history'); e.preventDefault(); break;
             case '4': 
-                const user = Store.getCurrentUser();
+                const user = CloudStore.getCurrentUser();
                 if (user && (user.role === 'admin' || user.role === 'manager')) {
                     showPage('approvals'); 
                 }
@@ -2382,14 +2387,13 @@ document.addEventListener('keydown', function(e) {
 // ============================================
 initializeApp();
 
-console.log('💰 CashFlow Pro - Enterprise Edition with Real Notifications');
-console.log('📧 Email & SMS notifications are simulated. In production, integrate with:');
-console.log('   - Email: SendGrid, Mailgun, AWS SES');
-console.log('   - SMS: Twilio, AWS SNS, Vonage');
-console.log('📝 First user registration becomes Admin');
-console.log('🔑 Managers have View-Only access to employees (no delete)');
-console.log('🔔 All actions trigger email & SMS notifications');
+console.log('💰 CashFlow Pro - Cloud Edition');
+console.log('☁️ Firebase Connected Successfully!');
+console.log('📊 Project:', firebaseConfig.projectId);
+console.log('🌍 Data synced across all devices and branches');
+console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals');
+console.log('🔄 Real-time sync enabled - changes appear instantly');
 </script>
 
 </body>
