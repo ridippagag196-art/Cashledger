@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CashFlow Pro - Cloud Edition</title>
+    <title>CashFlow Pro - Complete Financial Management</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,12 +19,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* All styles remain the same as before */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
             --warning: #f6c23e;
             --danger: #e74a3b;
+            --info: #36b9cc;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fc; min-height: 100vh; }
@@ -281,6 +281,16 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
         
+        .modal-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding: 20px 25px;
+        }
+        
+        .modal-footer {
+            border-top: 2px solid #f0f0f0;
+            padding: 15px 25px;
+        }
+        
         .notification-item {
             padding: 12px 15px;
             border-bottom: 1px solid #f0f0f0;
@@ -389,13 +399,61 @@
         .connection-status.offline { background: #e74a3b; color: white; }
         .connection-status.connecting { background: #f6c23e; color: #333; }
         
-        .data-count-badge {
-            font-size: 0.7rem;
-            background: #4e73df;
+        .cashflow-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-left: 5px;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .cashflow-card .amount {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .cashflow-card .label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .month-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .credit-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .credit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .credit-item:hover {
+            background: #f8f9fc;
+        }
+        
+        .credit-item .date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .credit-item .amount {
+            font-weight: 600;
+            color: #1cc88a;
+        }
+        
+        .credit-item .amount.debit {
+            color: #e74a3b;
         }
     </style>
 </head>
@@ -417,9 +475,9 @@
     <div id="loginScreen" class="login-container">
         <div class="login-card">
             <div class="brand">
-                <i class="fas fa-cloud-upload-alt"></i>
+                <i class="fas fa-hand-holding-usd"></i>
                 <h3>CashFlow Pro</h3>
-                <p>SECON-Mumbai Expense Management</p>
+                <p>Complete Financial Management</p>
                 <span class="cloud-badge connection-status connecting" id="connectionStatus">
                     <i class="fas fa-circle"></i> Connecting...
                 </span>
@@ -447,7 +505,8 @@
                 <div class="setup-info mt-3">
                     <h6><i class="fas fa-info-circle me-2"></i>Cloud Sync Enabled</h6>
                     <small>
-                        All data is stored in Cloud. Register once, access from anywhere!
+                        All data is stored in Firebase Cloud. Register once, access from anywhere!
+                        First user becomes Admin.
                     </small>
                     <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="showRegistration()">
                         <i class="fas fa-user-plus me-2"></i>Register New Account
@@ -541,6 +600,10 @@
                             <div class="px-3 py-2 mt-2">
                                 <small class="text-uppercase" style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">Administration</small>
                             </div>
+                            <a class="nav-link" href="#" onclick="showPage('cashflow')">
+                                <i class="fas fa-money-bill-wave"></i> Cash Flow
+                                <span class="badge bg-info float-end" id="cashflowBadge">Month</span>
+                            </a>
                             <a class="nav-link" href="#" onclick="showPage('approvals')">
                                 <i class="fas fa-check-double"></i> Approvals
                                 <span class="badge bg-danger float-end" id="pendingCount">0</span>
@@ -572,6 +635,62 @@
                             <small id="currentDateTime" class="text-muted"></small>
                             <div class="float-end">
                                 <span class="badge bg-success" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Summary Cards -->
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #1cc88a;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Opening Balance</div>
+                                            <h3 class="mb-0" id="openingBalance">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-success">
+                                            <i class="fas fa-arrow-circle-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #4e73df;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Monthly Credit</div>
+                                            <h3 class="mb-0" id="monthlyCredit">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-primary">
+                                            <i class="fas fa-arrow-circle-up"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #e74a3b;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Total Expenses</div>
+                                            <h3 class="mb-0" id="totalExpenses">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-danger">
+                                            <i class="fas fa-arrow-circle-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #f6c23e;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Closing Balance</div>
+                                            <h3 class="mb-0" id="closingBalance">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-warning">
+                                            <i class="fas fa-wallet"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -675,6 +794,97 @@
                                     <h5><i class="fas fa-bell me-2"></i>Notifications</h5>
                                     <div id="notificationList" style="max-height: 300px; overflow-y: auto;">
                                         <div class="text-muted text-center py-3">No notifications</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow Page -->
+                    <div id="page-cashflow" class="page-content" style="display: none;">
+                        <h4><i class="fas fa-money-bill-wave me-2 text-primary"></i>Cash Flow Management</h4>
+                        
+                        <!-- Month Selector -->
+                        <div class="month-selector">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <label class="fw-semibold">Select Month:</label>
+                                    <input type="month" class="form-control" id="cashflowMonth" value="2026-08">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="fw-semibold">Branch:</label>
+                                    <select class="form-select" id="cashflowBranch">
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Bangalore">Bangalore</option>
+                                        <option value="Chennai">Chennai</option>
+                                        <option value="Hyderabad">Hyderabad</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-primary" onclick="loadCashFlow()">
+                                        <i class="fas fa-sync me-2"></i>Load Data
+                                    </button>
+                                    <button class="btn btn-success" onclick="showCreditModal()">
+                                        <i class="fas fa-plus me-2"></i>Add Credit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="cashflow-card" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);">
+                                    <div class="label">Opening Balance</div>
+                                    <div class="amount" id="cfOpeningBalance">₹0</div>
+                                    <small id="cfOpeningDate"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="cashflow-card" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+                                    <div class="label">Total Credits</div>
+                                    <div class="amount" id="cfTotalCredits">₹0</div>
+                                    <small>This month</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="cashflow-card" style="background: linear-gradient(135deg, #e74a3b 0%, #c0392b 100%);">
+                                    <div class="label">Total Expenses</div>
+                                    <div class="amount" id="cfTotalExpenses">₹0</div>
+                                    <small>This month</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="cashflow-card" style="background: linear-gradient(135deg, #f6c23e 0%, #d4a00a 100%);">
+                                    <div class="label">Closing Balance</div>
+                                    <div class="amount" id="cfClosingBalance">₹0</div>
+                                    <small id="cfClosingDate"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Credit History -->
+                        <div class="table-container">
+                            <h5><i class="fas fa-history me-2"></i>Credit History</h5>
+                            <div class="credit-history" id="creditHistoryList">
+                                <div class="text-center text-muted py-3">No credits added yet</div>
+                            </div>
+                        </div>
+
+                        <!-- Expense Breakdown -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="table-container">
+                                    <h5><i class="fas fa-chart-pie me-2"></i>Expense Breakdown</h5>
+                                    <canvas id="expenseChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="table-container">
+                                    <h5><i class="fas fa-list me-2"></i>Monthly Summary</h5>
+                                    <div id="monthlySummary">
+                                        <div class="text-center text-muted py-3">No data available</div>
                                     </div>
                                 </div>
                             </div>
@@ -933,6 +1143,48 @@
     </div>
 </div>
 
+<!-- Credit Modal -->
+<div class="modal fade" id="creditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Add Monthly Credit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="creditForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Branch *</label>
+                        <select class="form-select" id="creditBranch" required>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Month *</label>
+                        <input type="month" class="form-control" id="creditMonth" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Credit Amount (₹) *</label>
+                        <input type="number" class="form-control" id="creditAmount" min="1" placeholder="Enter amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea class="form-control" id="creditDescription" rows="2" placeholder="e.g., Monthly budget, Project funding"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveCredit()">Add Credit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Employee Modal -->
 <div class="modal fade" id="employeeModal" tabindex="-1">
     <div class="modal-dialog">
@@ -1089,6 +1341,8 @@ const CloudStore = {
     transactionsCollection: db.collection('transactions'),
     notificationsCollection: db.collection('notifications'),
     auditCollection: db.collection('audit'),
+    cashflowCollection: db.collection('cashflow'),
+    creditsCollection: db.collection('credits'),
     
     currentUser: null,
     listeners: [],
@@ -1200,6 +1454,41 @@ const CloudStore = {
         return listener;
     },
     
+    listenToCashflow(branch, month, callback) {
+        const listener = this.cashflowCollection
+            .where('branch', '==', branch)
+            .where('month', '==', month)
+            .onSnapshot((snapshot) => {
+                const data = [];
+                snapshot.forEach(doc => {
+                    data.push({ id: doc.id, ...doc.data() });
+                });
+                callback(data);
+            }, (error) => {
+                console.error('Error listening to cashflow:', error);
+            });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
+    listenToCredits(branch, month, callback) {
+        const listener = this.creditsCollection
+            .where('branch', '==', branch)
+            .where('month', '==', month)
+            .orderBy('createdAt', 'desc')
+            .onSnapshot((snapshot) => {
+                const credits = [];
+                snapshot.forEach(doc => {
+                    credits.push({ id: doc.id, ...doc.data() });
+                });
+                callback(credits);
+            }, (error) => {
+                console.error('Error listening to credits:', error);
+            });
+        this.listeners.push(listener);
+        return listener;
+    },
+    
     async addUser(userData) {
         const docRef = await this.usersCollection.add(userData);
         return { id: docRef.id, ...userData };
@@ -1249,6 +1538,21 @@ const CloudStore = {
         return { id: docRef.id, ...logData };
     },
     
+    async addCashflow(cashflowData) {
+        const docRef = await this.cashflowCollection.add(cashflowData);
+        return { id: docRef.id, ...cashflowData };
+    },
+    
+    async updateCashflow(id, data) {
+        await this.cashflowCollection.doc(id).update(data);
+        return { id, ...data };
+    },
+    
+    async addCredit(creditData) {
+        const docRef = await this.creditsCollection.add(creditData);
+        return { id: docRef.id, ...creditData };
+    },
+    
     cleanup() {
         this.listeners.forEach(listener => listener());
         this.listeners = [];
@@ -1263,6 +1567,8 @@ let appState = {
     transactions: [],
     notifications: [],
     auditLogs: [],
+    cashflow: [],
+    credits: [],
     currentUser: null
 };
 
@@ -1272,6 +1578,12 @@ let appState = {
 async function initializeApp() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
+    
+    // Set default month
+    const now = new Date();
+    const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    document.getElementById('cashflowMonth').value = defaultMonth;
+    document.getElementById('creditMonth').value = defaultMonth;
     
     const userId = localStorage.getItem('cf_user_id');
     if (userId) {
@@ -1520,7 +1832,7 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD - FIXED!
+// UPDATE DASHBOARD
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
@@ -1531,7 +1843,7 @@ function updateDashboard() {
         userTransactions = transactions.filter(t => t.employeeId === user.id);
     }
     
-    // ✅ FIX: Only include APPROVED and COMPLETED transactions for Total Advances
+    // Total Advances (only approved/completed)
     const activeTransactions = userTransactions.filter(t => 
         t.status === 'approved' || t.status === 'completed'
     );
@@ -1552,6 +1864,9 @@ function updateDashboard() {
         document.getElementById('empApprovedRequests').textContent = approvedCount;
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
+    
+    // Update Cash Flow Summary on Dashboard
+    updateCashFlowSummary();
     
     const recent = userTransactions.slice(-5).reverse();
     const tbody = document.getElementById('recentTransactionsBody');
@@ -1574,6 +1889,279 @@ function updateDashboard() {
 }
 
 // ============================================
+// CASH FLOW FUNCTIONS
+// ============================================
+function updateCashFlowSummary() {
+    // Get current month and branch
+    const month = document.getElementById('cashflowMonth').value || new Date().toISOString().slice(0, 7);
+    const branch = document.getElementById('cashflowBranch').value || 'Mumbai';
+    
+    // Calculate from transactions
+    const transactions = appState.transactions;
+    const monthTransactions = transactions.filter(t => {
+        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+        return tMonth === month && t.employeeDepartment === branch;
+    });
+    
+    const totalExpenses = monthTransactions
+        .filter(t => t.status === 'approved' || t.status === 'completed')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    // Get credits for this month
+    const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
+    const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    
+    // Get opening balance from previous month
+    const prevMonth = getPreviousMonth(month);
+    const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
+    const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const prevExpenses = appState.transactions
+        .filter(t => {
+            const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+            return tMonth === prevMonth && t.employeeDepartment === branch && (t.status === 'approved' || t.status === 'completed');
+        })
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const openingBalance = prevTotalCredits - prevExpenses;
+    const closingBalance = openingBalance + totalCredits - totalExpenses;
+    
+    // Update dashboard summary
+    document.getElementById('openingBalance').textContent = '₹' + openingBalance.toLocaleString();
+    document.getElementById('monthlyCredit').textContent = '₹' + totalCredits.toLocaleString();
+    document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+    document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString();
+}
+
+function getPreviousMonth(month) {
+    const [year, m] = month.split('-').map(Number);
+    const d = new Date(year, m - 1, 1);
+    d.setMonth(d.getMonth() - 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+
+function loadCashFlow() {
+    const month = document.getElementById('cashflowMonth').value;
+    const branch = document.getElementById('cashflowBranch').value;
+    
+    if (!month || !branch) {
+        showToast('warning', 'Please select month and branch');
+        return;
+    }
+    
+    // Listen to credits for this month
+    CloudStore.listenToCredits(branch, month, (credits) => {
+        appState.credits = credits;
+        displayCashFlowData(month, branch);
+    });
+    
+    // Update cashflow data
+    CloudStore.listenToCashflow(branch, month, (cashflowData) => {
+        appState.cashflow = cashflowData;
+        displayCashFlowData(month, branch);
+    });
+}
+
+function displayCashFlowData(month, branch) {
+    const transactions = appState.transactions;
+    const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
+    const cashflow = appState.cashflow.find(c => c.month === month && c.branch === branch);
+    
+    // Calculate totals
+    const monthTransactions = transactions.filter(t => {
+        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+        return tMonth === month && t.employeeDepartment === branch;
+    });
+    
+    const totalExpenses = monthTransactions
+        .filter(t => t.status === 'approved' || t.status === 'completed')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    
+    // Calculate opening balance
+    const prevMonth = getPreviousMonth(month);
+    const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
+    const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const prevExpenses = appState.transactions
+        .filter(t => {
+            const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+            return tMonth === prevMonth && t.employeeDepartment === branch && (t.status === 'approved' || t.status === 'completed');
+        })
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const openingBalance = prevTotalCredits - prevExpenses;
+    const closingBalance = openingBalance + totalCredits - totalExpenses;
+    
+    // Update UI
+    document.getElementById('cfOpeningBalance').textContent = '₹' + openingBalance.toLocaleString();
+    document.getElementById('cfOpeningDate').textContent = 'As of ' + formatMonth(prevMonth);
+    document.getElementById('cfTotalCredits').textContent = '₹' + totalCredits.toLocaleString();
+    document.getElementById('cfTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+    document.getElementById('cfClosingBalance').textContent = '₹' + closingBalance.toLocaleString();
+    document.getElementById('cfClosingDate').textContent = 'As of ' + formatMonth(month);
+    
+    // Display credit history
+    displayCreditHistory(credits);
+    displayMonthlySummary(month, branch, openingBalance, totalCredits, totalExpenses, closingBalance);
+    updateExpenseChart(monthTransactions);
+}
+
+function displayCreditHistory(credits) {
+    const container = document.getElementById('creditHistoryList');
+    if (credits.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-3">No credits added yet</div>';
+        return;
+    }
+    
+    container.innerHTML = credits.map(c => `
+        <div class="credit-item">
+            <div>
+                <strong>${c.description || 'Monthly Credit'}</strong>
+                <div class="date">${new Date(c.createdAt).toLocaleDateString()}</div>
+            </div>
+            <div class="amount">+₹${(c.amount || 0).toLocaleString()}</div>
+        </div>
+    `).join('');
+}
+
+function displayMonthlySummary(month, branch, opening, credits, expenses, closing) {
+    const container = document.getElementById('monthlySummary');
+    container.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <tr>
+                    <td><strong>Branch:</strong></td>
+                    <td>${branch}</td>
+                </tr>
+                <tr>
+                    <td><strong>Month:</strong></td>
+                    <td>${formatMonth(month)}</td>
+                </tr>
+                <tr class="table-secondary">
+                    <td><strong>Opening Balance:</strong></td>
+                    <td>₹${opening.toLocaleString()}</td>
+                </tr>
+                <tr class="table-success">
+                    <td><strong>Total Credits:</strong></td>
+                    <td>+₹${credits.toLocaleString()}</td>
+                </tr>
+                <tr class="table-danger">
+                    <td><strong>Total Expenses:</strong></td>
+                    <td>-₹${expenses.toLocaleString()}</td>
+                </tr>
+                <tr class="table-warning">
+                    <td><strong>Closing Balance:</strong></td>
+                    <td><strong>₹${closing.toLocaleString()}</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center text-muted small">
+                        Next month's opening balance will be ₹${closing.toLocaleString()}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    `;
+}
+
+function formatMonth(month) {
+    if (!month) return 'N/A';
+    const [year, m] = month.split('-').map(Number);
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return months[m - 1] + ' ' + year;
+}
+
+function updateExpenseChart(transactions) {
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    if (window.expenseChartInstance) {
+        window.expenseChartInstance.destroy();
+    }
+    
+    const categories = {};
+    transactions
+        .filter(t => t.status === 'approved' || t.status === 'completed')
+        .forEach(t => {
+            const cat = t.category || 'Other';
+            categories[cat] = (categories[cat] || 0) + (t.amount || 0);
+        });
+    
+    window.expenseChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(categories),
+            datasets: [{
+                data: Object.values(categories),
+                backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₹' + context.parsed.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ============================================
+// CREDIT MODAL FUNCTIONS
+// ============================================
+function showCreditModal() {
+    const modal = new bootstrap.Modal(document.getElementById('creditModal'));
+    document.getElementById('creditForm').reset();
+    const now = new Date();
+    const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    document.getElementById('creditMonth').value = defaultMonth;
+    document.getElementById('creditBranch').value = document.getElementById('cashflowBranch').value || 'Mumbai';
+    modal.show();
+}
+
+async function saveCredit() {
+    const branch = document.getElementById('creditBranch').value;
+    const month = document.getElementById('creditMonth').value;
+    const amount = parseFloat(document.getElementById('creditAmount').value);
+    const description = document.getElementById('creditDescription').value || 'Monthly Credit';
+    
+    if (!branch || !month || !amount || amount <= 0) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        const creditData = {
+            branch: branch,
+            month: month,
+            amount: amount,
+            description: description,
+            createdBy: CloudStore.getCurrentUser()?.username || 'system',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        await CloudStore.addCredit(creditData);
+        await addAuditLog('ADD_CREDIT', 'Credit', `${branch}-${month}`);
+        
+        bootstrap.Modal.getInstance(document.getElementById('creditModal')).hide();
+        showToast('success', `✅ ₹${amount.toLocaleString()} added as credit for ${branch}`);
+        loadCashFlow();
+    } catch (error) {
+        showToast('danger', 'Failed to add credit: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+// ============================================
 // NAVIGATION
 // ============================================
 function showPage(page) {
@@ -1591,6 +2179,7 @@ function showPage(page) {
     
     switch(page) {
         case 'dashboard': updateDashboard(); break;
+        case 'cashflow': loadCashFlow(); break;
         case 'history': loadMyHistory(); break;
         case 'approvals': loadApprovals(); break;
         case 'employees': loadEmployees(); break;
@@ -2473,6 +3062,12 @@ document.addEventListener('keydown', function(e) {
                 }
                 e.preventDefault(); 
                 break;
+            case '5':
+                if (user && user.role === 'admin') {
+                    showPage('cashflow');
+                }
+                e.preventDefault();
+                break;
         }
     }
 });
@@ -2482,13 +3077,18 @@ document.addEventListener('keydown', function(e) {
 // ============================================
 initializeApp();
 
-console.log('💰 CashFlow Pro - Cloud Edition');
+console.log('💰 CashFlow Pro - Complete Financial Management');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
-console.log('✅ FIXED: Total Advances only includes APPROVED and COMPLETED transactions');
+console.log('✅ Features:');
+console.log('   - Monthly Cash Flow Tracking');
+console.log('   - Branch-wise Management');
+console.log('   - Opening/Closing Balance');
+console.log('   - Credit Management');
+console.log('   - Expense Tracking');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
-console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals');
+console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
 </script>
 
 </body>
