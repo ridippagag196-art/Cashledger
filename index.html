@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* All styles remain the same as before */
+        /* All styles remain the same */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -227,12 +227,27 @@
             opacity: 0.4;
         }
         
-        .stat-card .stat-value {
-            font-size: 1.5rem;
+        .balance-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s;
+        }
+        
+        .balance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58,59,69,0.15);
+        }
+        
+        .balance-card .amount {
+            font-size: 2rem;
             font-weight: 700;
         }
         
-        .stat-card .stat-label {
+        .balance-card .label {
             font-size: 0.7rem;
             text-transform: uppercase;
             color: #999;
@@ -468,24 +483,6 @@
         .credit-item .amount.debit {
             color: #e74a3b;
         }
-        
-        .balance-highlight {
-            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .balance-highlight .amount {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        
-        .balance-highlight .label {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
     </style>
 </head>
 <body>
@@ -669,34 +666,90 @@
                             </div>
                         </div>
 
-                        <!-- Branch Account Summary - NEW -->
+                        <!-- NEW: Branch Account Balance Cards -->
                         <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="balance-highlight" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                            <div class="col-md-3 mb-3">
+                                <div class="balance-card" style="border-top: 4px solid #4e73df;">
                                     <div class="label"><i class="fas fa-university me-1"></i>Branch Account Balance</div>
-                                    <div class="amount" id="branchBalance">₹0</div>
-                                    <small>Total Credits Received</small>
+                                    <div class="amount text-primary" id="branchBalance">₹0</div>
+                                    <small class="text-muted">Total Credits Received</small>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="balance-highlight" style="background: linear-gradient(135deg, #e74a3b 0%, #c0392b 100%);">
+                            <div class="col-md-3 mb-3">
+                                <div class="balance-card" style="border-top: 4px solid #e74a3b;">
                                     <div class="label"><i class="fas fa-arrow-circle-down me-1"></i>Utilized Amount</div>
-                                    <div class="amount" id="utilizedAmount">₹0</div>
-                                    <small>Approved Expenses</small>
+                                    <div class="amount text-danger" id="utilizedAmount">₹0</div>
+                                    <small class="text-muted">Approved Expenses</small>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="balance-highlight" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+                            <div class="col-md-3 mb-3">
+                                <div class="balance-card" style="border-top: 4px solid #1cc88a;">
                                     <div class="label"><i class="fas fa-wallet me-1"></i>Available Balance</div>
-                                    <div class="amount" id="availableBalance">₹0</div>
-                                    <small>Balance - Utilized</small>
+                                    <div class="amount text-success" id="availableBalance">₹0</div>
+                                    <small class="text-muted">Balance - Utilized</small>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="balance-highlight" style="background: linear-gradient(135deg, #f6c23e 0%, #d4a00a 100%);">
+                            <div class="col-md-3 mb-3">
+                                <div class="balance-card" style="border-top: 4px solid #f6c23e;">
                                     <div class="label"><i class="fas fa-percent me-1"></i>Utilization Rate</div>
-                                    <div class="amount" id="utilizationRate">0%</div>
-                                    <small>Of Total Balance</small>
+                                    <div class="amount text-warning" id="utilizationRate">0%</div>
+                                    <small class="text-muted">Of Total Balance</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Summary Cards -->
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #1cc88a;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Opening Balance</div>
+                                            <h3 class="mb-0" id="openingBalance">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-success">
+                                            <i class="fas fa-arrow-circle-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #4e73df;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Monthly Credit</div>
+                                            <h3 class="mb-0" id="monthlyCredit">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-primary">
+                                            <i class="fas fa-arrow-circle-up"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #e74a3b;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Total Expenses</div>
+                                            <h3 class="mb-0" id="totalExpenses">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-danger">
+                                            <i class="fas fa-arrow-circle-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="stat-card" style="border-left-color: #f6c23e;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="text-muted small text-uppercase fw-semibold">Closing Balance</div>
+                                            <h3 class="mb-0" id="closingBalance">₹0</h3>
+                                        </div>
+                                        <div class="stat-icon text-warning">
+                                            <i class="fas fa-wallet"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -811,6 +864,7 @@
                     <div id="page-cashflow" class="page-content" style="display: none;">
                         <h4><i class="fas fa-money-bill-wave me-2 text-primary"></i>Cash Flow Management</h4>
                         
+                        <!-- Month Selector -->
                         <div class="month-selector">
                             <div class="row align-items-center">
                                 <div class="col-md-4">
@@ -1846,7 +1900,7 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD - UPDATED with Branch Balance
+// UPDATE DASHBOARD - WITH BRANCH BALANCE
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
@@ -1977,7 +2031,6 @@ function updateCashFlowSummary() {
     const openingBalance = prevTotalCredits - prevExpenses;
     const closingBalance = openingBalance + totalCredits - totalExpenses;
     
-    // Update dashboard summary
     document.getElementById('openingBalance').textContent = '₹' + openingBalance.toLocaleString();
     document.getElementById('monthlyCredit').textContent = '₹' + totalCredits.toLocaleString();
     document.getElementById('totalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
@@ -1991,7 +2044,1149 @@ function getPreviousMonth(month) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
 }
 
-// ... (rest of the functions remain the same)
+function loadCashFlow() {
+    const month = document.getElementById('cashflowMonth').value;
+    const branch = document.getElementById('cashflowBranch').value;
+    
+    if (!month || !branch) {
+        showToast('warning', 'Please select month and branch');
+        return;
+    }
+    
+    CloudStore.listenToCredits(branch, month, (credits) => {
+        appState.credits = credits;
+        displayCashFlowData(month, branch);
+    });
+    
+    CloudStore.listenToCashflow(branch, month, (cashflowData) => {
+        appState.cashflow = cashflowData;
+        displayCashFlowData(month, branch);
+    });
+}
+
+function displayCashFlowData(month, branch) {
+    const transactions = appState.transactions;
+    const credits = appState.credits.filter(c => c.month === month && c.branch === branch);
+    const cashflow = appState.cashflow.find(c => c.month === month && c.branch === branch);
+    
+    const monthTransactions = transactions.filter(t => {
+        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+        return tMonth === month && t.employeeDepartment === branch;
+    });
+    
+    const totalExpenses = monthTransactions
+        .filter(t => t.status === 'approved' || t.status === 'completed')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const totalCredits = credits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    
+    const prevMonth = getPreviousMonth(month);
+    const prevCredits = appState.credits.filter(c => c.month === prevMonth && c.branch === branch);
+    const prevTotalCredits = prevCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const prevExpenses = appState.transactions
+        .filter(t => {
+            const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
+            return tMonth === prevMonth && t.employeeDepartment === branch && (t.status === 'approved' || t.status === 'completed');
+        })
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const openingBalance = prevTotalCredits - prevExpenses;
+    const closingBalance = openingBalance + totalCredits - totalExpenses;
+    
+    document.getElementById('cfOpeningBalance').textContent = '₹' + openingBalance.toLocaleString();
+    document.getElementById('cfOpeningDate').textContent = 'As of ' + formatMonth(prevMonth);
+    document.getElementById('cfTotalCredits').textContent = '₹' + totalCredits.toLocaleString();
+    document.getElementById('cfTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+    document.getElementById('cfClosingBalance').textContent = '₹' + closingBalance.toLocaleString();
+    document.getElementById('cfClosingDate').textContent = 'As of ' + formatMonth(month);
+    
+    displayCreditHistory(credits);
+    displayMonthlySummary(month, branch, openingBalance, totalCredits, totalExpenses, closingBalance);
+    updateExpenseChart(monthTransactions);
+}
+
+function displayCreditHistory(credits) {
+    const container = document.getElementById('creditHistoryList');
+    if (credits.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-3">No credits added yet</div>';
+        return;
+    }
+    
+    container.innerHTML = credits.map(c => `
+        <div class="credit-item">
+            <div>
+                <strong>${c.description || 'Monthly Credit'}</strong>
+                <div class="date">${new Date(c.createdAt).toLocaleDateString()}</div>
+            </div>
+            <div class="amount">+₹${(c.amount || 0).toLocaleString()}</div>
+        </div>
+    `).join('');
+}
+
+function displayMonthlySummary(month, branch, opening, credits, expenses, closing) {
+    const container = document.getElementById('monthlySummary');
+    container.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <tr>
+                    <td><strong>Branch:</strong></td>
+                    <td>${branch}</td>
+                </tr>
+                <tr>
+                    <td><strong>Month:</strong></td>
+                    <td>${formatMonth(month)}</td>
+                </tr>
+                <tr class="table-secondary">
+                    <td><strong>Opening Balance:</strong></td>
+                    <td>₹${opening.toLocaleString()}</td>
+                </tr>
+                <tr class="table-success">
+                    <td><strong>Total Credits:</strong></td>
+                    <td>+₹${credits.toLocaleString()}</td>
+                </tr>
+                <tr class="table-danger">
+                    <td><strong>Total Expenses:</strong></td>
+                    <td>-₹${expenses.toLocaleString()}</td>
+                </tr>
+                <tr class="table-warning">
+                    <td><strong>Closing Balance:</strong></td>
+                    <td><strong>₹${closing.toLocaleString()}</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center text-muted small">
+                        Next month's opening balance will be ₹${closing.toLocaleString()}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    `;
+}
+
+function formatMonth(month) {
+    if (!month) return 'N/A';
+    const [year, m] = month.split('-').map(Number);
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return months[m - 1] + ' ' + year;
+}
+
+function updateExpenseChart(transactions) {
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    if (window.expenseChartInstance) {
+        window.expenseChartInstance.destroy();
+    }
+    
+    const categories = {};
+    transactions
+        .filter(t => t.status === 'approved' || t.status === 'completed')
+        .forEach(t => {
+            const cat = t.category || 'Other';
+            categories[cat] = (categories[cat] || 0) + (t.amount || 0);
+        });
+    
+    window.expenseChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(categories),
+            datasets: [{
+                data: Object.values(categories),
+                backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₹' + context.parsed.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ============================================
+// CREDIT MODAL FUNCTIONS
+// ============================================
+function showCreditModal() {
+    const modal = new bootstrap.Modal(document.getElementById('creditModal'));
+    document.getElementById('creditForm').reset();
+    const now = new Date();
+    const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    document.getElementById('creditMonth').value = defaultMonth;
+    document.getElementById('creditBranch').value = document.getElementById('cashflowBranch').value || 'Mumbai';
+    modal.show();
+}
+
+async function saveCredit() {
+    const branch = document.getElementById('creditBranch').value;
+    const month = document.getElementById('creditMonth').value;
+    const amount = parseFloat(document.getElementById('creditAmount').value);
+    const description = document.getElementById('creditDescription').value || 'Monthly Credit';
+    
+    if (!branch || !month || !amount || amount <= 0) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        const creditData = {
+            branch: branch,
+            month: month,
+            amount: amount,
+            description: description,
+            createdBy: CloudStore.getCurrentUser()?.username || 'system',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        await CloudStore.addCredit(creditData);
+        await addAuditLog('ADD_CREDIT', 'Credit', `${branch}-${month}`);
+        
+        bootstrap.Modal.getInstance(document.getElementById('creditModal')).hide();
+        showToast('success', `✅ ₹${amount.toLocaleString()} added as credit for ${branch}`);
+        loadCashFlow();
+    } catch (error) {
+        showToast('danger', 'Failed to add credit: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+function showPage(page) {
+    document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
+    
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) {
+        pageEl.style.display = 'block';
+        pageEl.classList.add('fade-in');
+    }
+    
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+    const link = document.querySelector(`.sidebar .nav-link[onclick*="${page}"]`);
+    if (link) link.classList.add('active');
+    
+    switch(page) {
+        case 'dashboard': updateDashboard(); break;
+        case 'cashflow': loadCashFlow(); break;
+        case 'history': loadMyHistory(); break;
+        case 'approvals': loadApprovals(); break;
+        case 'employees': loadEmployees(); break;
+        case 'reports': generateReports(); break;
+        case 'audit': loadAuditLogs(); break;
+    }
+}
+
+// ============================================
+// REQUEST ADVANCE
+// ============================================
+document.getElementById('advanceRequestForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const user = CloudStore.getCurrentUser();
+    if (!user) {
+        showToast('warning', 'Please login first');
+        return;
+    }
+    
+    const type = document.getElementById('reqType').value;
+    const amount = parseFloat(document.getElementById('reqAmount').value);
+    const category = document.getElementById('reqCategory').value;
+    const purpose = document.getElementById('reqPurpose').value;
+    const description = document.getElementById('reqDescription').value;
+    const dueDate = document.getElementById('reqDueDate').value;
+    
+    if (!type || !amount || !category || !purpose) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        const transaction = {
+            transactionId: 'TXN_' + Date.now(),
+            employeeId: user.id,
+            employeeName: user.fullName,
+            employeeDepartment: user.department || 'N/A',
+            employeeEmpId: user.employeeId || 'N/A',
+            type: type,
+            category: category,
+            amount: amount,
+            purpose: purpose,
+            description: description || '',
+            dueDate: dueDate || null,
+            status: 'pending',
+            settlementAmount: 0,
+            remainingAmount: amount,
+            createdBy: user.username,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            approvedBy: null,
+            approvalDate: null,
+            remarks: ''
+        };
+        
+        await CloudStore.addTransaction(transaction);
+        
+        const usersSnapshot = await CloudStore.usersCollection
+            .where('role', 'in', ['admin', 'manager'])
+            .get();
+        
+        const adminNotifications = [];
+        usersSnapshot.forEach(doc => {
+            const admin = { id: doc.id, ...doc.data() };
+            adminNotifications.push({
+                userId: admin.id,
+                type: 'NEW_REQUEST',
+                title: `New Request from ${user.fullName}`,
+                message: `${user.fullName} requested ₹${amount.toLocaleString()} for ${purpose}`,
+                entityId: transaction.transactionId,
+                severity: 'info',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+        });
+        
+        await Promise.all(adminNotifications.map(n => CloudStore.addNotification(n)));
+        
+        await addAuditLog('CREATE_REQUEST', 'Transaction', transaction.transactionId);
+        
+        document.getElementById('advanceRequestForm').reset();
+        showToast('success', '✅ Request submitted! Admins have been notified.');
+    } catch (error) {
+        showToast('danger', 'Failed to submit request: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+});
+
+// ============================================
+// MY HISTORY
+// ============================================
+function loadMyHistory() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    const myTxns = appState.transactions
+        .filter(t => t.employeeId === user.id)
+        .reverse();
+    
+    document.getElementById('historyCount').textContent = myTxns.length;
+    
+    const tbody = document.getElementById('historyBody');
+    if (myTxns.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions</td></tr>`;
+    } else {
+        tbody.innerHTML = myTxns.map(t => `
+            <tr>
+                <td><code>${t.id || 'N/A'}</code></td>
+                <td><span class="badge bg-info">${(t.type || '').replace('_', ' ')}</span></td>
+                <td>${t.category || 'N/A'}</td>
+                <td>₹${(t.amount || 0).toLocaleString()}</td>
+                <td><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></td>
+                <td>${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
+                <td>${t.remarks || '-'}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+function refreshHistory() {
+    loadMyHistory();
+    showToast('info', 'Refreshed from cloud');
+}
+
+function exportMyHistory() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    const myTxns = appState.transactions.filter(t => t.employeeId === user.id);
+    if (myTxns.length === 0) {
+        showToast('warning', 'No transactions to export');
+        return;
+    }
+    
+    let csv = 'ID,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
+    myTxns.forEach(t => {
+        csv += `${t.id},${t.type || ''},${t.category || ''},${t.amount || 0},${t.status || ''},${t.purpose || ''},${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''},${t.remarks || ''}\n`;
+    });
+    
+    downloadCSV(csv, `my_transactions_${new Date().toISOString().slice(0,10)}.csv`);
+    showToast('success', 'Export started');
+}
+
+// ============================================
+// APPROVALS
+// ============================================
+function loadApprovals() {
+    const user = CloudStore.getCurrentUser();
+    if (!user || (user.role !== 'admin' && user.role !== 'manager')) return;
+    
+    const filter = document.getElementById('approvalFilter')?.value || 'all';
+    
+    let filtered = appState.transactions;
+    if (filter !== 'all') {
+        filtered = appState.transactions.filter(t => t.status === filter);
+    }
+    
+    filtered.sort((a, b) => {
+        if (a.status === 'pending' && b.status !== 'pending') return -1;
+        if (a.status !== 'pending' && b.status === 'pending') return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    
+    document.getElementById('approvalCount').textContent = appState.transactions.filter(t => t.status === 'pending').length;
+    
+    const tbody = document.getElementById('approvalsBody');
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No transactions</td></tr>`;
+    } else {
+        tbody.innerHTML = filtered.map(t => `
+            <tr class="${t.status === 'pending' ? 'table-warning' : ''}">
+                <td><code>${t.id || 'N/A'}</code></td>
+                <td><strong>${t.employeeName || 'N/A'}</strong></td>
+                <td>${t.employeeDepartment || 'N/A'}</td>
+                <td><span class="badge bg-info">${(t.type || '').replace('_', ' ')}</span></td>
+                <td>₹${(t.amount || 0).toLocaleString()}</td>
+                <td>${t.purpose || 'N/A'}</td>
+                <td><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></td>
+                <td>
+                    ${t.status === 'pending' ? `
+                        <button class="btn btn-sm btn-success me-1" onclick="showApprovalModal('${t.id}')">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    ` : `
+                        <button class="btn btn-sm btn-outline-info" onclick="viewTransactionDetails('${t.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    `}
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function showApprovalModal(id) {
+    const t = appState.transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    document.getElementById('aprId').textContent = t.id || 'N/A';
+    document.getElementById('aprEmployee').textContent = t.employeeName || 'N/A';
+    document.getElementById('aprDepartment').textContent = t.employeeDepartment || 'N/A';
+    document.getElementById('aprType').textContent = (t.type || '').replace('_', ' ');
+    document.getElementById('aprAmount').textContent = '₹' + (t.amount || 0).toLocaleString();
+    document.getElementById('aprPurpose').textContent = t.purpose || 'N/A';
+    document.getElementById('aprDescription').textContent = t.description || 'No description';
+    document.getElementById('aprSettlementAmount').value = t.amount || 0;
+    document.getElementById('aprSettlementAmount').max = t.amount || 0;
+    document.getElementById('aprRemarks').value = '';
+    document.getElementById('aprDecision').value = 'approved';
+    document.getElementById('approvalModal').dataset.txnId = id;
+    
+    document.getElementById('aprDecision').onchange = function() {
+        document.getElementById('aprSettlementSection').style.display = 
+            this.value === 'approved' ? 'block' : 'none';
+    };
+    document.getElementById('aprSettlementSection').style.display = 'block';
+    
+    new bootstrap.Modal(document.getElementById('approvalModal')).show();
+}
+
+async function processApproval() {
+    const id = document.getElementById('approvalModal').dataset.txnId;
+    const decision = document.getElementById('aprDecision').value;
+    const settlementAmount = parseFloat(document.getElementById('aprSettlementAmount').value) || 0;
+    const remarks = document.getElementById('aprRemarks').value || '';
+    
+    const t = appState.transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    const user = CloudStore.getCurrentUser();
+    
+    showLoading(true);
+    try {
+        const updateData = {
+            updatedAt: new Date().toISOString(),
+            approvedBy: user.username,
+            approvalDate: new Date().toISOString(),
+            remarks: remarks
+        };
+        
+        if (decision === 'approved') {
+            updateData.status = 'approved';
+            updateData.settlementAmount = settlementAmount;
+            updateData.remainingAmount = (t.amount || 0) - settlementAmount;
+            
+            if (updateData.remainingAmount === 0) {
+                updateData.status = 'completed';
+                updateData.settlementDate = new Date().toISOString();
+            } else if (settlementAmount > 0) {
+                updateData.status = 'partially_settled';
+            }
+            
+            await CloudStore.addNotification({
+                userId: t.employeeId,
+                type: 'REQUEST_APPROVED',
+                title: `✅ Your request was approved`,
+                message: `Amount: ₹${(t.amount || 0).toLocaleString()} - ${t.purpose || ''}`,
+                entityId: t.id,
+                severity: 'success',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+        } else {
+            updateData.status = 'rejected';
+            
+            await CloudStore.addNotification({
+                userId: t.employeeId,
+                type: 'REQUEST_REJECTED',
+                title: `❌ Your request was rejected`,
+                message: `Amount: ₹${(t.amount || 0).toLocaleString()} - ${t.purpose || ''}`,
+                entityId: t.id,
+                severity: 'danger',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+        }
+        
+        await CloudStore.updateTransaction(id, updateData);
+        await addAuditLog('PROCESS_APPROVAL', 'Transaction', t.id);
+        
+        bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
+        showToast('success', `✅ Request ${decision}. Notifications sent.`);
+    } catch (error) {
+        showToast('danger', 'Failed to process: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+// ============================================
+// EMPLOYEES
+// ============================================
+function loadEmployees() {
+    const employees = appState.employees;
+    console.log('📋 Loading employees:', employees.length);
+    document.getElementById('employeeCount').textContent = employees.length;
+    
+    const locations = new Set(employees.map(e => e.location || 'Unknown'));
+    document.getElementById('branchCount').textContent = locations.size + ' branches';
+    
+    const user = CloudStore.getCurrentUser();
+    const isAdmin = user && user.role === 'admin';
+    const isManager = user && user.role === 'manager';
+    
+    const tbody = document.getElementById('employeesBody');
+    if (employees.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">
+            <i class="fas fa-info-circle me-2"></i>No employees found. 
+            <button class="btn btn-sm btn-primary ms-2" onclick="showEmployeeModal()">
+                <i class="fas fa-plus me-1"></i>Add your first employee
+            </button>
+        </td></tr>`;
+    } else {
+        tbody.innerHTML = employees.map(emp => `
+            <tr>
+                <td><code>${emp.employeeId || 'N/A'}</code></td>
+                <td><strong>${emp.name || 'N/A'}</strong></td>
+                <td>${emp.email || 'N/A'}</td>
+                <td>${emp.mobile || 'N/A'}</td>
+                <td>${emp.department || 'N/A'}</td>
+                <td>${emp.designation || 'N/A'}</td>
+                <td><span class="role-badge ${emp.role || 'employee'}">${(emp.role || 'employee').toUpperCase()}</span></td>
+                <td>
+                    <span class="badge ${emp.isActive !== false ? 'bg-success' : 'bg-danger'}">
+                        ${emp.isActive !== false ? 'Active' : 'Inactive'}
+                    </span>
+                </td>
+                <td><span class="badge bg-secondary">${emp.location || 'Unknown'}</span></td>
+                <td>
+                    ${isAdmin ? `
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : isManager ? `
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEmployee('${emp.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <span class="badge bg-secondary">View Only</span>
+                    ` : `
+                        <span class="badge bg-secondary">No Access</span>
+                    `}
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+function refreshEmployees() {
+    showToast('info', 'Refreshing employee list from cloud...');
+    CloudStore.employeesCollection.get().then((snapshot) => {
+        const employees = [];
+        snapshot.forEach(doc => {
+            employees.push({ id: doc.id, ...doc.data() });
+        });
+        appState.employees = employees;
+        loadEmployees();
+        showToast('success', `✅ ${employees.length} employees loaded`);
+    }).catch((error) => {
+        showToast('danger', 'Error refreshing: ' + error.message);
+    });
+}
+
+function viewEmployee(id) {
+    const emp = appState.employees.find(e => e.id === id);
+    if (!emp) return;
+    
+    const details = `
+        <div class="row small">
+            <div class="col-5"><strong>Employee ID:</strong></div><div class="col-7">${emp.employeeId || 'N/A'}</div>
+            <div class="col-5"><strong>Name:</strong></div><div class="col-7">${emp.name || 'N/A'}</div>
+            <div class="col-5"><strong>Email:</strong></div><div class="col-7">${emp.email || 'N/A'}</div>
+            <div class="col-5"><strong>Mobile:</strong></div><div class="col-7">${emp.mobile || 'N/A'}</div>
+            <div class="col-5"><strong>Department:</strong></div><div class="col-7">${emp.department || 'N/A'}</div>
+            <div class="col-5"><strong>Designation:</strong></div><div class="col-7">${emp.designation || 'N/A'}</div>
+            <div class="col-5"><strong>Location:</strong></div><div class="col-7">${emp.location || 'N/A'}</div>
+            <div class="col-5"><strong>Role:</strong></div><div class="col-7"><span class="role-badge ${emp.role || 'employee'}">${(emp.role || 'employee').toUpperCase()}</span></div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="badge ${emp.isActive !== false ? 'bg-success' : 'bg-danger'}">${emp.isActive !== false ? 'Active' : 'Inactive'}</span></div>
+        </div>
+    `;
+    showCustomModal('Employee Details', details);
+}
+
+function showEmployeeModal(employeeId = null) {
+    const user = CloudStore.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can add/edit employees');
+        return;
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+    document.getElementById('employeeForm').reset();
+    document.getElementById('editEmployeeId').value = '';
+    document.getElementById('employeeModalTitle').textContent = 'Add Employee';
+    document.getElementById('empPassword').required = true;
+    
+    if (employeeId) {
+        const emp = appState.employees.find(e => e.id === employeeId);
+        if (emp) {
+            document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
+            document.getElementById('editEmployeeId').value = emp.id;
+            document.getElementById('empEmployeeId').value = emp.employeeId || '';
+            document.getElementById('empName').value = emp.name || '';
+            document.getElementById('empEmail').value = emp.email || '';
+            document.getElementById('empMobile').value = emp.mobile || '';
+            document.getElementById('empDepartment').value = emp.department || '';
+            document.getElementById('empDesignation').value = emp.designation || '';
+            document.getElementById('empLocation').value = emp.location || '';
+            document.getElementById('empRole').value = emp.role || 'employee';
+            document.getElementById('empUsername').value = '';
+            document.getElementById('empPassword').value = '';
+            document.getElementById('empPassword').required = false;
+            document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+            
+            CloudStore.usersCollection.doc(emp.id).get().then(doc => {
+                if (doc.exists) {
+                    document.getElementById('empUsername').value = doc.data().username || '';
+                }
+            });
+        }
+    }
+    
+    modal.show();
+}
+
+async function saveEmployee() {
+    const user = CloudStore.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can add/edit employees');
+        return;
+    }
+    
+    const id = document.getElementById('editEmployeeId').value;
+    const employeeId = document.getElementById('empEmployeeId').value.trim();
+    const name = document.getElementById('empName').value.trim();
+    const email = document.getElementById('empEmail').value.trim();
+    const mobile = document.getElementById('empMobile').value.trim();
+    const department = document.getElementById('empDepartment').value.trim();
+    const designation = document.getElementById('empDesignation').value.trim();
+    const location = document.getElementById('empLocation').value.trim() || 'Unknown';
+    const role = document.getElementById('empRole').value;
+    const username = document.getElementById('empUsername').value.trim();
+    const password = document.getElementById('empPassword').value;
+    
+    if (!employeeId || !name || !email || !mobile || !department || !designation) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        if (id) {
+            await CloudStore.updateEmployee(id, {
+                employeeId, name, email, mobile, department, designation,
+                location, role, updatedAt: new Date().toISOString()
+            });
+            
+            if (username) {
+                const userDoc = await CloudStore.usersCollection.doc(id).get();
+                if (userDoc.exists) {
+                    const updateData = { username, fullName: name, department };
+                    if (password && password.length >= 6) updateData.password = password;
+                    await CloudStore.usersCollection.doc(id).update(updateData);
+                }
+            }
+            
+            showToast('success', '✅ Employee updated successfully');
+        } else {
+            const empSnapshot = await CloudStore.employeesCollection
+                .where('employeeId', '==', employeeId)
+                .get();
+            if (!empSnapshot.empty) {
+                showToast('danger', 'Employee ID already exists');
+                showLoading(false);
+                return;
+            }
+            
+            if (username) {
+                const userSnapshot = await CloudStore.usersCollection
+                    .where('username', '==', username)
+                    .get();
+                if (!userSnapshot.empty) {
+                    showToast('danger', 'Username already exists');
+                    showLoading(false);
+                    return;
+                }
+            }
+            
+            if (!password || password.length < 6) {
+                showToast('warning', 'Password must be at least 6 characters');
+                showLoading(false);
+                return;
+            }
+            
+            const newId = 'user_' + Date.now();
+            const userData = {
+                username: username || employeeId.toLowerCase(),
+                password: password,
+                fullName: name,
+                role: role || 'employee',
+                department: department,
+                employeeId: employeeId,
+                createdAt: new Date().toISOString()
+            };
+            await CloudStore.usersCollection.doc(newId).set(userData);
+            
+            const employeeData = {
+                id: newId,
+                employeeId,
+                name,
+                email,
+                mobile,
+                department,
+                designation,
+                location: location || 'Unknown',
+                role: role || 'employee',
+                isActive: true,
+                createdAt: new Date().toISOString()
+            };
+            await CloudStore.addEmployee(employeeData);
+            
+            await CloudStore.addNotification({
+                userId: newId,
+                type: 'WELCOME',
+                title: 'Welcome to CashFlow Pro!',
+                message: `Your account has been created. Username: ${username || employeeId.toLowerCase()}`,
+                entityId: newId,
+                severity: 'success',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+            
+            showToast('success', '✅ Employee added successfully');
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+        await addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
+    } catch (error) {
+        showToast('danger', 'Failed to save: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+function editEmployee(id) {
+    const user = CloudStore.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can edit employees');
+        return;
+    }
+    showEmployeeModal(id);
+}
+
+async function deleteEmployee(id) {
+    const user = CloudStore.getCurrentUser();
+    if (user.role !== 'admin') {
+        showToast('danger', 'Only Admins can delete employees');
+        return;
+    }
+    
+    if (!confirm('⚠️ WARNING: This will permanently delete this employee and all their data. Continue?')) return;
+    
+    showLoading(true);
+    try {
+        await CloudStore.deleteEmployee(id);
+        await CloudStore.usersCollection.doc(id).delete();
+        
+        showToast('success', '✅ Employee deleted successfully');
+        await addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+// ============================================
+// REPORTS
+// ============================================
+let statusChartInstance = null;
+let departmentChartInstance = null;
+
+function generateReports() {
+    const transactions = appState.transactions;
+    const employees = appState.employees;
+    
+    const reportData = employees.map(emp => {
+        const empTxns = transactions.filter(t => t.employeeId === emp.id);
+        const total = empTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
+        const approved = empTxns.filter(t => t.status === 'approved' || t.status === 'completed').length;
+        const rejected = empTxns.filter(t => t.status === 'rejected').length;
+        const pending = empTxns.filter(t => t.status === 'pending').length;
+        return {
+            employee: emp.name || 'Unknown',
+            department: emp.department || 'N/A',
+            totalRequests: empTxns.length,
+            totalAmount: total,
+            approved, rejected, pending
+        };
+    }).filter(r => r.totalRequests > 0);
+    
+    const tbody = document.getElementById('reportBody');
+    if (reportData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No data available</td></tr>`;
+    } else {
+        tbody.innerHTML = reportData.map(r => `
+            <tr>
+                <td>${r.employee}</td>
+                <td>${r.department}</td>
+                <td>${r.totalRequests}</td>
+                <td>₹${r.totalAmount.toLocaleString()}</td>
+                <td class="text-success">${r.approved}</td>
+                <td class="text-danger">${r.rejected}</td>
+                <td class="text-warning">${r.pending}</td>
+            </tr>
+        `).join('');
+    }
+    
+    updateStatusChart(transactions);
+    updateDepartmentChart(transactions, employees);
+}
+
+function updateStatusChart(transactions) {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    if (statusChartInstance) statusChartInstance.destroy();
+    
+    const counts = {
+        pending: transactions.filter(t => t.status === 'pending').length,
+        approved: transactions.filter(t => t.status === 'approved').length,
+        rejected: transactions.filter(t => t.status === 'rejected').length,
+        completed: transactions.filter(t => t.status === 'completed').length,
+        partially_settled: transactions.filter(t => t.status === 'partially_settled').length
+    };
+    
+    statusChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Approved', 'Rejected', 'Completed', 'Partially Settled'],
+            datasets: [{
+                data: Object.values(counts),
+                backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b', '#36b9cc', '#858796'],
+                borderWidth: 2
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+}
+
+function updateDepartmentChart(transactions, employees) {
+    const ctx = document.getElementById('departmentChart').getContext('2d');
+    if (departmentChartInstance) departmentChartInstance.destroy();
+    
+    const deptData = {};
+    employees.forEach(emp => {
+        const empTxns = transactions.filter(t => t.employeeId === emp.id);
+        const total = empTxns.reduce((sum, t) => sum + (t.amount || 0), 0);
+        if (total > 0) {
+            deptData[emp.department || 'Unknown'] = (deptData[emp.department || 'Unknown'] || 0) + total;
+        }
+    });
+    
+    departmentChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(deptData),
+            datasets: [{
+                label: 'Total Advances by Department',
+                data: Object.values(deptData),
+                backgroundColor: '#4e73df',
+                borderColor: '#224abe',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: function(value) { return '₹' + value.toLocaleString(); } }
+                }
+            }
+        }
+    });
+}
+
+function exportFullReport() {
+    const transactions = appState.transactions;
+    if (transactions.length === 0) {
+        showToast('warning', 'No data to export');
+        return;
+    }
+    
+    let csv = 'ID,Employee,Department,Type,Category,Amount,Status,Purpose,Date,Remarks\n';
+    transactions.forEach(t => {
+        csv += `${t.id || 'N/A'},${t.employeeName || 'N/A'},${t.employeeDepartment || 'N/A'},${t.type || ''},${t.category || ''},${t.amount || 0},${t.status || ''},${t.purpose || ''},${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''},${t.remarks || ''}\n`;
+    });
+    
+    downloadCSV(csv, `full_report_${new Date().toISOString().slice(0,10)}.csv`);
+    showToast('success', 'Report exported');
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+function loadNotifications() {
+    const notifications = appState.notifications;
+    const container = document.getElementById('notificationList');
+    
+    if (!notifications || notifications.length === 0) {
+        container.innerHTML = `<div class="text-muted text-center py-3">No notifications</div>`;
+        return;
+    }
+    
+    container.innerHTML = notifications.map(n => `
+        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fw-semibold">${n.title || 'Notification'}</div>
+                    <small class="text-muted">${n.message || ''}</small>
+                </div>
+                <span class="badge bg-${n.severity || 'info'}">${(n.type || '').replace('_', ' ')}</span>
+            </div>
+            <div class="time">${n.createdAt ? new Date(n.createdAt).toLocaleString() : ''}</div>
+        </div>
+    `).join('');
+}
+
+async function markNotificationRead(id) {
+    try {
+        await CloudStore.notificationsCollection.doc(id).update({ read: true });
+    } catch (error) {
+        console.error('Error marking notification read:', error);
+    }
+}
+
+// ============================================
+// AUDIT LOGS
+// ============================================
+async function addAuditLog(action, entityType, entityId) {
+    const user = CloudStore.getCurrentUser();
+    try {
+        await CloudStore.addAuditLog({
+            timestamp: new Date().toISOString(),
+            user: user?.username || 'system',
+            role: user?.role || 'system',
+            action: action,
+            entityType: entityType,
+            entityId: entityId,
+            details: `${action} on ${entityType}: ${entityId}`
+        });
+    } catch (error) {
+        console.error('Error adding audit log:', error);
+    }
+}
+
+function loadAuditLogs() {
+    const logs = appState.auditLogs;
+    const tbody = document.getElementById('auditBody');
+    
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`;
+    } else {
+        tbody.innerHTML = logs.map(log => `
+            <tr>
+                <td>${log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A'}</td>
+                <td><strong>${log.user || 'system'}</strong></td>
+                <td><span class="badge bg-secondary">${log.role || 'system'}</span></td>
+                <td><span class="badge bg-primary">${log.action || 'N/A'}</span></td>
+                <td><code>${log.details || 'N/A'}</code></td>
+            </tr>
+        `).join('');
+    }
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function updateDateTime() {
+    const now = new Date();
+    document.getElementById('currentDateTime').textContent = now.toLocaleString('en-US', { 
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+}
+
+function showToast(type, message) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast-custom border-${type}`;
+    const icons = {
+        success: 'fa-check-circle text-success',
+        danger: 'fa-exclamation-circle text-danger',
+        warning: 'fa-exclamation-triangle text-warning',
+        info: 'fa-info-circle text-info'
+    };
+    toast.innerHTML = `
+        <div class="d-flex align-items-center">
+            <div class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></div>
+            <div class="flex-grow-1">${message}</div>
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+function viewTransactionDetails(id) {
+    const t = appState.transactions.find(t => t.id === id);
+    if (!t) return;
+    
+    const details = `
+        <div class="row small">
+            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${t.id || 'N/A'}</div>
+            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${t.employeeName || 'N/A'}</div>
+            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${(t.type || '').replace('_', ' ')}</div>
+            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(t.amount || 0).toLocaleString()}</div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${t.status || 'pending'}">${(t.status || 'pending').replace('_', ' ')}</span></div>
+            <div class="col-5"><strong>Purpose:</strong></div><div class="col-7">${t.purpose || 'N/A'}</div>
+            <div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${t.remarks || 'N/A'}</div>
+            <div class="col-5"><strong>Date:</strong></div><div class="col-7">${t.createdAt ? new Date(t.createdAt).toLocaleString() : 'N/A'}</div>
+        </div>
+    `;
+    showCustomModal('Transaction Details', details);
+}
+
+function showCustomModal(title, content) {
+    const modalHtml = `
+        <div class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header"><h5 class="modal-title">${title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body">${content}</div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button></div>
+                </div>
+            </div>
+        </div>
+    `;
+    const modalEl = document.createElement('div');
+    modalEl.innerHTML = modalHtml;
+    document.body.appendChild(modalEl);
+    const bsModal = new bootstrap.Modal(modalEl.querySelector('.modal'));
+    bsModal.show();
+    modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+}
+
+function downloadCSV(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function showLoading(show) {
+    document.getElementById('spinnerOverlay').style.display = show ? 'flex' : 'none';
+}
+
+// ============================================
+// KEYBOARD SHORTCUTS
+// ============================================
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey) {
+        switch(e.key) {
+            case '1': showPage('dashboard'); e.preventDefault(); break;
+            case '2': showPage('request'); e.preventDefault(); break;
+            case '3': showPage('history'); e.preventDefault(); break;
+            case '4': 
+                const user = CloudStore.getCurrentUser();
+                if (user && (user.role === 'admin' || user.role === 'manager')) {
+                    showPage('approvals'); 
+                }
+                e.preventDefault(); 
+                break;
+            case '5':
+                if (user && user.role === 'admin') {
+                    showPage('cashflow');
+                }
+                e.preventDefault();
+                break;
+        }
+    }
+});
+
+// ============================================
+// INITIALIZE
+// ============================================
+initializeApp();
+
+console.log('💰 CashFlow Pro - Complete Financial Management');
+console.log('☁️ Firebase Connected Successfully!');
+console.log('📊 Project: cashflowpro-253b0');
+console.log('✅ Features:');
+console.log('   - Branch Account Balance');
+console.log('   - Utilized Amount Tracking');
+console.log('   - Available Balance');
+console.log('   - Utilization Rate');
+console.log('   - Monthly Cash Flow Tracking');
+console.log('🌍 Data synced across all devices and branches');
+console.log('🔑 First user registration becomes Admin');
+console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
 </script>
+
 </body>
 </html>
