@@ -1878,11 +1878,10 @@ function setupRealtimeListeners() {
         loadNotifications();
     });
     
-    // ✅ FIX: Listen to ALL credits for branch balance calculation
+    // Listen to credits for branch balance
     const branch = user.department || 'Mumbai';
     const currentMonth = new Date().toISOString().slice(0, 7);
     
-    // Listen to credits for the branch
     CloudStore.listenToCredits(branch, currentMonth, (credits) => {
         appState.credits = credits;
         console.log('💳 Credits loaded:', credits.length, 'for branch:', branch);
@@ -1898,7 +1897,7 @@ function setupRealtimeListeners() {
 }
 
 // ============================================
-// UPDATE DASHBOARD - FIXED BRANCH BALANCE
+// UPDATE DASHBOARD - FIXED
 // ============================================
 function updateDashboard() {
     const user = CloudStore.getCurrentUser();
@@ -1932,41 +1931,44 @@ function updateDashboard() {
         document.getElementById('empRejectedRequests').textContent = rejectedCount;
     }
     
-    // ✅ FIXED: Branch Cash Flow Summary - CORRECTLY CALCULATED
+    // ✅ FIXED: Branch Cash Flow - CORRECT CALCULATION
     const branch = user?.department || 'Mumbai';
     const currentMonth = new Date().toISOString().slice(0, 7);
     
-    console.log('🏦 Calculating for branch:', branch, 'month:', currentMonth);
-    console.log('📊 Credits data:', credits);
+    console.log('🏦 Branch:', branch, 'Month:', currentMonth);
+    console.log('💳 All Credits:', credits);
     
-    // Get credits for this month and branch
-    const monthCredits = credits.filter(c => 
-        c.month === currentMonth && c.branch === branch
+    // ✅ FIX: Get credits for this branch
+    const branchCredits = credits.filter(c => c.branch === branch);
+    console.log('💳 Branch Credits:', branchCredits);
+    
+    // ✅ FIX: Calculate total credits for this branch (ALL months, not just current)
+    // For Branch Account Balance, we want ALL credits for this branch
+    const totalBranchCredits = branchCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    console.log('💰 Total Branch Credits:', totalBranchCredits);
+    
+    // ✅ FIX: Get credits for current month only (for Monthly Credit display)
+    const monthCredits = branchCredits.filter(c => c.month === currentMonth);
+    const monthlyCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
+    
+    // ✅ FIX: Get ALL approved/completed transactions (NOT filtered by department)
+    // For Utilized Amount, we want ALL approved expenses across the company
+    const allApproved = transactions.filter(t => 
+        t.status === 'approved' || t.status === 'completed'
     );
-    console.log('💳 Filtered credits:', monthCredits);
+    const totalUtilized = allApproved.reduce((sum, t) => sum + (t.amount || 0), 0);
+    console.log('💰 Total Utilized (All Approved):', totalUtilized);
     
-    const totalCredits = monthCredits.reduce((sum, c) => sum + (c.amount || 0), 0);
-    console.log('💰 Total Credits:', totalCredits);
-    
-    // Get expenses (approved/completed transactions for this branch)
-    const monthExpenses = transactions.filter(t => {
-        const tMonth = t.createdAt ? t.createdAt.slice(0, 7) : '';
-        return tMonth === currentMonth && 
-               t.employeeDepartment === branch && 
-               (t.status === 'approved' || t.status === 'completed');
-    });
-    const totalExpenses = monthExpenses.reduce((sum, t) => sum + (t.amount || 0), 0);
-    console.log('💸 Total Expenses:', totalExpenses);
-    
-    // Calculate balances
-    const branchBalance = totalCredits;
-    const utilizedAmount = totalExpenses;
+    // ✅ FIX: Calculate available balance
+    const branchBalance = totalBranchCredits;
+    const utilizedAmount = totalUtilized;
     const availableBalance = branchBalance - utilizedAmount;
     const utilizationRate = branchBalance > 0 ? (utilizedAmount / branchBalance) * 100 : 0;
     
     console.log('📊 Branch Balance:', branchBalance);
-    console.log('📊 Utilized:', utilizedAmount);
-    console.log('📊 Available:', availableBalance);
+    console.log('📊 Utilized Amount:', utilizedAmount);
+    console.log('📊 Available Balance:', availableBalance);
+    console.log('📊 Utilization Rate:', utilizationRate);
     
     // Update UI
     document.getElementById('branchBalance').textContent = '₹' + branchBalance.toLocaleString();
@@ -3188,15 +3190,16 @@ console.log('💰 CashFlow Pro - Complete Financial Management');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
-console.log('   - Branch Account Balance (from credits)');
-console.log('   - Utilized Amount (approved expenses)');
+console.log('   - Branch Account Balance (ALL credits for branch)');
+console.log('   - Utilized Amount (ALL approved expenses)');
 console.log('   - Available Balance (balance - utilized)');
 console.log('   - Utilization Rate');
 console.log('   - Monthly Cash Flow Tracking');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=Request, Ctrl+3=History, Ctrl+4=Approvals, Ctrl+5=CashFlow');
-console.log('📌 To fix balance: Add credits in Cash Flow page');
+console.log('📌 NOTE: Branch Account Balance shows ALL credits for the branch');
+console.log('📌 Utilized Amount shows ALL approved expenses across the company');
 </script>
 
 </body>
