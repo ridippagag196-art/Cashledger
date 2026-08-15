@@ -20,7 +20,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <style>
-        /* All existing styles remain the same */
+        /* All styles remain the same */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -592,6 +592,44 @@
             text-transform: uppercase;
             margin-bottom: 10px;
         }
+        
+        .camp-card {
+            border-radius: 12px;
+            padding: 15px;
+            background: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid #4e73df;
+            transition: all 0.3s;
+        }
+        
+        .camp-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58,59,69,0.15);
+        }
+        
+        .camp-card .camp-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .camp-card .camp-details {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .camp-card .fund-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1cc88a;
+        }
+        
+        .card-limit-info {
+            background: #f8f9fc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -672,9 +710,9 @@
                         <input type="tel" class="form-control form-control-sm" id="regMobile" placeholder="+91 9876543210" required>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small">Branch *</label>
+                        <label class="form-label small">Branch/Camp *</label>
                         <select class="form-select form-select-sm" id="regBranch" required>
-                            <option value="">Select Branch</option>
+                            <option value="">Select Branch/Camp</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -745,7 +783,7 @@
                                 <i class="fas fa-lock"></i> Permissions
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('branches')" id="branchesMenuLink">
-                                <i class="fas fa-building"></i> Branches
+                                <i class="fas fa-building"></i> Branches/Camps
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('projects')" id="projectsMenuLink">
                                 <i class="fas fa-project-diagram"></i> Projects
@@ -789,7 +827,7 @@
                                 <div class="stat-card" style="border-left-color: #4e73df;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="stat-label">Branches</div>
+                                            <div class="stat-label">Branches/Camps</div>
                                             <div class="stat-value" id="totalBranches">0</div>
                                         </div>
                                         <div class="stat-icon text-primary">
@@ -844,11 +882,11 @@
                                 <div class="stat-card" style="border-left-color: #4e73df;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="stat-label">Total Project Funds</div>
-                                            <div class="stat-value text-primary" id="totalFunds">₹0</div>
+                                            <div class="stat-label">Total Card Funds</div>
+                                            <div class="stat-value text-primary" id="totalCardFunds">₹0</div>
                                         </div>
                                         <div class="stat-icon text-primary">
-                                            <i class="fas fa-wallet"></i>
+                                            <i class="fas fa-credit-card"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -888,34 +926,6 @@
                                         </div>
                                         <div class="stat-icon text-warning">
                                             <i class="fas fa-clock"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4" id="cardSummarySection">
-                            <div class="col-md-12">
-                                <div class="table-container">
-                                    <h5><i class="fas fa-credit-card me-2"></i>SBI Visa Card Summary</h5>
-                                    <div class="row mt-3">
-                                        <div class="col-md-4">
-                                            <div class="stat-card" style="border-left-color: #4e73df;">
-                                                <div class="stat-label">Total Card Funds</div>
-                                                <div class="stat-value text-primary" id="cardTotalFunds">₹0</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="stat-card" style="border-left-color: #e74a3b;">
-                                                <div class="stat-label">Utilized</div>
-                                                <div class="stat-value text-danger" id="cardUtilized">₹0</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="stat-card" style="border-left-color: #1cc88a;">
-                                                <div class="stat-label">Available</div>
-                                                <div class="stat-value text-success" id="cardAvailable">₹0</div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1044,7 +1054,7 @@
                         <div class="table-container">
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Branch Isolation:</strong> Users can only see data from their own branch.
+                                <strong>Branch Isolation:</strong> Users can only see data from their own branch/camp.
                             </div>
 
                             <div class="mb-3">
@@ -1064,6 +1074,66 @@
                         </div>
                     </div>
 
+                    <!-- Branches/Camps Page -->
+                    <div id="page-branches" class="page-content" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fas fa-building me-2 text-primary"></i>Branches & Camps</h4>
+                            <button class="btn btn-primary" onclick="showBranchModal()" id="addBranchBtn">
+                                <i class="fas fa-plus me-2"></i>Add Branch/Camp
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="branchesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Location</th>
+                                            <th>Manager</th>
+                                            <th>Projects</th>
+                                            <th>Employees</th>
+                                            <th>Card Limit</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="branchesBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects Page -->
+                    <div id="page-projects" class="page-content" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fas fa-project-diagram me-2 text-primary"></i>Projects</h4>
+                            <button class="btn btn-primary" onclick="showProjectModal()" id="addProjectBtn">
+                                <i class="fas fa-plus me-2"></i>Add Project
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="projectsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Camps</th>
+                                            <th>Total Fund Allocated</th>
+                                            <th>Utilized</th>
+                                            <th>Available</th>
+                                            <th>% Used</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="projectsBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Advances Page -->
                     <div id="page-advances" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1079,7 +1149,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Employee</th>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Project</th>
                                             <th>Amount</th>
                                             <th>Spent</th>
@@ -1111,7 +1181,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Employee</th>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Project</th>
                                             <th>Category</th>
                                             <th>Amount</th>
@@ -1142,7 +1212,7 @@
                                     <thead>
                                         <tr>
                                             <th>Card Number</th>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Project</th>
                                             <th>Card Holder</th>
                                             <th>Limit</th>
@@ -1153,65 +1223,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="cardsBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Branches Page -->
-                    <div id="page-branches" class="page-content" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4><i class="fas fa-building me-2 text-primary"></i>Branches</h4>
-                            <button class="btn btn-primary" onclick="showBranchModal()" id="addBranchBtn">
-                                <i class="fas fa-plus me-2"></i>Add Branch
-                            </button>
-                        </div>
-                        <div class="table-container">
-                            <div class="table-responsive">
-                                <table class="table table-hover" id="branchesTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Location</th>
-                                            <th>Manager</th>
-                                            <th>Projects</th>
-                                            <th>Employees</th>
-                                            <th>Total Funds</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="branchesBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Projects Page -->
-                    <div id="page-projects" class="page-content" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4><i class="fas fa-project-diagram me-2 text-primary"></i>Projects</h4>
-                            <button class="btn btn-primary" onclick="showProjectModal()" id="addProjectBtn">
-                                <i class="fas fa-plus me-2"></i>Add Project
-                            </button>
-                        </div>
-                        <div class="table-container">
-                            <div class="table-responsive">
-                                <table class="table table-hover" id="projectsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Branch</th>
-                                            <th>Allocated Fund</th>
-                                            <th>Utilized</th>
-                                            <th>Available</th>
-                                            <th>% Used</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="projectsBody">
                                     </tbody>
                                 </table>
                             </div>
@@ -1233,7 +1244,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Name</th>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Designation</th>
                                             <th>Role</th>
                                             <th>Advances</th>
@@ -1273,7 +1284,7 @@
                                             <th>ID</th>
                                             <th>Type</th>
                                             <th>Employee</th>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Project</th>
                                             <th>Amount</th>
                                             <th>Purpose</th>
@@ -1294,7 +1305,7 @@
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
                                 <div class="table-container">
-                                    <h5>Fund Utilization by Branch</h5>
+                                    <h5>Card Utilization by Camp</h5>
                                     <canvas id="branchChart"></canvas>
                                 </div>
                             </div>
@@ -1314,9 +1325,9 @@
                                 <table class="table table-hover" id="reportTable">
                                     <thead>
                                         <tr>
-                                            <th>Branch</th>
+                                            <th>Camp</th>
                                             <th>Project</th>
-                                            <th>Total Fund</th>
+                                            <th>Card Limit</th>
                                             <th>Utilized</th>
                                             <th>Available</th>
                                             <th>% Used</th>
@@ -1356,7 +1367,136 @@
     </div>
 </div>
 
-<!-- All Modals remain the same -->
+<!-- All Modals remain the same with updated field names -->
+<!-- Branch Modal -->
+<div class="modal fade" id="branchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-building me-2"></i>Add Branch/Camp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="branchForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Camp Name *</label>
+                        <input type="text" class="form-control" id="branchName" placeholder="e.g., Raipur Camp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Camp Type</label>
+                        <select class="form-select" id="branchType">
+                            <option value="main">Main Branch</option>
+                            <option value="camp">Camp</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Location *</label>
+                        <input type="text" class="form-control" id="branchLocation" placeholder="e.g., Raipur, Chhattisgarh" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Manager</label>
+                        <select class="form-select" id="branchManager">
+                            <option value="">Select Manager</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Monthly Card Limit (₹)</label>
+                        <input type="number" class="form-control" id="branchCardLimit" min="0" placeholder="Enter monthly card limit">
+                        <small class="text-muted">Funds allocated monthly via SBI Visa Card</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveBranch()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-project-diagram me-2"></i>Add Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="projectForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Project Name *</label>
+                        <input type="text" class="form-control" id="projectName" placeholder="e.g., Pipeline Survey" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Associated Camps *</label>
+                        <select class="form-select" id="projectCamps" multiple required>
+                            <option value="">Select Camps</option>
+                        </select>
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple camps</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea class="form-control" id="projectDescription" rows="2" placeholder="Project description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveProject()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Card Modal -->
+<div class="modal fade" id="cardModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-credit-card me-2"></i>Add SBI Visa Card</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cardForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Card Number (Last 4 digits) *</label>
+                        <input type="text" class="form-control" id="cardNumber" placeholder="e.g., 4582" maxlength="4" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Camp *</label>
+                        <select class="form-select" id="cardBranch" required>
+                            <option value="">Select Camp</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Project *</label>
+                        <select class="form-select" id="cardProject" required>
+                            <option value="">Select Project</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Card Holder *</label>
+                        <select class="form-select" id="cardHolder" required>
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Monthly Credit Limit (₹) *</label>
+                        <input type="number" class="form-control" id="cardLimit" min="1" placeholder="Enter monthly credit limit" required>
+                        <small class="text-muted">Funds allocated monthly for this camp</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCard()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remaining modals (Advance, Expense, Employee, Approval) remain the same -->
 <!-- Advance Modal -->
 <div class="modal fade" id="advanceModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -1369,9 +1509,9 @@
                 <form id="advanceForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Branch *</label>
+                            <label class="form-label fw-semibold">Camp *</label>
                             <select class="form-select" id="advBranch" required>
-                                <option value="">Select Branch</option>
+                                <option value="">Select Camp</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -1415,9 +1555,9 @@
                 <form id="expenseForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Branch *</label>
+                            <label class="form-label fw-semibold">Camp *</label>
                             <select class="form-select" id="expBranch" required>
-                                <option value="">Select Branch</option>
+                                <option value="">Select Camp</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -1497,124 +1637,6 @@
     </div>
 </div>
 
-<!-- Branch Modal -->
-<div class="modal fade" id="branchModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-building me-2"></i>Add Branch</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="branchForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Branch Name *</label>
-                        <input type="text" class="form-control" id="branchName" placeholder="e.g., Branch A" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Location *</label>
-                        <input type="text" class="form-control" id="branchLocation" placeholder="e.g., Mumbai" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Manager</label>
-                        <select class="form-select" id="branchManager">
-                            <option value="">Select Manager</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveBranch()">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Project Modal -->
-<div class="modal fade" id="projectModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-project-diagram me-2"></i>Add Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="projectForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Project Name *</label>
-                        <input type="text" class="form-control" id="projectName" placeholder="e.g., Pipeline Survey" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Branch *</label>
-                        <select class="form-select" id="projectBranch" required>
-                            <option value="">Select Branch</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Allocated Fund (₹) *</label>
-                        <input type="number" class="form-control" id="projectFund" min="1" placeholder="Enter allocated amount" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Description</label>
-                        <textarea class="form-control" id="projectDescription" rows="2" placeholder="Project description"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveProject()">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Card Modal -->
-<div class="modal fade" id="cardModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-credit-card me-2"></i>Add SBI Visa Card</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="cardForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Card Number (Last 4 digits) *</label>
-                        <input type="text" class="form-control" id="cardNumber" placeholder="e.g., 4582" maxlength="4" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Branch *</label>
-                        <select class="form-select" id="cardBranch" required>
-                            <option value="">Select Branch</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Project *</label>
-                        <select class="form-select" id="cardProject" required>
-                            <option value="">Select Project</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Card Holder *</label>
-                        <select class="form-select" id="cardHolder" required>
-                            <option value="">Select Employee</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Credit Limit (₹) *</label>
-                        <input type="number" class="form-control" id="cardLimit" min="1" placeholder="Enter credit limit" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveCard()">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Employee Modal -->
 <div class="modal fade" id="employeeModal" tabindex="-1">
     <div class="modal-dialog">
@@ -1643,9 +1665,9 @@
                         <input type="tel" class="form-control form-control-sm" id="empMobile" required>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small">Branch *</label>
+                        <label class="form-label small">Camp *</label>
                         <select class="form-select form-select-sm" id="empBranch" required>
-                            <option value="">Select Branch</option>
+                            <option value="">Select Camp</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -1693,7 +1715,7 @@
                     <div class="mb-1"><strong>ID:</strong> <span id="aprId"></span></div>
                     <div class="mb-1"><strong>Type:</strong> <span id="aprType"></span></div>
                     <div class="mb-1"><strong>Employee:</strong> <span id="aprEmployee"></span></div>
-                    <div class="mb-1"><strong>Branch:</strong> <span id="aprBranch"></span></div>
+                    <div class="mb-1"><strong>Camp:</strong> <span id="aprBranch"></span></div>
                     <div class="mb-1"><strong>Project:</strong> <span id="aprProject"></span></div>
                     <div class="mb-1"><strong>Amount:</strong> <span id="aprAmount"></span></div>
                     <div class="mb-1"><strong>Purpose:</strong> <span id="aprPurpose"></span></div>
@@ -1761,7 +1783,7 @@ db.enablePersistence({
 console.log('☁️ Firebase Connected Successfully!');
 
 // ============================================
-// DEFAULT PERMISSIONS
+// PERMISSIONS SYSTEM (Shortened for brevity)
 // ============================================
 const DefaultPermissions = {
     admin: {
@@ -1791,8 +1813,6 @@ const DefaultPermissions = {
         deleteEmployee: true,
         approveRequests: true,
         managePermissions: true,
-        // ✅ Branch isolation: Admin sees ALL branches
-        branchIsolation: false,
         viewAllBranches: true
     },
     manager: {
@@ -1822,8 +1842,6 @@ const DefaultPermissions = {
         deleteEmployee: false,
         approveRequests: true,
         managePermissions: false,
-        // ✅ Branch isolation: Manager sees only their branch
-        branchIsolation: true,
         viewAllBranches: false
     },
     accounts: {
@@ -1853,7 +1871,6 @@ const DefaultPermissions = {
         deleteEmployee: false,
         approveRequests: true,
         managePermissions: false,
-        branchIsolation: true,
         viewAllBranches: false
     },
     employee: {
@@ -1883,7 +1900,6 @@ const DefaultPermissions = {
         deleteEmployee: false,
         approveRequests: false,
         managePermissions: false,
-        branchIsolation: true,
         viewAllBranches: false
     },
     auditor: {
@@ -1913,7 +1929,6 @@ const DefaultPermissions = {
         deleteEmployee: false,
         approveRequests: false,
         managePermissions: false,
-        branchIsolation: false,
         viewAllBranches: true
     }
 };
@@ -1939,7 +1954,7 @@ function loadPermissions() {
                 { key: 'viewAdvances', label: 'View Advances', desc: 'View all advance requests' },
                 { key: 'viewExpenses', label: 'View Expenses', desc: 'View all expense submissions' },
                 { key: 'viewCards', label: 'View Cards', desc: 'View SBI Visa card details' },
-                { key: 'viewBranches', label: 'View Branches', desc: 'View branch information' },
+                { key: 'viewBranches', label: 'View Branches/Camps', desc: 'View branch/camp information' },
                 { key: 'viewProjects', label: 'View Projects', desc: 'View project information' },
                 { key: 'viewEmployees', label: 'View Employees', desc: 'View employee list' },
                 { key: 'viewApprovals', label: 'View Approvals', desc: 'View pending approvals' },
@@ -1955,7 +1970,7 @@ function loadPermissions() {
                 { key: 'addAdvance', label: 'Add Advance', desc: 'Create advance requests' },
                 { key: 'addExpense', label: 'Add Expense', desc: 'Submit expenses' },
                 { key: 'addCard', label: 'Add Card', desc: 'Add new SBI Visa cards' },
-                { key: 'addBranch', label: 'Add Branch', desc: 'Create new branches' },
+                { key: 'addBranch', label: 'Add Branch/Camp', desc: 'Create new branches/camps' },
                 { key: 'addProject', label: 'Add Project', desc: 'Create new projects' },
                 { key: 'addEmployee', label: 'Add Employee', desc: 'Add new employees' }
             ]
@@ -1967,7 +1982,7 @@ function loadPermissions() {
                 { key: 'deleteAdvance', label: 'Delete Advance', desc: 'Delete advance requests' },
                 { key: 'deleteExpense', label: 'Delete Expense', desc: 'Delete expense submissions' },
                 { key: 'deleteCard', label: 'Delete Card', desc: 'Delete SBI Visa cards' },
-                { key: 'deleteBranch', label: 'Delete Branch', desc: 'Delete branches' },
+                { key: 'deleteBranch', label: 'Delete Branch/Camp', desc: 'Delete branches/camps' },
                 { key: 'deleteProject', label: 'Delete Project', desc: 'Delete projects' },
                 { key: 'deleteEmployee', label: 'Delete Employee', desc: 'Delete employees' }
             ]
@@ -1978,7 +1993,7 @@ function loadPermissions() {
             permissions: [
                 { key: 'approveRequests', label: 'Approve Requests', desc: 'Approve or reject requests' },
                 { key: 'managePermissions', label: 'Manage Permissions', desc: 'Edit permission settings' },
-                { key: 'viewAllBranches', label: 'View All Branches', desc: 'See data from all branches' }
+                { key: 'viewAllBranches', label: 'View All Branches/Camps', desc: 'See data from all branches/camps' }
             ]
         }
     ];
@@ -1987,7 +2002,6 @@ function loadPermissions() {
     
     let html = `<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure permissions for <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong> role. Changes take effect immediately.</div>`;
     
-    // Show permission toggles
     permissionGroups.forEach(group => {
         html += `
             <div class="permission-section">
@@ -2026,11 +2040,11 @@ function loadPermissions() {
     });
     
     const roleDescriptions = {
-        admin: 'Full access to all features. Can manage permissions and system settings. Sees ALL branches.',
-        manager: 'Can manage their branch, approve requests, and view reports. Sees ONLY their branch.',
-        accounts: 'Can view financial data, approve expenses, and generate reports. Sees ONLY their branch.',
-        employee: 'Can submit advance requests and expenses, view personal dashboard. Sees ONLY their branch.',
-        auditor: 'Read-only access to all data for audit purposes. Sees ALL branches.'
+        admin: 'Full access to all features. Can manage permissions and system settings. Sees ALL branches/camps.',
+        manager: 'Can manage their camp, approve requests, and view reports. Sees ONLY their camp.',
+        accounts: 'Can view financial data, approve expenses, and generate reports. Sees ONLY their camp.',
+        employee: 'Can submit advance requests and expenses, view personal dashboard. Sees ONLY their camp.',
+        auditor: 'Read-only access to all data for audit purposes. Sees ALL branches/camps.'
     };
     
     html += `
@@ -2105,95 +2119,7 @@ function hasPermission(role, permission) {
 }
 
 // ============================================
-// APPLY PERMISSIONS WITH BRANCH ISOLATION
-// ============================================
-function applyPermissions() {
-    const user = CloudStore.getCurrentUser();
-    if (!user) return;
-    
-    const role = user.role;
-    const perms = getUserPermissions(role);
-    const isAdmin = role === 'admin';
-    const userBranch = user.branch || '';
-    
-    // Menu items visibility
-    const menuItems = {
-        dashboardMenuLink: perms.viewDashboard,
-        myDashboardMenuLink: perms.viewMyDashboard,
-        advancesMenuLink: perms.viewAdvances,
-        expensesMenuLink: perms.viewExpenses,
-        cardsMenuLink: perms.viewCards,
-        branchesMenuLink: perms.viewBranches,
-        projectsMenuLink: perms.viewProjects,
-        employeesMenuLink: perms.viewEmployees,
-        approvalsMenuLink: perms.viewApprovals,
-        reportsMenuLink: perms.viewReports,
-        auditMenuLink: perms.viewAudit,
-        permissionsMenuLink: perms.viewPermissions && isAdmin
-    };
-    
-    Object.keys(menuItems).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = menuItems[id] ? 'block' : 'none';
-        }
-    });
-    
-    // Admin menu visibility
-    const adminMenu = document.getElementById('adminMenu');
-    if (adminMenu) {
-        const hasAdminAccess = menuItems.branchesMenuLink || menuItems.projectsMenuLink || 
-                              menuItems.employeesMenuLink || menuItems.approvalsMenuLink || 
-                              menuItems.reportsMenuLink || menuItems.auditMenuLink || 
-                              menuItems.permissionsMenuLink;
-        adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
-    }
-    
-    // Add buttons
-    const addButtons = {
-        addAdvanceBtn: perms.addAdvance,
-        addExpenseBtn: perms.addExpense,
-        addCardBtn: perms.addCard,
-        addBranchBtn: perms.addBranch,
-        addProjectBtn: perms.addProject,
-        addEmployeeBtn: perms.addEmployee
-    };
-    
-    Object.keys(addButtons).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = addButtons[id] ? 'inline-block' : 'none';
-        }
-    });
-    
-    // ✅ Branch isolation: Show branch name in profile
-    if (userBranch) {
-        document.getElementById('userDeptDisplay').textContent = userBranch;
-    }
-    
-    // ✅ Show/hide branch indicator
-    const branchIndicator = document.getElementById('branchIndicator');
-    if (branchIndicator) {
-        if (perms.viewAllBranches) {
-            branchIndicator.textContent = '🔓 All Branches';
-            branchIndicator.className = 'badge bg-success ms-2';
-        } else {
-            branchIndicator.textContent = '🔒 ' + userBranch;
-            branchIndicator.className = 'badge bg-info ms-2';
-        }
-    }
-    
-    // If employee, show My Dashboard by default
-    if (role === 'employee' && !perms.viewDashboard) {
-        document.getElementById('page-dashboard').style.display = 'none';
-        document.getElementById('page-myDashboard').style.display = 'block';
-        document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
-        document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.remove('active');
-    }
-}
-
-// ============================================
-// DATA STORE - Cloud Sync
+// DATA STORE - Cloud Sync with Branch Isolation
 // ============================================
 const CloudStore = {
     usersCollection: db.collection('users'),
@@ -2242,7 +2168,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.branchesCollection.orderBy('name');
         
-        // ✅ Branch isolation: If user can't see all branches, filter by their branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('name', '==', user.branch);
         }
@@ -2265,9 +2190,8 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.projectsCollection.orderBy('name');
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
+            query = query.where('camps', 'array-contains', user.branch);
         }
         
         const listener = query.onSnapshot((snapshot) => {
@@ -2288,7 +2212,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.employeesCollection.orderBy('name');
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('branch', '==', user.branch);
         }
@@ -2311,7 +2234,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.advancesCollection.orderBy('createdAt', 'desc');
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('branch', '==', user.branch);
         }
@@ -2334,7 +2256,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.expensesCollection.orderBy('createdAt', 'desc');
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('branch', '==', user.branch);
         }
@@ -2357,7 +2278,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.cardsCollection.orderBy('cardNumber');
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('branch', '==', user.branch);
         }
@@ -2380,7 +2300,6 @@ const CloudStore = {
         const perms = getUserPermissions(user?.role);
         let query = this.auditCollection.orderBy('timestamp', 'desc').limit(100);
         
-        // ✅ Branch isolation: Filter by branch
         if (!perms.viewAllBranches && user?.branch) {
             query = query.where('branch', '==', user.branch);
         }
@@ -2581,6 +2500,77 @@ function removeFile(index) {
 }
 
 // ============================================
+// APPLY PERMISSIONS
+// ============================================
+function applyPermissions() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    const role = user.role;
+    const perms = getUserPermissions(role);
+    const isAdmin = role === 'admin';
+    const userBranch = user.branch || '';
+    
+    const menuItems = {
+        dashboardMenuLink: perms.viewDashboard,
+        myDashboardMenuLink: perms.viewMyDashboard,
+        advancesMenuLink: perms.viewAdvances,
+        expensesMenuLink: perms.viewExpenses,
+        cardsMenuLink: perms.viewCards,
+        branchesMenuLink: perms.viewBranches,
+        projectsMenuLink: perms.viewProjects,
+        employeesMenuLink: perms.viewEmployees,
+        approvalsMenuLink: perms.viewApprovals,
+        reportsMenuLink: perms.viewReports,
+        auditMenuLink: perms.viewAudit,
+        permissionsMenuLink: perms.viewPermissions && isAdmin
+    };
+    
+    Object.keys(menuItems).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = menuItems[id] ? 'block' : 'none';
+        }
+    });
+    
+    const adminMenu = document.getElementById('adminMenu');
+    if (adminMenu) {
+        const hasAdminAccess = menuItems.branchesMenuLink || menuItems.projectsMenuLink || 
+                              menuItems.employeesMenuLink || menuItems.approvalsMenuLink || 
+                              menuItems.reportsMenuLink || menuItems.auditMenuLink || 
+                              menuItems.permissionsMenuLink;
+        adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
+    }
+    
+    const addButtons = {
+        addAdvanceBtn: perms.addAdvance,
+        addExpenseBtn: perms.addExpense,
+        addCardBtn: perms.addCard,
+        addBranchBtn: perms.addBranch,
+        addProjectBtn: perms.addProject,
+        addEmployeeBtn: perms.addEmployee
+    };
+    
+    Object.keys(addButtons).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = addButtons[id] ? 'inline-block' : 'none';
+        }
+    });
+    
+    if (userBranch) {
+        document.getElementById('userDeptDisplay').textContent = userBranch;
+    }
+    
+    if (role === 'employee' && !perms.viewDashboard) {
+        document.getElementById('page-dashboard').style.display = 'none';
+        document.getElementById('page-myDashboard').style.display = 'block';
+        document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
+        document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.remove('active');
+    }
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 async function initializeApp() {
@@ -2761,10 +2751,8 @@ function showDashboard() {
         document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
         document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
         
-        // Apply permissions
         applyPermissions();
         
-        // Default page
         const perms = getUserPermissions(user.role);
         if (user.role === 'employee' || !perms.viewDashboard) {
             document.getElementById('page-dashboard').style.display = 'none';
@@ -2866,31 +2854,16 @@ function updateDashboard() {
         .reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
     document.getElementById('totalOutstanding').textContent = '₹' + outstanding.toLocaleString();
     
-    const totalFunds = projects.reduce((sum, p) => sum + (p.allocatedFund || 0), 0);
-    const totalExpenses = expenses
-        .filter(e => e.status === 'approved' || e.status === 'completed')
-        .reduce((sum, e) => sum + (e.amount || 0), 0);
-    const totalAdvances = advances
-        .filter(a => a.status === 'issued')
-        .reduce((sum, a) => sum + (a.amount || 0), 0);
-    
-    document.getElementById('totalFunds').textContent = '₹' + totalFunds.toLocaleString();
-    document.getElementById('totalUtilized').textContent = '₹' + (totalExpenses + totalAdvances).toLocaleString();
-    document.getElementById('totalAvailable').textContent = '₹' + (totalFunds - totalExpenses - totalAdvances).toLocaleString();
+    const totalCardLimit = cards.reduce((sum, c) => sum + (c.limit || 0), 0);
+    const totalCardUtilized = cards.reduce((sum, c) => sum + (c.utilized || 0), 0);
+    document.getElementById('totalCardFunds').textContent = '₹' + totalCardLimit.toLocaleString();
+    document.getElementById('totalUtilized').textContent = '₹' + totalCardUtilized.toLocaleString();
+    document.getElementById('totalAvailable').textContent = '₹' + (totalCardLimit - totalCardUtilized).toLocaleString();
     
     const pendingVerification = expenses
         .filter(e => e.status === 'pending' || e.status === 'submitted')
         .reduce((sum, e) => sum + (e.amount || 0), 0);
     document.getElementById('pendingVerification').textContent = '₹' + pendingVerification.toLocaleString();
-    
-    const isManager = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts';
-    if (isManager && hasPermission(user?.role, 'viewCards')) {
-        const totalCardLimit = cards.reduce((sum, c) => sum + (c.limit || 0), 0);
-        const totalCardUtilized = cards.reduce((sum, c) => sum + (c.utilized || 0), 0);
-        document.getElementById('cardTotalFunds').textContent = '₹' + totalCardLimit.toLocaleString();
-        document.getElementById('cardUtilized').textContent = '₹' + totalCardUtilized.toLocaleString();
-        document.getElementById('cardAvailable').textContent = '₹' + (totalCardLimit - totalCardUtilized).toLocaleString();
-    }
     
     updateAttentionList();
     
@@ -3080,7 +3053,6 @@ function populateBranchSelectors() {
     const perms = getUserPermissions(user?.role);
     let branches = appState.branches;
     
-    // ✅ Branch isolation: Only show user's branch in selectors
     if (!perms.viewAllBranches && user?.branch) {
         branches = branches.filter(b => b.name === user.branch);
     }
@@ -3091,7 +3063,7 @@ function populateBranchSelectors() {
         const select = document.getElementById(id);
         if (!select) return;
         const currentValue = select.value;
-        select.innerHTML = '<option value="">Select Branch</option>' + 
+        select.innerHTML = '<option value="">Select Camp</option>' + 
             branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
         if (currentValue && branches.some(b => b.name === currentValue)) {
             select.value = currentValue;
@@ -3105,6 +3077,14 @@ function populateBranchSelectors() {
             appState.employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
         if (currentValue) branchManager.value = currentValue;
     }
+    
+    // Populate project camps selector
+    const projectCamps = document.getElementById('projectCamps');
+    if (projectCamps) {
+        projectCamps.innerHTML = branches.map(b => 
+            `<option value="${b.name}">${b.name}</option>`
+        ).join('');
+    }
 }
 
 function populateProjectSelectors() {
@@ -3112,9 +3092,8 @@ function populateProjectSelectors() {
     const perms = getUserPermissions(user?.role);
     let projects = appState.projects;
     
-    // ✅ Branch isolation: Only show user's branch projects
     if (!perms.viewAllBranches && user?.branch) {
-        projects = projects.filter(p => p.branch === user.branch);
+        projects = projects.filter(p => p.camps && p.camps.includes(user.branch));
     }
     
     const selectors = ['advProject', 'expProject', 'cardProject'];
@@ -3132,8 +3111,179 @@ function populateProjectSelectors() {
 }
 
 // ============================================
-// LOAD FUNCTIONS - WITH BRANCH ISOLATION
+// LOAD FUNCTIONS
 // ============================================
+
+// BRANCHES
+function loadBranches() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewBranches')) {
+        document.getElementById('branchesBody').innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const branches = appState.branches;
+    const tbody = document.getElementById('branchesBody');
+    
+    if (branches.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No branches/camps found</td></tr>`;
+        return;
+    }
+    
+    const canDelete = hasPermission(user?.role, 'deleteBranch');
+    
+    tbody.innerHTML = branches.map(b => {
+        const branchProjects = appState.projects.filter(p => p.camps && p.camps.includes(b.name));
+        const branchEmployees = appState.employees.filter(e => e.branch === b.name);
+        const branchCards = appState.cards.filter(c => c.branch === b.name);
+        const totalLimit = branchCards.reduce((sum, c) => sum + (c.limit || 0), 0);
+        
+        return `
+            <tr>
+                <td><strong>${b.name}</strong></td>
+                <td><span class="badge ${b.type === 'main' ? 'bg-primary' : 'bg-info'}">${b.type || 'camp'}</span></td>
+                <td>${b.location || 'N/A'}</td>
+                <td>${b.managerName || 'N/A'}</td>
+                <td>${branchProjects.length}</td>
+                <td>${branchEmployees.length}</td>
+                <td>₹${totalLimit.toLocaleString()}</td>
+                <td>
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteBranch('${b.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="badge bg-secondary">View Only</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// PROJECTS
+function loadProjects() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewProjects')) {
+        document.getElementById('projectsBody').innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const projects = appState.projects;
+    const tbody = document.getElementById('projectsBody');
+    
+    if (projects.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No projects found</td></tr>`;
+        return;
+    }
+    
+    const canDelete = hasPermission(user?.role, 'deleteProject');
+    
+    tbody.innerHTML = projects.map(p => {
+        const projectCards = appState.cards.filter(c => c.projectName === p.name);
+        const totalLimit = projectCards.reduce((sum, c) => sum + (c.limit || 0), 0);
+        const totalUtilized = projectCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
+        const available = totalLimit - totalUtilized;
+        const percentUsed = totalLimit > 0 ? (totalUtilized / totalLimit) * 100 : 0;
+        const camps = p.camps ? p.camps.join(', ') : 'No camps assigned';
+        
+        return `
+            <tr>
+                <td><strong>${p.name}</strong></td>
+                <td>${camps}</td>
+                <td>₹${totalLimit.toLocaleString()}</td>
+                <td>₹${totalUtilized.toLocaleString()}</td>
+                <td>₹${available.toLocaleString()}</td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar ${percentUsed > 80 ? 'bg-danger' : percentUsed > 50 ? 'bg-warning' : 'bg-success'}" 
+                             style="width: ${Math.min(percentUsed, 100)}%">
+                            ${percentUsed.toFixed(0)}%
+                        </div>
+                    </div>
+                </td>
+                <td><span class="badge ${p.status === 'active' ? 'bg-success' : 'bg-secondary'}">${p.status || 'Active'}</span></td>
+                <td>
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="badge bg-secondary">View Only</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// CARDS
+function loadCards() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewCards')) {
+        document.getElementById('cardsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const cards = appState.cards;
+    const tbody = document.getElementById('cardsBody');
+    if (cards.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No cards found</td></tr>`;
+        return;
+    }
+    
+    const canDelete = hasPermission(user?.role, 'deleteCard');
+    
+    tbody.innerHTML = cards.map(c => {
+        const utilized = c.utilized || 0;
+        const available = c.limit - utilized;
+        const percentUsed = c.limit > 0 ? (utilized / c.limit) * 100 : 0;
+        
+        return `
+            <tr>
+                <td>XXXX ${c.cardNumber || 'N/A'}</td>
+                <td>${c.branch || 'N/A'}</td>
+                <td>${c.projectName || 'N/A'}</td>
+                <td>${c.holderName || 'N/A'}</td>
+                <td>₹${(c.limit || 0).toLocaleString()}</td>
+                <td>₹${utilized.toLocaleString()}</td>
+                <td>₹${available.toLocaleString()}</td>
+                <td>
+                    <span class="badge ${percentUsed > 80 ? 'bg-danger' : percentUsed > 50 ? 'bg-warning' : 'bg-success'}">
+                        ${percentUsed.toFixed(0)}%
+                    </span>
+                </td>
+                <td>
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${c.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="badge bg-secondary">View Only</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
 
 // EMPLOYEES
 function loadEmployees() {
@@ -3152,9 +3302,8 @@ function loadEmployees() {
     const employees = appState.employees;
     const tbody = document.getElementById('employeesBody');
     
-    // ✅ Branch isolation already applied in listener
     if (employees.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees found in your branch</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees found</td></tr>`;
         return;
     }
     
@@ -3198,175 +3347,6 @@ function loadEmployees() {
     }).join('');
 }
 
-// CARDS
-function loadCards() {
-    const user = CloudStore.getCurrentUser();
-    if (!hasPermission(user?.role, 'viewCards')) {
-        document.getElementById('cardsBody').innerHTML = `
-            <tr>
-                <td colspan="9" class="text-center text-muted">
-                    <i class="fas fa-lock me-2"></i>Access restricted.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    const cards = appState.cards;
-    const tbody = document.getElementById('cardsBody');
-    if (cards.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No cards found in your branch</td></tr>`;
-        return;
-    }
-    
-    const canDelete = hasPermission(user?.role, 'deleteCard');
-    
-    tbody.innerHTML = cards.map(c => {
-        const utilized = c.utilized || 0;
-        const available = c.limit - utilized;
-        const percentUsed = c.limit > 0 ? (utilized / c.limit) * 100 : 0;
-        
-        return `
-            <tr>
-                <td>XXXX ${c.cardNumber || 'N/A'}</td>
-                <td>${c.branch || 'N/A'}</td>
-                <td>${c.projectName || 'N/A'}</td>
-                <td>${c.holderName || 'N/A'}</td>
-                <td>₹${(c.limit || 0).toLocaleString()}</td>
-                <td>₹${utilized.toLocaleString()}</td>
-                <td>₹${available.toLocaleString()}</td>
-                <td>
-                    <span class="badge ${percentUsed > 80 ? 'bg-danger' : percentUsed > 50 ? 'bg-warning' : 'bg-success'}">
-                        ${percentUsed.toFixed(0)}%
-                    </span>
-                </td>
-                <td>
-                    ${canDelete ? `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${c.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : `
-                        <span class="badge bg-secondary">View Only</span>
-                    `}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// BRANCHES
-function loadBranches() {
-    const user = CloudStore.getCurrentUser();
-    if (!hasPermission(user?.role, 'viewBranches')) {
-        document.getElementById('branchesBody').innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-muted">
-                    <i class="fas fa-lock me-2"></i>Access restricted.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    const branches = appState.branches;
-    const tbody = document.getElementById('branchesBody');
-    
-    // ✅ Branch isolation already applied in listener
-    if (branches.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No branches found</td></tr>`;
-        return;
-    }
-    
-    const canDelete = hasPermission(user?.role, 'deleteBranch');
-    
-    tbody.innerHTML = branches.map(b => {
-        const branchProjects = appState.projects.filter(p => p.branch === b.name);
-        const branchEmployees = appState.employees.filter(e => e.branch === b.name);
-        const totalFund = branchProjects.reduce((sum, p) => sum + (p.allocatedFund || 0), 0);
-        
-        return `
-            <tr>
-                <td><strong>${b.name}</strong></td>
-                <td>${b.location || 'N/A'}</td>
-                <td>${b.managerName || 'N/A'}</td>
-                <td>${branchProjects.length}</td>
-                <td>${branchEmployees.length}</td>
-                <td>₹${totalFund.toLocaleString()}</td>
-                <td>
-                    ${canDelete ? `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteBranch('${b.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : `
-                        <span class="badge bg-secondary">View Only</span>
-                    `}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// PROJECTS
-function loadProjects() {
-    const user = CloudStore.getCurrentUser();
-    if (!hasPermission(user?.role, 'viewProjects')) {
-        document.getElementById('projectsBody').innerHTML = `
-            <tr>
-                <td colspan="8" class="text-center text-muted">
-                    <i class="fas fa-lock me-2"></i>Access restricted.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    const projects = appState.projects;
-    const tbody = document.getElementById('projectsBody');
-    
-    // ✅ Branch isolation already applied in listener
-    if (projects.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No projects found in your branch</td></tr>`;
-        return;
-    }
-    
-    const canDelete = hasPermission(user?.role, 'deleteProject');
-    
-    tbody.innerHTML = projects.map(p => {
-        const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        const available = (p.allocatedFund || 0) - utilized;
-        const percentUsed = p.allocatedFund > 0 ? (utilized / p.allocatedFund) * 100 : 0;
-        
-        return `
-            <tr>
-                <td><strong>${p.name}</strong></td>
-                <td>${p.branch || 'N/A'}</td>
-                <td>₹${(p.allocatedFund || 0).toLocaleString()}</td>
-                <td>₹${utilized.toLocaleString()}</td>
-                <td>₹${available.toLocaleString()}</td>
-                <td>
-                    <div class="progress">
-                        <div class="progress-bar ${percentUsed > 80 ? 'bg-danger' : percentUsed > 50 ? 'bg-warning' : 'bg-success'}" 
-                             style="width: ${Math.min(percentUsed, 100)}%">
-                            ${percentUsed.toFixed(0)}%
-                        </div>
-                    </div>
-                </td>
-                <td><span class="badge ${p.status === 'active' ? 'bg-success' : 'bg-secondary'}">${p.status || 'Active'}</span></td>
-                <td>
-                    ${canDelete ? `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : `
-                        <span class="badge bg-secondary">View Only</span>
-                    `}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
 // ADVANCES
 function loadAdvances() {
     const user = CloudStore.getCurrentUser();
@@ -3383,7 +3363,6 @@ function loadAdvances() {
     
     let advances = appState.advances;
     
-    // Additional filtering for employee/manager
     if (user?.role === 'employee') {
         advances = advances.filter(a => a.employeeId === user.id);
     }
@@ -3445,7 +3424,6 @@ function loadExpenses() {
     
     let expenses = appState.expenses;
     
-    // Additional filtering for employee/manager
     if (user?.role === 'employee') {
         expenses = expenses.filter(e => e.employeeId === user.id);
     }
@@ -3660,31 +3638,32 @@ function generateReports() {
     const branches = appState.branches;
     const projects = appState.projects;
     
-    const reportData = projects.map(p => {
-        const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        const available = (p.allocatedFund || 0) - utilized;
-        const percentUsed = p.allocatedFund > 0 ? (utilized / p.allocatedFund) * 100 : 0;
+    const reportData = branches.map(b => {
+        const branchCards = appState.cards.filter(c => c.branch === b.name);
+        const totalLimit = branchCards.reduce((sum, c) => sum + (c.limit || 0), 0);
+        const totalUtilized = branchCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
+        const available = totalLimit - totalUtilized;
+        const percentUsed = totalLimit > 0 ? (totalUtilized / totalLimit) * 100 : 0;
         
         return {
-            branch: p.branch || 'N/A',
-            project: p.name,
-            totalFund: p.allocatedFund || 0,
-            utilized: utilized,
+            branch: b.name,
+            project: branchCards.map(c => c.projectName).join(', ') || 'N/A',
+            totalLimit: totalLimit,
+            utilized: totalUtilized,
             available: available,
             percentUsed: percentUsed
         };
     });
     
     const tbody = document.getElementById('reportBody');
-    if (reportData.length === 0) {
+    if (reportData.length === 0 || reportData.every(r => r.totalLimit === 0)) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No data available</td></tr>`;
     } else {
         tbody.innerHTML = reportData.map(r => `
             <tr>
                 <td>${r.branch}</td>
                 <td>${r.project}</td>
-                <td>₹${r.totalFund.toLocaleString()}</td>
+                <td>₹${r.totalLimit.toLocaleString()}</td>
                 <td>₹${r.utilized.toLocaleString()}</td>
                 <td>₹${r.available.toLocaleString()}</td>
                 <td>
@@ -3699,8 +3678,166 @@ function generateReports() {
         `).join('');
     }
     
-    updateBranchChart(branches, projects);
+    updateBranchChart(branches);
     updateEmployeeChart(appState.employees);
+}
+
+function updateBranchChart(branches) {
+    const ctx = document.getElementById('branchChart').getContext('2d');
+    if (branchChartInstance) branchChartInstance.destroy();
+    
+    const branchData = branches.map(b => {
+        const branchCards = appState.cards.filter(c => c.branch === b.name);
+        const totalLimit = branchCards.reduce((sum, c) => sum + (c.limit || 0), 0);
+        const totalUtilized = branchCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
+        return {
+            name: b.name,
+            totalLimit: totalLimit,
+            utilized: totalUtilized,
+            available: totalLimit - totalUtilized
+        };
+    }).filter(d => d.totalLimit > 0);
+    
+    branchChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: branchData.map(d => d.name),
+            datasets: [
+                {
+                    label: 'Total Limit',
+                    data: branchData.map(d => d.totalLimit),
+                    backgroundColor: '#4e73df',
+                    borderColor: '#224abe',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Utilized',
+                    data: branchData.map(d => d.utilized),
+                    backgroundColor: '#e74a3b',
+                    borderColor: '#c0392b',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Available',
+                    data: branchData.map(d => d.available),
+                    backgroundColor: '#1cc88a',
+                    borderColor: '#13855c',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₹' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateEmployeeChart(employees) {
+    const ctx = document.getElementById('employeeChart').getContext('2d');
+    if (employeeChartInstance) employeeChartInstance.destroy();
+    
+    const empData = employees.map(e => {
+        const empAdvances = appState.advances.filter(a => a.employeeId === e.id && a.status === 'issued');
+        const outstanding = empAdvances.reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
+        return {
+            name: e.name,
+            outstanding: outstanding
+        };
+    }).filter(d => d.outstanding > 0);
+    
+    if (empData.length === 0) {
+        employeeChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['No Outstanding'],
+                datasets: [{ data: [1], backgroundColor: ['#ddd'] }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        return;
+    }
+    
+    const colors = ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796', '#6f42c1', '#fd7e14'];
+    employeeChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: empData.map(d => d.name),
+            datasets: [{
+                data: empData.map(d => d.outstanding),
+                backgroundColor: colors.slice(0, empData.length),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ₹' + context.parsed.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function exportReport() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewReports')) {
+        showToast('warning', 'You don\'t have permission to export reports.');
+        return;
+    }
+    
+    const branches = appState.branches;
+    let csv = 'Camp,Project,Card Limit,Utilized,Available,% Used\n';
+    branches.forEach(b => {
+        const branchCards = appState.cards.filter(c => c.branch === b.name);
+        branchCards.forEach(c => {
+            const utilized = c.utilized || 0;
+            const available = c.limit - utilized;
+            const percentUsed = c.limit > 0 ? (utilized / c.limit) * 100 : 0;
+            csv += `${b.name},${c.projectName || 'N/A'},${c.limit || 0},${utilized},${available},${percentUsed.toFixed(0)}%\n`;
+        });
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    showToast('success', 'Report exported');
 }
 
 // ============================================
@@ -3771,7 +3908,7 @@ function showExpenseModal() {
 function showBranchModal() {
     const user = CloudStore.getCurrentUser();
     if (!hasPermission(user?.role, 'addBranch')) {
-        showToast('warning', 'You don\'t have permission to add branches.');
+        showToast('warning', 'You don\'t have permission to add branches/camps.');
         return;
     }
     populateBranchSelectors();
@@ -3864,15 +4001,12 @@ async function saveAdvance() {
         return;
     }
     
-    const projectData = appState.projects.find(p => p.name === project);
-    
     showLoading(true);
     try {
         const data = {
             employeeId: user.id,
             employeeName: user.fullName,
             branch: branch,
-            projectId: projectData?.id || null,
             projectName: project,
             amount: amount,
             remainingAmount: amount,
@@ -3934,8 +4068,6 @@ async function saveExpense() {
         return;
     }
     
-    const projectData = appState.projects.find(p => p.name === project);
-    
     showLoading(true);
     try {
         const fileUrls = [];
@@ -3956,7 +4088,6 @@ async function saveExpense() {
             employeeId: user.id,
             employeeName: user.fullName,
             branch: branch,
-            projectId: projectData?.id || null,
             projectName: project,
             category: category,
             paymentMethod: paymentMethod,
@@ -3976,6 +4107,7 @@ async function saveExpense() {
         await CloudStore.addExpense(data);
         await addAuditLog('CREATE_EXPENSE', 'Expense', amount);
         
+        // Update advance if exists
         const advance = appState.advances.find(a => 
             a.employeeId === user.id && 
             a.status === 'issued' && 
@@ -4018,13 +4150,15 @@ async function saveExpense() {
 async function saveBranch() {
     const user = CloudStore.getCurrentUser();
     if (!hasPermission(user?.role, 'addBranch')) {
-        showToast('warning', 'You don\'t have permission to add branches.');
+        showToast('warning', 'You don\'t have permission to add branches/camps.');
         return;
     }
     
     const name = document.getElementById('branchName').value.trim();
+    const type = document.getElementById('branchType').value;
     const location = document.getElementById('branchLocation').value.trim();
     const managerId = document.getElementById('branchManager').value;
+    const cardLimit = parseFloat(document.getElementById('branchCardLimit').value) || 0;
     
     if (!name || !location) {
         showToast('warning', 'Please fill all required fields');
@@ -4037,17 +4171,19 @@ async function saveBranch() {
     try {
         const data = {
             name,
+            type: type || 'camp',
             location,
             managerId: managerId || null,
             managerName: manager ? manager.name : null,
+            cardLimit: cardLimit,
             createdAt: new Date().toISOString()
         };
         await CloudStore.addBranch(data);
         await addAuditLog('CREATE_BRANCH', 'Branch', name);
         bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
-        showToast('success', `Branch ${name} added successfully`);
+        showToast('success', `Camp ${name} added successfully`);
     } catch (error) {
-        showToast('danger', 'Failed to add branch: ' + error.message);
+        showToast('danger', 'Failed to add camp: ' + error.message);
     }
     showLoading(false);
 }
@@ -4060,12 +4196,12 @@ async function saveProject() {
     }
     
     const name = document.getElementById('projectName').value.trim();
-    const branch = document.getElementById('projectBranch').value;
-    const allocatedFund = parseFloat(document.getElementById('projectFund').value);
+    const campsSelect = document.getElementById('projectCamps');
+    const selectedCamps = Array.from(campsSelect.selectedOptions).map(opt => opt.value);
     const description = document.getElementById('projectDescription').value.trim();
     
-    if (!name || !branch || !allocatedFund || allocatedFund <= 0) {
-        showToast('warning', 'Please fill all required fields');
+    if (!name || selectedCamps.length === 0) {
+        showToast('warning', 'Please fill all required fields and select at least one camp');
         return;
     }
     
@@ -4073,8 +4209,7 @@ async function saveProject() {
     try {
         const data = {
             name,
-            branch,
-            allocatedFund,
+            camps: selectedCamps,
             description,
             status: 'active',
             createdAt: new Date().toISOString()
@@ -4082,7 +4217,7 @@ async function saveProject() {
         await CloudStore.addProject(data);
         await addAuditLog('CREATE_PROJECT', 'Project', name);
         bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-        showToast('success', `Project ${name} added successfully`);
+        showToast('success', `Project ${name} added successfully with ${selectedCamps.length} camps`);
     } catch (error) {
         showToast('danger', 'Failed to add project: ' + error.message);
     }
@@ -4108,14 +4243,12 @@ async function saveCard() {
     }
     
     const holder = appState.employees.find(e => e.id === holderId);
-    const projectData = appState.projects.find(p => p.name === project);
     
     showLoading(true);
     try {
         const data = {
             cardNumber: cardNumber.padStart(4, '0'),
             branch: branch,
-            projectId: projectData?.id || null,
             projectName: project,
             holderId: holderId,
             holderName: holder ? holder.name : 'N/A',
@@ -4127,7 +4260,7 @@ async function saveCard() {
         await CloudStore.addCard(data);
         await addAuditLog('CREATE_CARD', 'Card', cardNumber);
         bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
-        showToast('success', 'Card added successfully');
+        showToast('success', `Card added successfully for ${branch} with monthly limit ₹${limit.toLocaleString()}`);
     } catch (error) {
         showToast('danger', 'Failed to add card: ' + error.message);
     }
@@ -4243,14 +4376,14 @@ async function deleteCard(id) {
 async function deleteBranch(id) {
     const user = CloudStore.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteBranch')) {
-        showToast('warning', 'You don\'t have permission to delete branches.');
+        showToast('warning', 'You don\'t have permission to delete branches/camps.');
         return;
     }
-    if (!confirm('Delete this branch and all associated data?')) return;
+    if (!confirm('Delete this camp and all associated data?')) return;
     try {
         await CloudStore.branchesCollection.doc(id).delete();
         await addAuditLog('DELETE_BRANCH', 'Branch', id);
-        showToast('success', 'Branch deleted');
+        showToast('success', 'Camp deleted');
     } catch (error) {
         showToast('danger', 'Failed to delete: ' + error.message);
     }
@@ -4302,169 +4435,6 @@ async function deleteExpense(id) {
     } catch (error) {
         showToast('danger', 'Failed to delete: ' + error.message);
     }
-}
-
-// ============================================
-// CHART FUNCTIONS
-// ============================================
-let branchChartInstance = null;
-let employeeChartInstance = null;
-
-function updateBranchChart(branches, projects) {
-    const ctx = document.getElementById('branchChart').getContext('2d');
-    if (branchChartInstance) branchChartInstance.destroy();
-    
-    const branchData = branches.map(b => {
-        const branchProjects = projects.filter(p => p.branch === b.name);
-        const totalFund = branchProjects.reduce((sum, p) => sum + (p.allocatedFund || 0), 0);
-        const branchExpenses = appState.expenses.filter(e => e.branch === b.name && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = branchExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        return {
-            name: b.name,
-            totalFund: totalFund,
-            utilized: utilized,
-            available: totalFund - utilized
-        };
-    });
-    
-    branchChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: branchData.map(d => d.name),
-            datasets: [
-                {
-                    label: 'Total Fund',
-                    data: branchData.map(d => d.totalFund),
-                    backgroundColor: '#4e73df',
-                    borderColor: '#224abe',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Utilized',
-                    data: branchData.map(d => d.utilized),
-                    backgroundColor: '#e74a3b',
-                    borderColor: '#c0392b',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Available',
-                    data: branchData.map(d => d.available),
-                    backgroundColor: '#1cc88a',
-                    borderColor: '#13855c',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '₹' + context.parsed.y.toLocaleString();
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₹' + value.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function updateEmployeeChart(employees) {
-    const ctx = document.getElementById('employeeChart').getContext('2d');
-    if (employeeChartInstance) employeeChartInstance.destroy();
-    
-    const empData = employees.map(e => {
-        const empAdvances = appState.advances.filter(a => a.employeeId === e.id && a.status === 'issued');
-        const outstanding = empAdvances.reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
-        return {
-            name: e.name,
-            outstanding: outstanding
-        };
-    }).filter(d => d.outstanding > 0);
-    
-    if (empData.length === 0) {
-        employeeChartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['No Outstanding'],
-                datasets: [{ data: [1], backgroundColor: ['#ddd'] }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-        return;
-    }
-    
-    const colors = ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796', '#6f42c1', '#fd7e14'];
-    employeeChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: empData.map(d => d.name),
-            datasets: [{
-                data: empData.map(d => d.outstanding),
-                backgroundColor: colors.slice(0, empData.length),
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ₹' + context.parsed.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function exportReport() {
-    const user = CloudStore.getCurrentUser();
-    if (!hasPermission(user?.role, 'viewReports')) {
-        showToast('warning', 'You don\'t have permission to export reports.');
-        return;
-    }
-    
-    const projects = appState.projects;
-    let csv = 'Branch,Project,Total Fund,Utilized,Available,% Used\n';
-    projects.forEach(p => {
-        const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        const available = (p.allocatedFund || 0) - utilized;
-        const percentUsed = p.allocatedFund > 0 ? (utilized / p.allocatedFund) * 100 : 0;
-        csv += `${p.branch || 'N/A'},${p.name},${p.allocatedFund || 0},${utilized},${available},${percentUsed.toFixed(0)}%\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    showToast('success', 'Report exported');
 }
 
 // ============================================
@@ -4591,7 +4561,7 @@ function viewEmployeeLedger(employeeId) {
     const content = `
         <div class="mb-3">
             <h6>${emp.name} - Employee Ledger</h6>
-            <small>Branch: ${emp.branch || 'N/A'} | Employee ID: ${emp.employeeId}</small>
+            <small>Camp: ${emp.branch || 'N/A'} | Employee ID: ${emp.employeeId}</small>
         </div>
         <div class="table-responsive">
             <table class="table table-sm">
@@ -4642,7 +4612,7 @@ function viewExpense(id) {
         <div class="row">
             <div class="col-6"><strong>ID:</strong></div><div class="col-6">${expense.id}</div>
             <div class="col-6"><strong>Employee:</strong></div><div class="col-6">${expense.employeeName}</div>
-            <div class="col-6"><strong>Branch:</strong></div><div class="col-6">${expense.branch}</div>
+            <div class="col-6"><strong>Camp:</strong></div><div class="col-6">${expense.branch}</div>
             <div class="col-6"><strong>Project:</strong></div><div class="col-6">${expense.projectName}</div>
             <div class="col-6"><strong>Category:</strong></div><div class="col-6">${expense.category}</div>
             <div class="col-6"><strong>Amount:</strong></div><div class="col-6">₹${(expense.amount || 0).toLocaleString()}</div>
@@ -4831,7 +4801,7 @@ function viewApproval(id, isAdvance) {
             <div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div>
             <div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance ? 'Advance' : 'Expense'}</div>
             <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName || 'N/A'}</div>
-            <div class="col-5"><strong>Branch:</strong></div><div class="col-7">${item.branch || 'N/A'}</div>
+            <div class="col-5"><strong>Camp:</strong></div><div class="col-7">${item.branch || 'N/A'}</div>
             <div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName || 'N/A'}</div>
             <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount || 0).toLocaleString()}</div>
             <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').replace('_', ' ')}</span></div>
@@ -4888,15 +4858,12 @@ console.log('🏗️ Project Fund Management System');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
-console.log('   - Branch Isolation - Each branch sees only their data');
-console.log('   - Role-Based Access Control (RBAC)');
-console.log('   - Granular Permission Management');
-console.log('   - Admins can grant/restrict permissions per role');
-console.log('   - Employees see ONLY My Dashboard');
-console.log('   - Managers see their branch data');
-console.log('   - Only Admins can Delete (Employees, Cards, Branches, Projects)');
+console.log('   - Camp-based Fund Management');
+console.log('   - SBI Visa Cards allocated per camp');
+console.log('   - Mumbai Branch transfers funds monthly');
+console.log('   - Projects have multiple camps');
+console.log('   - Branch Isolation - Each camp sees only their data');
 console.log('   - Complete Audit Trail');
-console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Super Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Advances, Ctrl+4=Expenses, Ctrl+5=Cards');
 </script>
