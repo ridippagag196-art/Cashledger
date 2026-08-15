@@ -1937,78 +1937,38 @@ function setupRealtimeListeners() {
     CloudStore.listenToEmployees((employees) => {
         appState.employees = employees;
         updateDashboard();
-        function loadEmployees() {
-    const user = CloudStore.getCurrentUser();
-    const employees = appState.employees;
-    const tbody = document.getElementById('employeesBody');
+        loadEmployees();
+        generateReports();
+    });
     
-    // ✅ Role-based filtering
-    let filteredEmployees = employees;
-    if (user?.role === 'manager') {
-        // Manager sees only their branch employees
-        filteredEmployees = employees.filter(e => e.branch === user.branch);
-    } else if (user?.role === 'employee') {
-        // Employee sees only themselves (or none)
-        filteredEmployees = employees.filter(e => e.id === user.id);
+    CloudStore.listenToAdvances((advances) => {
+        appState.advances = advances;
+        updateDashboard();
+        loadAdvances();
+        loadMyDashboard();
+        loadApprovals();
+    });
+    
+    CloudStore.listenToExpenses((expenses) => {
+        appState.expenses = expenses;
+        updateDashboard();
+        loadExpenses();
+        loadMyDashboard();
+        loadApprovals();
+    });
+    
+    CloudStore.listenToCards((cards) => {
+        appState.cards = cards;
+        updateDashboard();
+        loadCards();
+    });
+    
+    if (user.role === 'admin' || user.role === 'auditor') {
+        CloudStore.listenToAudit((logs) => {
+            appState.auditLogs = logs;
+            loadAuditLogs();
+        });
     }
-    // Admin and Accounts see all
-    
-    if (filteredEmployees.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees found</td></tr>`;
-        return;
-    }
-    
-    tbody.innerHTML = filteredEmployees.map(e => {
-        const empAdvances = appState.advances.filter(a => a.employeeId === e.id);
-        const totalAdvances = empAdvances.reduce((sum, a) => sum + (a.amount || 0), 0);
-        const outstanding = empAdvances
-            .filter(a => a.status === 'issued')
-            .reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
-        
-        // ✅ Role-based actions
-        const isAdmin = user?.role === 'admin';
-        const isManager = user?.role === 'manager';
-        const isAccounts = user?.role === 'accounts';
-        const isEmployee = user?.role === 'employee';
-        
-        // Only Admin can edit/delete
-        const canEdit = isAdmin;
-        const canDelete = isAdmin;
-        const canViewLedger = isAdmin || isManager || isAccounts;
-        
-        return `
-            <tr>
-                <td><code>${e.employeeId}</code></td>
-                <td><strong>${e.name}</strong></td>
-                <td>${e.branch || 'N/A'}</td>
-                <td>${e.designation || 'N/A'}</td>
-                <td><span class="role-badge ${e.role || 'employee'}">${(e.role || 'employee').toUpperCase()}</span></td>
-                <td>₹${totalAdvances.toLocaleString()}</td>
-                <td><span class="${outstanding > 0 ? 'text-danger fw-bold' : 'text-success'}">₹${outstanding.toLocaleString()}</span></td>
-                <td><span class="badge ${e.isActive !== false ? 'bg-success' : 'bg-danger'}">${e.isActive !== false ? 'Active' : 'Inactive'}</span></td>
-                <td>
-                    ${canEdit ? `
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${e.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    ` : ''}
-                    ${canDelete ? `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${e.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : ''}
-                    ${canViewLedger ? `
-                        <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${e.id}')">
-                            <i class="fas fa-book"></i>
-                        </button>
-                    ` : ''}
-                    ${!canEdit && !canDelete && !canViewLedger ? `
-                        <span class="badge bg-secondary">No Access</span>
-                    ` : ''}
-                </td>
-            </tr>
-        `;
-    }).join('');
 }
 
 // ============================================
