@@ -532,6 +532,17 @@
             padding: 5px 10px;
             border: 1px solid #ddd;
         }
+        
+        .no-access {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+        
+        .no-access i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -554,7 +565,7 @@
             <div class="brand">
                 <i class="fas fa-project-diagram"></i>
                 <h3>Project Fund Pro</h3>
-                <p>SECON-Mumbai Fund Management</p>
+                <p>Complete Project Fund Management</p>
                 <span class="cloud-badge connection-status connecting" id="connectionStatus">
                     <i class="fas fa-circle"></i> Connecting...
                 </span>
@@ -680,7 +691,8 @@
                         <a class="nav-link" href="#" onclick="showPage('expenses')">
                             <i class="fas fa-receipt"></i> Expenses
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('cards')">
+                        <!-- Cards - Only for Admin/Manager/Accounts -->
+                        <a class="nav-link" href="#" onclick="showPage('cards')" id="cardsMenu" style="display: none;">
                             <i class="fas fa-credit-card"></i> Cards
                         </a>
                         <div id="adminMenu" style="display: none;">
@@ -838,8 +850,8 @@
                             </div>
                         </div>
 
-                        <!-- SBI Card Summary -->
-                        <div class="row mb-4">
+                        <!-- SBI Card Summary - Only for Admin/Manager -->
+                        <div class="row mb-4" id="cardSummarySection">
                             <div class="col-md-12">
                                 <div class="table-container">
                                     <h5><i class="fas fa-credit-card me-2"></i>SBI Visa Card Summary</h5>
@@ -981,7 +993,7 @@
                         </div>
                     </div>
 
-                    <!-- Advances Page -->
+                    <!-- Advances Page - Filtered by Role -->
                     <div id="page-advances" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-hand-holding-usd me-2 text-primary"></i>Advances</h4>
@@ -1013,7 +1025,7 @@
                         </div>
                     </div>
 
-                    <!-- Expenses Page -->
+                    <!-- Expenses Page - Filtered by Role -->
                     <div id="page-expenses" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-receipt me-2 text-primary"></i>Expenses</h4>
@@ -1045,7 +1057,7 @@
                         </div>
                     </div>
 
-                    <!-- Cards Page -->
+                    <!-- Cards Page - Admin/Manager Only -->
                     <div id="page-cards" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-credit-card me-2 text-primary"></i>SBI Visa Cards</h4>
@@ -1076,7 +1088,7 @@
                         </div>
                     </div>
 
-                    <!-- Branches Page -->
+                    <!-- Branches Page - Admin Only -->
                     <div id="page-branches" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-building me-2 text-primary"></i>Branches</h4>
@@ -1105,7 +1117,7 @@
                         </div>
                     </div>
 
-                    <!-- Projects Page -->
+                    <!-- Projects Page - Admin/Manager Only -->
                     <div id="page-projects" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-project-diagram me-2 text-primary"></i>Projects</h4>
@@ -1135,7 +1147,7 @@
                         </div>
                     </div>
 
-                    <!-- Employees Page -->
+                    <!-- Employees Page - Admin Only -->
                     <div id="page-employees" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-users me-2 text-primary"></i>Employees</h4>
@@ -1166,7 +1178,7 @@
                         </div>
                     </div>
 
-                    <!-- Approvals Page -->
+                    <!-- Approvals Page - Manager/Admin/Accounts Only -->
                     <div id="page-approvals" class="page-content" style="display: none;">
                         <h4><i class="fas fa-check-double me-2 text-primary"></i>Pending Approvals</h4>
                         <div class="table-container">
@@ -1205,7 +1217,7 @@
                         </div>
                     </div>
 
-                    <!-- Reports Page -->
+                    <!-- Reports Page - Admin/Manager Only -->
                     <div id="page-reports" class="page-content" style="display: none;">
                         <h4><i class="fas fa-chart-bar me-2 text-primary"></i>Reports & Analytics</h4>
                         <div class="row mb-4">
@@ -1246,7 +1258,7 @@
                         </div>
                     </div>
 
-                    <!-- Audit Page -->
+                    <!-- Audit Page - Admin Only -->
                     <div id="page-audit" class="page-content" style="display: none;">
                         <h4><i class="fas fa-history me-2 text-primary"></i>Audit Logs</h4>
                         <div class="table-container">
@@ -2194,8 +2206,22 @@ function showDashboard() {
         document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
         document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
         
+        // ✅ ROLE-BASED MENU VISIBILITY
         const isAdmin = user.role === 'admin' || user.role === 'manager' || user.role === 'accounts';
+        const isSuperAdmin = user.role === 'admin';
+        const isManager = user.role === 'manager' || user.role === 'accounts';
+        
+        // Admin menu (Branches, Projects, Employees, Approvals, Reports, Audit)
         document.getElementById('adminMenu').style.display = isAdmin ? 'block' : 'none';
+        
+        // Cards menu - only for Admin/Manager/Accounts
+        document.getElementById('cardsMenu').style.display = isManager ? 'block' : 'none';
+        
+        // Hide audit for non-admins
+        const auditLink = document.querySelector('#adminMenu .nav-link[onclick*="audit"]');
+        if (auditLink) {
+            auditLink.style.display = isSuperAdmin ? 'block' : 'none';
+        }
     }
     
     setupRealtimeListeners();
@@ -2267,6 +2293,7 @@ function setupRealtimeListeners() {
 // UPDATE DASHBOARD
 // ============================================
 function updateDashboard() {
+    const user = CloudStore.getCurrentUser();
     const branches = appState.branches;
     const projects = appState.projects;
     const employees = appState.employees;
@@ -2304,20 +2331,36 @@ function updateDashboard() {
         .reduce((sum, e) => sum + (e.amount || 0), 0);
     document.getElementById('pendingVerification').textContent = '₹' + pendingVerification.toLocaleString();
     
-    // Card Summary
-    const totalCardLimit = cards.reduce((sum, c) => sum + (c.limit || 0), 0);
-    const totalCardUtilized = cards.reduce((sum, c) => sum + (c.utilized || 0), 0);
-    document.getElementById('cardTotalFunds').textContent = '₹' + totalCardLimit.toLocaleString();
-    document.getElementById('cardUtilized').textContent = '₹' + totalCardUtilized.toLocaleString();
-    document.getElementById('cardAvailable').textContent = '₹' + (totalCardLimit - totalCardUtilized).toLocaleString();
+    // Card Summary - Only for Admin/Manager
+    const isManager = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts';
+    if (isManager) {
+        const totalCardLimit = cards.reduce((sum, c) => sum + (c.limit || 0), 0);
+        const totalCardUtilized = cards.reduce((sum, c) => sum + (c.utilized || 0), 0);
+        document.getElementById('cardTotalFunds').textContent = '₹' + totalCardLimit.toLocaleString();
+        document.getElementById('cardUtilized').textContent = '₹' + totalCardUtilized.toLocaleString();
+        document.getElementById('cardAvailable').textContent = '₹' + (totalCardLimit - totalCardUtilized).toLocaleString();
+    }
     
     // Attention Required
     updateAttentionList();
     
-    // Recent Activity
-    const allActivities = [...advances, ...expenses]
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 10);
+    // Recent Activity - Filter by role
+    let allActivities = [...advances, ...expenses];
+    
+    // Employee sees only their own activities
+    if (user?.role === 'employee') {
+        allActivities = allActivities.filter(item => item.employeeId === user.id);
+    }
+    // Manager sees only their branch
+    else if (user?.role === 'manager') {
+        const emp = appState.employees.find(e => e.id === user.id);
+        if (emp) {
+            allActivities = allActivities.filter(item => item.branch === emp.branch);
+        }
+    }
+    
+    allActivities.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    allActivities = allActivities.slice(0, 10);
     
     const tbody = document.getElementById('recentActivityBody');
     if (allActivities.length === 0) {
@@ -2339,21 +2382,24 @@ function updateDashboard() {
 // UPDATE ATTENTION LIST
 // ============================================
 function updateAttentionList() {
+    const user = CloudStore.getCurrentUser();
     const container = document.getElementById('attentionList');
     const alerts = [];
     
-    // Check missing bills (expenses without attachments)
-    const missingBills = appState.expenses.filter(e => 
-        (e.status === 'approved' || e.status === 'completed') && 
-        (!e.files || e.files.length === 0)
-    );
-    if (missingBills.length > 0) {
-        alerts.push({
-            type: 'danger',
-            icon: 'fa-file-invoice',
-            title: `${missingBills.length} Bills Missing`,
-            message: `Expenses approved without bill attachments`
-        });
+    // Check missing bills (expenses without attachments) - Only for admin/manager
+    if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
+        const missingBills = appState.expenses.filter(e => 
+            (e.status === 'approved' || e.status === 'completed') && 
+            (!e.files || e.files.length === 0)
+        );
+        if (missingBills.length > 0) {
+            alerts.push({
+                type: 'danger',
+                icon: 'fa-file-invoice',
+                title: `${missingBills.length} Bills Missing`,
+                message: `Expenses approved without bill attachments`
+            });
+        }
     }
     
     // Check overdue advances (older than 30 days)
@@ -2387,17 +2433,19 @@ function updateAttentionList() {
         });
     }
     
-    // Check card utilization > 80%
-    const highUtilizationCards = appState.cards.filter(c => 
-        c.limit > 0 && (c.utilized / c.limit) > 0.8
-    );
-    if (highUtilizationCards.length > 0) {
-        alerts.push({
-            type: 'warning',
-            icon: 'fa-credit-card',
-            title: `${highUtilizationCards.length} Cards Above 80% Utilization`,
-            message: `Card utilization exceeding recommended limit`
-        });
+    // Check card utilization > 80% - Only for admin/manager
+    if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
+        const highUtilizationCards = appState.cards.filter(c => 
+            c.limit > 0 && (c.utilized / c.limit) > 0.8
+        );
+        if (highUtilizationCards.length > 0) {
+            alerts.push({
+                type: 'warning',
+                icon: 'fa-credit-card',
+                title: `${highUtilizationCards.length} Cards Above 80% Utilization`,
+                message: `Card utilization exceeding recommended limit`
+            });
+        }
     }
     
     if (alerts.length === 0) {
@@ -2938,7 +2986,22 @@ function viewEmployeeLedger(employeeId) {
 // ADVANCE FUNCTIONS
 // ============================================
 function loadAdvances() {
-    const advances = appState.advances;
+    const user = CloudStore.getCurrentUser();
+    let advances = appState.advances;
+    
+    // ✅ ROLE-BASED FILTERING
+    if (user?.role === 'employee') {
+        // Employee sees only their own advances
+        advances = advances.filter(a => a.employeeId === user.id);
+    } else if (user?.role === 'manager') {
+        // Manager sees only their branch advances
+        const emp = appState.employees.find(e => e.id === user.id);
+        if (emp) {
+            advances = advances.filter(a => a.branch === emp.branch);
+        }
+    }
+    // Admin sees all
+    
     const tbody = document.getElementById('advancesBody');
     if (advances.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">No advances found</td></tr>`;
@@ -2948,6 +3011,7 @@ function loadAdvances() {
     tbody.innerHTML = advances.map(a => {
         const spent = (a.amount || 0) - (a.remainingAmount || 0);
         const balance = a.remainingAmount || a.amount || 0;
+        const isOwner = user?.id === a.employeeId;
         
         return `
             <tr>
@@ -2961,14 +3025,16 @@ function loadAdvances() {
                 <td><span class="status-badge status-${a.status || 'pending'}">${(a.status || 'pending').replace('_', ' ')}</span></td>
                 <td>${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'N/A'}</td>
                 <td>
-                    ${a.status === 'issued' ? `
+                    ${a.status === 'issued' && isOwner ? `
                         <button class="btn btn-sm btn-outline-success me-1" onclick="returnAdvance('${a.id}')">
                             <i class="fas fa-hand-holding-usd"></i> Return
                         </button>
                     ` : ''}
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteAdvance('${a.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${user?.role === 'admin' ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteAdvance('${a.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : ''}
                 </td>
             </tr>
         `;
@@ -3097,7 +3163,22 @@ async function deleteAdvance(id) {
 // EXPENSE FUNCTIONS
 // ============================================
 function loadExpenses() {
-    const expenses = appState.expenses;
+    const user = CloudStore.getCurrentUser();
+    let expenses = appState.expenses;
+    
+    // ✅ ROLE-BASED FILTERING
+    if (user?.role === 'employee') {
+        // Employee sees only their own expenses
+        expenses = expenses.filter(e => e.employeeId === user.id);
+    } else if (user?.role === 'manager') {
+        // Manager sees only their branch expenses
+        const emp = appState.employees.find(e => e.id === user.id);
+        if (emp) {
+            expenses = expenses.filter(e => e.branch === emp.branch);
+        }
+    }
+    // Admin sees all
+    
     const tbody = document.getElementById('expensesBody');
     if (expenses.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">No expenses found</td></tr>`;
@@ -3119,9 +3200,11 @@ function loadExpenses() {
                 <button class="btn btn-sm btn-outline-info me-1" onclick="viewExpense('${e.id}')">
                     <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${e.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
+                ${user?.role === 'admin' ? `
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${e.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ` : ''}
             </td>
         </tr>
     `).join('');
@@ -3293,6 +3376,19 @@ async function deleteExpense(id) {
 // CARD FUNCTIONS
 // ============================================
 function loadCards() {
+    // ✅ Only allow access for Admin/Manager/Accounts
+    const user = CloudStore.getCurrentUser();
+    if (user?.role !== 'admin' && user?.role !== 'manager' && user?.role !== 'accounts') {
+        document.getElementById('cardsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. Only Admin, Managers, and Accounts can view cards.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     const cards = appState.cards;
     const tbody = document.getElementById('cardsBody');
     if (cards.length === 0) {
@@ -3333,7 +3429,6 @@ function showCardModal() {
     populateBranchSelectors();
     populateProjectSelectors();
     
-    // Populate card holder dropdown
     const holderSelect = document.getElementById('cardHolder');
     holderSelect.innerHTML = '<option value="">Select Employee</option>' + 
         appState.employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
@@ -3838,6 +3933,18 @@ async function addAuditLog(action, entityType, entityId) {
 }
 
 function loadAuditLogs() {
+    const user = CloudStore.getCurrentUser();
+    if (user?.role !== 'admin') {
+        document.getElementById('auditBody').innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. Only Admins can view audit logs.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     const logs = appState.auditLogs;
     const tbody = document.getElementById('auditBody');
     if (!logs || logs.length === 0) {
@@ -3860,6 +3967,30 @@ function loadAuditLogs() {
 // NAVIGATION
 // ============================================
 function showPage(page) {
+    const user = CloudStore.getCurrentUser();
+    
+    // ✅ ROLE-BASED ACCESS CONTROL
+    // Check if the user has access to the requested page
+    const restrictedPages = ['branches', 'projects', 'employees', 'reports', 'audit'];
+    const isAdmin = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts';
+    const isSuperAdmin = user?.role === 'admin';
+    
+    // Redirect if access denied
+    if (page === 'cards' && !isAdmin) {
+        showToast('warning', 'Access denied. Only Admins, Managers, and Accounts can view cards.');
+        return;
+    }
+    
+    if (restrictedPages.includes(page) && !isAdmin) {
+        showToast('warning', 'Access denied. You do not have permission to view this page.');
+        return;
+    }
+    
+    if (page === 'audit' && !isSuperAdmin) {
+        showToast('warning', 'Access denied. Only Admins can view audit logs.');
+        return;
+    }
+    
     document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
     
     const pageEl = document.getElementById('page-' + page);
@@ -3972,14 +4103,12 @@ console.log('🏗️ Project Fund Management System');
 console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
-console.log('   - Multi-branch & Project Management');
-console.log('   - Employee Advances with Cash Tracking');
-console.log('   - Expense Submission with Bill Upload');
-console.log('   - SBI Visa Card Tracking');
-console.log('   - Automatic Balance Calculation');
+console.log('   - Role-Based Access Control (RBAC)');
+console.log('   - Employees see only their own data');
+console.log('   - Managers see their branch data');
+console.log('   - Admins see everything');
+console.log('   - Cards restricted to Admins/Managers/Accounts');
 console.log('   - Complete Audit Trail');
-console.log('   - Employee Ledger');
-console.log('   - Real-time Dashboard');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Super Admin');
 console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Advances, Ctrl+4=Expenses, Ctrl+5=Cards');
