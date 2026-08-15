@@ -14,13 +14,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-    
     <style>
-        /* All styles remain the same */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -309,72 +303,6 @@
             padding: 15px 25px;
         }
         
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
-        
-        .notification-item:hover {
-            background: #f8f9fc;
-        }
-        
-        .notification-item.unread {
-            background: #ebf4ff;
-            border-left: 3px solid #4e73df;
-        }
-        
-        .notification-item .time {
-            font-size: 0.7rem;
-            color: #999;
-        }
-        
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .quick-stat-item {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.08);
-        }
-        
-        .quick-stat-item .number {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2d3748;
-        }
-        
-        .quick-stat-item .label {
-            font-size: 0.8rem;
-            color: #718096;
-            margin-top: 5px;
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                min-height: auto;
-                height: auto;
-                position: relative;
-            }
-            .main-content {
-                max-height: none;
-                padding: 15px;
-            }
-            .stat-card {
-                margin-bottom: 15px;
-            }
-            .login-card {
-                padding: 30px 20px;
-            }
-        }
-        
         .spinner-overlay {
             position: fixed;
             top: 0;
@@ -538,47 +466,6 @@
             color: #999;
         }
         
-        .project-card {
-            border-radius: 12px;
-            padding: 15px;
-            background: white;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 2rem 0 rgba(58,59,69,0.15);
-        }
-        
-        .project-card .progress {
-            height: 8px;
-            border-radius: 4px;
-        }
-        
-        .branch-selector {
-            display: inline-block;
-            margin-left: 10px;
-        }
-        
-        .branch-selector select {
-            border-radius: 8px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-        }
-        
-        .no-access {
-            text-align: center;
-            padding: 50px 20px;
-            color: #999;
-        }
-        
-        .no-access i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        
         .permission-section {
             border-left: 3px solid #4e73df;
             padding-left: 15px;
@@ -590,44 +477,6 @@
             font-weight: 600;
             color: #4e73df;
             text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        
-        .camp-card {
-            border-radius: 12px;
-            padding: 15px;
-            background: white;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.1);
-            margin-bottom: 15px;
-            border-left: 4px solid #4e73df;
-            transition: all 0.3s;
-        }
-        
-        .camp-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 2rem 0 rgba(58,59,69,0.15);
-        }
-        
-        .camp-card .camp-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .camp-card .camp-details {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .camp-card .fund-amount {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1cc88a;
-        }
-        
-        .card-limit-info {
-            background: #f8f9fc;
-            padding: 10px 15px;
-            border-radius: 8px;
             margin-bottom: 10px;
         }
         
@@ -685,7 +534,7 @@
                         <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-login w-100" id="loginBtn">
+                <button type="submit" class="btn btn-login w-100" id="loginBtn" disabled>
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
                 
@@ -777,7 +626,6 @@
                         <a class="nav-link" href="#" onclick="showPage('myDashboard')" id="myDashboardMenuLink">
                             <i class="fas fa-user"></i> My Dashboard
                         </a>
-                        <!-- ⭐ FUND MANAGEMENT - ADDED HERE ⭐ -->
                         <a class="nav-link" href="#" onclick="showPage('fundManagement')" id="fundMenuLink">
                             <i class="fas fa-money-bill-wave"></i> Fund Management
                         </a>
@@ -790,7 +638,6 @@
                         <a class="nav-link" href="#" onclick="showPage('cards')" id="cardsMenuLink">
                             <i class="fas fa-credit-card"></i> Cards
                         </a>
-                        <!-- ADMIN MENU -->
                         <div id="adminMenu" style="display: none;">
                             <div class="px-3 py-2 mt-2">
                                 <small class="text-uppercase" style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">Administration</small>
@@ -893,7 +740,6 @@
                             </div>
                         </div>
 
-                        <!-- Fund Stats Row -->
                         <div class="row mb-4">
                             <div class="col-md-3 mb-3">
                                 <div class="stat-card" style="border-left-color: #4e73df;">
@@ -1061,7 +907,7 @@
                         </div>
                     </div>
 
-                    <!-- ⭐ FUND MANAGEMENT PAGE ⭐ -->
+                    <!-- Fund Management Page -->
                     <div id="page-fundManagement" class="page-content" style="display: none;">
                         <div class="company-header">
                             <h4><i class="fas fa-money-bill-wave me-2 text-primary"></i>Fund Management</h4>
@@ -1809,7 +1655,7 @@
     </div>
 </div>
 
-<!-- ⭐ Fund Refill Modal ⭐ -->
+<!-- Fund Refill Modal -->
 <div class="modal fade" id="refillModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1837,7 +1683,7 @@
     </div>
 </div>
 
-<!-- ⭐ Fund Transfer Modal ⭐ -->
+<!-- Fund Transfer Modal -->
 <div class="modal fade" id="transferModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1878,81 +1724,129 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Firebase SDK - Loaded with fallback -->
 <script>
-// ============================================
-// FIREBASE CONFIGURATION - FIXED
-// ============================================
-const firebaseConfig = {
-    apiKey: "AIzaSyAgLXzqiGKiotxlevleo3-2lXGtksBfVd4",
-    authDomain: "cashflowpro-253b0.firebaseapp.com",
-    projectId: "cashflowpro-253b0",
-    storageBucket: "cashflowpro-253b0.firebasestorage.app",
-    messagingSenderId: "75148749502",
-    appId: "1:75148749502:web:41e46dc4da7169ded80cef",
-    measurementId: "G-NPJ6KZYWP3"
-};
+// Load Firebase SDKs dynamically
+function loadFirebaseSDK() {
+    return new Promise((resolve, reject) => {
+        // Check if Firebase is already loaded
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+            resolve();
+            return;
+        }
 
-// Initialize Firebase with error handling
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        console.log('✅ Firebase initialized successfully');
-        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
-        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
-    } else {
-        console.log('✅ Firebase already initialized');
-        firebase.app();
-        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
-        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
-    }
-} catch (error) {
-    console.error('❌ Firebase init error:', error);
-    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Init Error';
-    document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+        // Load Firebase scripts sequentially
+        const scripts = [
+            'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js'
+        ];
+
+        let loaded = 0;
+
+        scripts.forEach((src, index) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            script.onload = () => {
+                loaded++;
+                if (loaded === scripts.length) {
+                    resolve();
+                }
+            };
+            script.onerror = () => {
+                reject(new Error(`Failed to load: ${src}`));
+            };
+            document.head.appendChild(script);
+        });
+    });
 }
 
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-// Test connection immediately
-db.collection('users').limit(1).get()
+// Initialize Firebase after SDK loads
+loadFirebaseSDK()
     .then(() => {
-        console.log('✅ Firestore connected successfully');
-        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
-        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
-        document.getElementById('loginBtn').disabled = false;
+        console.log('✅ Firebase SDK loaded successfully');
+        initFirebase();
     })
     .catch((error) => {
-        console.error('❌ Firestore connection failed:', error);
-        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #f6c23e;"></i> Connecting...';
-        document.getElementById('connectionStatus').className = 'cloud-badge connection-status connecting';
-        
-        // Retry after 3 seconds
-        setTimeout(() => {
-            db.collection('users').limit(1).get()
-                .then(() => {
-                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
-                    document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
-                    document.getElementById('loginBtn').disabled = false;
-                    showToast('success', 'Firebase connected successfully!');
-                })
-                .catch(() => {
-                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Offline';
-                    document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
-                    showToast('warning', 'Firebase connection failed. Please check your internet.');
-                });
-        }, 3000);
+        console.error('❌ Failed to load Firebase SDK:', error);
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> SDK Error';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+        document.getElementById('loginBtn').disabled = false;
+        showToast('danger', 'Failed to load Firebase. Please check your internet connection.');
     });
 
-// Enable offline persistence
-db.enablePersistence({
-    synchronizeTabs: true
-}).catch((err) => {
-    console.warn('Persistence warning:', err);
-});
+function initFirebase() {
+    const firebaseConfig = {
+        apiKey: "AIzaSyAgLXzqiGKiotxlevleo3-2lXGtksBfVd4",
+        authDomain: "cashflowpro-253b0.firebaseapp.com",
+        projectId: "cashflowpro-253b0",
+        storageBucket: "cashflowpro-253b0.firebasestorage.app",
+        messagingSenderId: "75148749502",
+        appId: "1:75148749502:web:41e46dc4da7169ded80cef",
+        measurementId: "G-NPJ6KZYWP3"
+    };
 
-console.log('☁️ Firebase Initialized');
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase initialized successfully');
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+            document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+            document.getElementById('loginBtn').disabled = false;
+        } else {
+            console.log('✅ Firebase already initialized');
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+            document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+            document.getElementById('loginBtn').disabled = false;
+        }
+    } catch (error) {
+        console.error('❌ Firebase init error:', error);
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Init Error';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+        document.getElementById('loginBtn').disabled = false;
+        showToast('danger', 'Firebase initialization failed: ' + error.message);
+        return;
+    }
 
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // Test connection
+    db.collection('users').limit(1).get()
+        .then(() => {
+            console.log('✅ Firestore connected successfully');
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+            document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+            document.getElementById('loginBtn').disabled = false;
+            showToast('success', 'Connected to Firebase successfully!');
+        })
+        .catch((error) => {
+            console.error('❌ Firestore connection failed:', error);
+            document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Offline';
+            document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+            document.getElementById('loginBtn').disabled = false;
+            showToast('warning', 'Firebase connection failed. Please check your internet.');
+        });
+
+    // Enable offline persistence
+    db.enablePersistence({
+        synchronizeTabs: true
+    }).catch((err) => {
+        console.warn('Persistence warning:', err);
+    });
+
+    // Set global db and storage
+    window.db = db;
+    window.storage = storage;
+    window.CloudStore = createCloudStore(db, storage);
+
+    // Initialize the app
+    initializeApp();
+}
+</script>
+
+<script>
 // ============================================
 // PERMISSIONS SYSTEM
 // ============================================
@@ -2017,346 +1911,349 @@ const DefaultPermissions = {
 let currentPermissions = {};
 
 // ============================================
-// DATA STORE - Cloud Sync with Branch Isolation
+// CREATE CLOUD STORE
 // ============================================
-const CloudStore = {
-    usersCollection: db.collection('users'),
-    employeesCollection: db.collection('employees'),
-    branchesCollection: db.collection('branches'),
-    projectsCollection: db.collection('projects'),
-    advancesCollection: db.collection('advances'),
-    expensesCollection: db.collection('expenses'),
-    cardsCollection: db.collection('cards'),
-    notificationsCollection: db.collection('notifications'),
-    auditCollection: db.collection('audit'),
-    permissionsCollection: db.collection('permissions'),
-    fundsCollection: db.collection('funds'),
-    
-    currentUser: null,
-    listeners: [],
-    
-    setCurrentUser(user) {
-        this.currentUser = user;
-        if (user) {
-            localStorage.setItem('pf_user_id', user.id);
-            localStorage.setItem('pf_user_data', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('pf_user_id');
-            localStorage.removeItem('pf_user_data');
-        }
-    },
-    
-    getCurrentUser() {
-        if (this.currentUser) return this.currentUser;
-        const userId = localStorage.getItem('pf_user_id');
-        if (userId) {
-            const cachedUser = localStorage.getItem('pf_user_data');
-            if (cachedUser) {
-                try {
-                    this.currentUser = JSON.parse(cachedUser);
-                    return this.currentUser;
-                } catch (e) {}
+function createCloudStore(db, storage) {
+    return {
+        usersCollection: db.collection('users'),
+        employeesCollection: db.collection('employees'),
+        branchesCollection: db.collection('branches'),
+        projectsCollection: db.collection('projects'),
+        advancesCollection: db.collection('advances'),
+        expensesCollection: db.collection('expenses'),
+        cardsCollection: db.collection('cards'),
+        notificationsCollection: db.collection('notifications'),
+        auditCollection: db.collection('audit'),
+        permissionsCollection: db.collection('permissions'),
+        fundsCollection: db.collection('funds'),
+        
+        currentUser: null,
+        listeners: [],
+        
+        setCurrentUser(user) {
+            this.currentUser = user;
+            if (user) {
+                localStorage.setItem('pf_user_id', user.id);
+                localStorage.setItem('pf_user_data', JSON.stringify(user));
+            } else {
+                localStorage.removeItem('pf_user_id');
+                localStorage.removeItem('pf_user_data');
             }
-        }
-        return null;
-    },
-    
-    // Listeners with branch filtering
-    listenToBranches(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.branchesCollection.orderBy('name');
+        },
         
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('name', '==', user.branch);
-        }
+        getCurrentUser() {
+            if (this.currentUser) return this.currentUser;
+            const userId = localStorage.getItem('pf_user_id');
+            if (userId) {
+                const cachedUser = localStorage.getItem('pf_user_data');
+                if (cachedUser) {
+                    try {
+                        this.currentUser = JSON.parse(cachedUser);
+                        return this.currentUser;
+                    } catch (e) {}
+                }
+            }
+            return null;
+        },
         
-        const listener = query.onSnapshot((snapshot) => {
-            const branches = [];
-            snapshot.forEach(doc => {
-                branches.push({ id: doc.id, ...doc.data() });
+        // Listeners with branch filtering
+        listenToBranches(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.branchesCollection.orderBy('name');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('name', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const branches = [];
+                snapshot.forEach(doc => {
+                    branches.push({ id: doc.id, ...doc.data() });
+                });
+                callback(branches);
+            }, (error) => {
+                console.error('Error listening to branches:', error);
             });
-            callback(branches);
-        }, (error) => {
-            console.error('Error listening to branches:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToProjects(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.projectsCollection.orderBy('name');
+            this.listeners.push(listener);
+            return listener;
+        },
         
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('camps', 'array-contains', user.branch);
+        listenToProjects(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.projectsCollection.orderBy('name');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('camps', 'array-contains', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const projects = [];
+                snapshot.forEach(doc => {
+                    projects.push({ id: doc.id, ...doc.data() });
+                });
+                callback(projects);
+            }, (error) => {
+                console.error('Error listening to projects:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToEmployees(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.employeesCollection.orderBy('name');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('branch', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const employees = [];
+                snapshot.forEach(doc => {
+                    employees.push({ id: doc.id, ...doc.data() });
+                });
+                callback(employees);
+            }, (error) => {
+                console.error('Error listening to employees:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToAdvances(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.advancesCollection.orderBy('createdAt', 'desc');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('branch', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const advances = [];
+                snapshot.forEach(doc => {
+                    advances.push({ id: doc.id, ...doc.data() });
+                });
+                callback(advances);
+            }, (error) => {
+                console.error('Error listening to advances:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToExpenses(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.expensesCollection.orderBy('createdAt', 'desc');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('branch', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const expenses = [];
+                snapshot.forEach(doc => {
+                    expenses.push({ id: doc.id, ...doc.data() });
+                });
+                callback(expenses);
+            }, (error) => {
+                console.error('Error listening to expenses:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToCards(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.cardsCollection.orderBy('cardNumber');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('branch', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const cards = [];
+                snapshot.forEach(doc => {
+                    cards.push({ id: doc.id, ...doc.data() });
+                });
+                callback(cards);
+            }, (error) => {
+                console.error('Error listening to cards:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToAudit(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.auditCollection.orderBy('timestamp', 'desc').limit(100);
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('branch', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const logs = [];
+                snapshot.forEach(doc => {
+                    logs.push({ id: doc.id, ...doc.data() });
+                });
+                callback(logs);
+            }, (error) => {
+                console.error('Error listening to audit:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        listenToFunds(callback) {
+            const user = this.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let query = this.fundsCollection.orderBy('camp');
+            
+            if (!perms.viewAllBranches && user?.branch) {
+                query = query.where('camp', '==', user.branch);
+            }
+            
+            const listener = query.onSnapshot((snapshot) => {
+                const funds = [];
+                snapshot.forEach(doc => {
+                    funds.push({ id: doc.id, ...doc.data() });
+                });
+                callback(funds);
+            }, (error) => {
+                console.error('Error listening to funds:', error);
+            });
+            this.listeners.push(listener);
+            return listener;
+        },
+        
+        async getMainFund() {
+            const snapshot = await this.fundsCollection.where('camp', '==', '__main__').get();
+            if (snapshot.empty) return { camp: '__main__', balance: 0 };
+            return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        },
+        
+        async updateFund(camp, amount, type, remark) {
+            const snapshot = await this.fundsCollection.where('camp', '==', camp).get();
+            let ref;
+            if (snapshot.empty) {
+                ref = await this.fundsCollection.add({ 
+                    camp, 
+                    balance: amount, 
+                    updatedAt: new Date().toISOString() 
+                });
+            } else {
+                ref = snapshot.docs[0].ref;
+                const current = snapshot.docs[0].data().balance || 0;
+                const newBalance = type === 'add' ? current + amount : current - amount;
+                await ref.update({ 
+                    balance: newBalance, 
+                    updatedAt: new Date().toISOString() 
+                });
+            }
+            await this.addAuditLog({ 
+                action: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER', 
+                entityType: 'Fund', 
+                entityId: camp, 
+                details: `${type} ${amount} to ${camp} (${remark||''})` 
+            });
+            return ref;
+        },
+        
+        async addBranch(data) {
+            const docRef = await this.branchesCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async addProject(data) {
+            const docRef = await this.projectsCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async addEmployee(data) {
+            const docRef = await this.employeesCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async updateEmployee(id, data) {
+            await this.employeesCollection.doc(id).update(data);
+            return { id, ...data };
+        },
+        
+        async addAdvance(data) {
+            const docRef = await this.advancesCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async updateAdvance(id, data) {
+            await this.advancesCollection.doc(id).update(data);
+            return { id, ...data };
+        },
+        
+        async addExpense(data) {
+            const docRef = await this.expensesCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async updateExpense(id, data) {
+            await this.expensesCollection.doc(id).update(data);
+            return { id, ...data };
+        },
+        
+        async addCard(data) {
+            const docRef = await this.cardsCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async updateCard(id, data) {
+            await this.cardsCollection.doc(id).update(data);
+            return { id, ...data };
+        },
+        
+        async addNotification(data) {
+            const docRef = await this.notificationsCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        async addAuditLog(data) {
+            const docRef = await this.auditCollection.add({ 
+                ...data, 
+                timestamp: new Date().toISOString(),
+                user: this.getCurrentUser()?.username || 'system',
+                role: this.getCurrentUser()?.role || 'system'
+            });
+            return { id: docRef.id, ...data };
+        },
+        
+        async getUserByUsername(username) {
+            const snapshot = await this.usersCollection
+                .where('username', '==', username)
+                .get();
+            if (snapshot.empty) return null;
+            const doc = snapshot.docs[0];
+            return { id: doc.id, ...doc.data() };
+        },
+        
+        async addUser(data) {
+            const docRef = await this.usersCollection.add(data);
+            return { id: docRef.id, ...data };
+        },
+        
+        cleanup() {
+            this.listeners.forEach(listener => listener());
+            this.listeners = [];
         }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const projects = [];
-            snapshot.forEach(doc => {
-                projects.push({ id: doc.id, ...doc.data() });
-            });
-            callback(projects);
-        }, (error) => {
-            console.error('Error listening to projects:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToEmployees(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.employeesCollection.orderBy('name');
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const employees = [];
-            snapshot.forEach(doc => {
-                employees.push({ id: doc.id, ...doc.data() });
-            });
-            callback(employees);
-        }, (error) => {
-            console.error('Error listening to employees:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToAdvances(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.advancesCollection.orderBy('createdAt', 'desc');
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const advances = [];
-            snapshot.forEach(doc => {
-                advances.push({ id: doc.id, ...doc.data() });
-            });
-            callback(advances);
-        }, (error) => {
-            console.error('Error listening to advances:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToExpenses(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.expensesCollection.orderBy('createdAt', 'desc');
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const expenses = [];
-            snapshot.forEach(doc => {
-                expenses.push({ id: doc.id, ...doc.data() });
-            });
-            callback(expenses);
-        }, (error) => {
-            console.error('Error listening to expenses:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToCards(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.cardsCollection.orderBy('cardNumber');
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const cards = [];
-            snapshot.forEach(doc => {
-                cards.push({ id: doc.id, ...doc.data() });
-            });
-            callback(cards);
-        }, (error) => {
-            console.error('Error listening to cards:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    listenToAudit(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.auditCollection.orderBy('timestamp', 'desc').limit(100);
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('branch', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const logs = [];
-            snapshot.forEach(doc => {
-                logs.push({ id: doc.id, ...doc.data() });
-            });
-            callback(logs);
-        }, (error) => {
-            console.error('Error listening to audit:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    // ⭐ Fund Management Listeners ⭐
-    listenToFunds(callback) {
-        const user = this.getCurrentUser();
-        const perms = getUserPermissions(user?.role);
-        let query = this.fundsCollection.orderBy('camp');
-        
-        if (!perms.viewAllBranches && user?.branch) {
-            query = query.where('camp', '==', user.branch);
-        }
-        
-        const listener = query.onSnapshot((snapshot) => {
-            const funds = [];
-            snapshot.forEach(doc => {
-                funds.push({ id: doc.id, ...doc.data() });
-            });
-            callback(funds);
-        }, (error) => {
-            console.error('Error listening to funds:', error);
-        });
-        this.listeners.push(listener);
-        return listener;
-    },
-    
-    async getMainFund() {
-        const snapshot = await this.fundsCollection.where('camp', '==', '__main__').get();
-        if (snapshot.empty) return { camp: '__main__', balance: 0 };
-        return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
-    },
-    
-    async updateFund(camp, amount, type, remark) {
-        const snapshot = await this.fundsCollection.where('camp', '==', camp).get();
-        let ref;
-        if (snapshot.empty) {
-            ref = await this.fundsCollection.add({ 
-                camp, 
-                balance: amount, 
-                updatedAt: new Date().toISOString() 
-            });
-        } else {
-            ref = snapshot.docs[0].ref;
-            const current = snapshot.docs[0].data().balance || 0;
-            const newBalance = type === 'add' ? current + amount : current - amount;
-            await ref.update({ 
-                balance: newBalance, 
-                updatedAt: new Date().toISOString() 
-            });
-        }
-        await this.addAuditLog({ 
-            action: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER', 
-            entityType: 'Fund', 
-            entityId: camp, 
-            details: `${type} ${amount} to ${camp} (${remark||''})` 
-        });
-        return ref;
-    },
-    
-    // CRUD Operations
-    async addBranch(data) {
-        const docRef = await this.branchesCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async addProject(data) {
-        const docRef = await this.projectsCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async addEmployee(data) {
-        const docRef = await this.employeesCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async updateEmployee(id, data) {
-        await this.employeesCollection.doc(id).update(data);
-        return { id, ...data };
-    },
-    
-    async addAdvance(data) {
-        const docRef = await this.advancesCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async updateAdvance(id, data) {
-        await this.advancesCollection.doc(id).update(data);
-        return { id, ...data };
-    },
-    
-    async addExpense(data) {
-        const docRef = await this.expensesCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async updateExpense(id, data) {
-        await this.expensesCollection.doc(id).update(data);
-        return { id, ...data };
-    },
-    
-    async addCard(data) {
-        const docRef = await this.cardsCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async updateCard(id, data) {
-        await this.cardsCollection.doc(id).update(data);
-        return { id, ...data };
-    },
-    
-    async addNotification(data) {
-        const docRef = await this.notificationsCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    async addAuditLog(data) {
-        const docRef = await this.auditCollection.add({ 
-            ...data, 
-            timestamp: new Date().toISOString(),
-            user: this.getCurrentUser()?.username || 'system',
-            role: this.getCurrentUser()?.role || 'system'
-        });
-        return { id: docRef.id, ...data };
-    },
-    
-    async getUserByUsername(username) {
-        const snapshot = await this.usersCollection
-            .where('username', '==', username)
-            .get();
-        if (snapshot.empty) return null;
-        const doc = snapshot.docs[0];
-        return { id: doc.id, ...doc.data() };
-    },
-    
-    async addUser(data) {
-        const docRef = await this.usersCollection.add(data);
-        return { id: docRef.id, ...data };
-    },
-    
-    cleanup() {
-        this.listeners.forEach(listener => listener());
-        this.listeners = [];
-    }
-};
+    };
+}
+
+// Global CloudStore variable
+let CloudStore = null;
 
 // ============================================
 // APPLICATION STATE
@@ -2441,7 +2338,7 @@ function loadPermissions() {
         }
     ];
     
-    const isSuperAdmin = CloudStore.getCurrentUser()?.role === 'admin';
+    const isSuperAdmin = CloudStore?.getCurrentUser()?.role === 'admin';
     
     let html = `<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure permissions for <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong> role. Changes take effect immediately.</div>`;
     
@@ -2500,7 +2397,7 @@ function loadPermissions() {
 }
 
 async function savePermission(role, key, value) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (user?.role !== 'admin') {
         showToast('warning', 'Only Admins can manage permissions');
         return;
@@ -2564,14 +2461,13 @@ function hasPermission(role, permission) {
 // APPLY PERMISSIONS
 // ============================================
 function applyPermissions() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!user) return;
     
     const role = user.role;
     const perms = getUserPermissions(role);
     const isAdmin = role === 'admin';
     
-    // Show/hide menu items based on permissions
     const menuItems = {
         dashboardMenuLink: perms.viewDashboard,
         myDashboardMenuLink: perms.viewMyDashboard,
@@ -2604,7 +2500,6 @@ function applyPermissions() {
         adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
     }
     
-    // Show/hide add buttons
     const addButtons = {
         addAdvanceBtn: perms.addAdvance,
         addExpenseBtn: perms.addExpense,
@@ -2621,7 +2516,6 @@ function applyPermissions() {
         }
     });
     
-    // Update user branch display
     if (user.branch) {
         document.getElementById('userDeptDisplay').textContent = user.branch;
     }
@@ -2727,7 +2621,7 @@ async function initializeApp() {
     await loadAllPermissions();
     
     const userId = localStorage.getItem('pf_user_id');
-    if (userId) {
+    if (userId && CloudStore) {
         try {
             const userDoc = await CloudStore.usersCollection.doc(userId).get();
             if (userDoc.exists) {
@@ -2748,6 +2642,11 @@ async function initializeApp() {
 // ============================================
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    if (!CloudStore) {
+        showToast('danger', 'Firebase not connected. Please wait.');
+        return;
+    }
+    
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
     
@@ -2776,14 +2675,14 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 });
 
 function logout() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (user) {
         CloudStore.addAuditLog({ action: 'LOGOUT', entityType: 'User', entityId: user.username });
     }
-    CloudStore.setCurrentUser(null);
+    if (CloudStore) CloudStore.setCurrentUser(null);
     localStorage.removeItem('pf_user_id');
     localStorage.removeItem('pf_user_data');
-    CloudStore.cleanup();
+    if (CloudStore) CloudStore.cleanup();
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     showToast('info', 'Logged out successfully');
@@ -2802,6 +2701,10 @@ function hideRegistration() {
 
 document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    if (!CloudStore) {
+        showToast('danger', 'Firebase not connected. Please wait.');
+        return;
+    }
     
     const employeeId = document.getElementById('regEmployeeId').value.trim();
     const fullName = document.getElementById('regFullName').value.trim();
@@ -2887,7 +2790,7 @@ function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('dashboardScreen').style.display = 'block';
     
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (user) {
         document.getElementById('userNameDisplay').textContent = user.fullName;
         document.getElementById('userDeptDisplay').textContent = user.branch || 'No Branch';
@@ -2919,10 +2822,10 @@ function showDashboard() {
 // SETUP REALTIME LISTENERS
 // ============================================
 function setupRealtimeListeners() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!user) return;
     
-    CloudStore.cleanup();
+    if (CloudStore) CloudStore.cleanup();
     
     CloudStore.listenToBranches((branches) => {
         appState.branches = branches;
@@ -2989,7 +2892,7 @@ function setupRealtimeListeners() {
 // UPDATE DASHBOARD
 // ============================================
 function updateDashboard() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const branches = appState.branches;
     const projects = appState.projects;
     const employees = appState.employees;
@@ -3007,7 +2910,6 @@ function updateDashboard() {
         .reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
     document.getElementById('totalOutstanding').textContent = '₹' + outstanding.toLocaleString();
     
-    // Fund stats
     const mainFund = funds.find(f => f.camp === '__main__');
     const mainBalance = mainFund ? mainFund.balance : 0;
     document.getElementById('mainBranchFund').textContent = '₹' + mainBalance.toLocaleString();
@@ -3020,7 +2922,6 @@ function updateDashboard() {
     const campUtilized = campCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
     document.getElementById('totalCampAvailable').textContent = '₹' + (totalAllocated - campUtilized).toLocaleString();
     
-    // Pending refill - camps with less than 10000 balance
     const lowFundCamps = campFunds.filter(f => f.balance < 10000);
     const pendingRefill = lowFundCamps.length * 5000;
     document.getElementById('pendingRefill').textContent = '₹' + pendingRefill.toLocaleString();
@@ -3058,7 +2959,7 @@ function updateDashboard() {
 }
 
 function updateAttentionList() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const container = document.getElementById('attentionList');
     const alerts = [];
     
@@ -3120,7 +3021,6 @@ function updateAttentionList() {
         }
     }
     
-    // Low fund alerts
     const campFunds = appState.funds.filter(f => f.camp !== '__main__');
     const lowFunds = campFunds.filter(f => f.balance < 5000);
     if (lowFunds.length > 0) {
@@ -3154,7 +3054,7 @@ function updateAttentionList() {
 // MY DASHBOARD
 // ============================================
 function loadMyDashboard() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!user) return;
     
     const employeeId = user.id;
@@ -3218,7 +3118,7 @@ function loadMyDashboard() {
 // POPULATE SELECTORS
 // ============================================
 function populateBranchSelectors() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const perms = getUserPermissions(user?.role);
     let branches = appState.branches;
     
@@ -3256,7 +3156,7 @@ function populateBranchSelectors() {
 }
 
 function populateProjectSelectors() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const perms = getUserPermissions(user?.role);
     let projects = appState.projects;
     
@@ -3279,12 +3179,10 @@ function populateProjectSelectors() {
 }
 
 // ============================================
-// LOAD FUNCTIONS
+// LOAD FUNCTIONS (Simplified - all work the same)
 // ============================================
-
-// Branches
 function loadBranches() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewBranches')) {
         document.getElementById('branchesBody').innerHTML = `
             <tr>
@@ -3335,9 +3233,8 @@ function loadBranches() {
     }).join('');
 }
 
-// Projects
 function loadProjects() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewProjects')) {
         document.getElementById('projectsBody').innerHTML = `
             <tr>
@@ -3397,9 +3294,8 @@ function loadProjects() {
     }).join('');
 }
 
-// Cards
 function loadCards() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewCards')) {
         document.getElementById('cardsBody').innerHTML = `
             <tr>
@@ -3453,9 +3349,8 @@ function loadCards() {
     }).join('');
 }
 
-// Employees
 function loadEmployees() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewEmployees')) {
         document.getElementById('employeesBody').innerHTML = `
             <tr>
@@ -3515,9 +3410,8 @@ function loadEmployees() {
     }).join('');
 }
 
-// Advances
 function loadAdvances() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewAdvances')) {
         document.getElementById('advancesBody').innerHTML = `
             <tr>
@@ -3576,9 +3470,8 @@ function loadAdvances() {
     }).join('');
 }
 
-// Expenses
 function loadExpenses() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewExpenses')) {
         document.getElementById('expensesBody').innerHTML = `
             <tr>
@@ -3629,9 +3522,8 @@ function loadExpenses() {
     `).join('');
 }
 
-// Approvals
 function loadApprovals() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewApprovals')) {
         document.getElementById('approvalsBody').innerHTML = `
             <tr>
@@ -3722,9 +3614,8 @@ function loadApprovals() {
     `).join('');
 }
 
-// Audit Logs
 function loadAuditLogs() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewAudit')) {
         document.getElementById('auditBody').innerHTML = `
             <tr>
@@ -3758,7 +3649,7 @@ function loadAuditLogs() {
 // ⭐ FUND MANAGEMENT ⭐
 // ============================================
 function loadFundManagement() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewFundManagement')) {
         document.getElementById('fundBody').innerHTML = `
             <tr>
@@ -3783,7 +3674,6 @@ function loadFundManagement() {
     const campUtilized = campCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
     document.getElementById('fundTotalCampAvailable').textContent = '₹' + (totalAllocated - campUtilized).toLocaleString();
     
-    // Update transfer modal available fund
     document.getElementById('transferAvailableFund').textContent = '₹' + mainBalance.toLocaleString();
     
     const tbody = document.getElementById('fundBody');
@@ -3833,7 +3723,7 @@ function loadFundManagement() {
 }
 
 function showRefillModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'manageFunds')) {
         showToast('warning', 'You don\'t have permission to manage funds.');
         return;
@@ -3863,7 +3753,7 @@ async function processRefill() {
 }
 
 function showTransferModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'manageFunds')) {
         showToast('warning', 'You don\'t have permission to transfer funds.');
         return;
@@ -3909,7 +3799,7 @@ function showTransferToCamp(camp) {
 }
 
 function showTransferFromCamp(camp) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'manageFunds')) {
         showToast('warning', 'You don\'t have permission to manage funds.');
         return;
@@ -3945,7 +3835,7 @@ function showTransferFromCamp(camp) {
 // REPORTS
 // ============================================
 function generateReports() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewReports')) {
         document.getElementById('reportBody').innerHTML = `
             <tr>
@@ -4143,7 +4033,7 @@ function updateEmployeeChart(employees) {
 }
 
 function exportReport() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'viewReports')) {
         showToast('warning', 'You don\'t have permission to export reports.');
         return;
@@ -4177,7 +4067,7 @@ function exportReport() {
 // NAVIGATION
 // ============================================
 function showPage(page) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const role = user?.role;
     
     const pagePermissions = {
@@ -4242,7 +4132,7 @@ function showPage(page) {
 // SHOW FUNCTIONS (Modals)
 // ============================================
 function showAdvanceModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addAdvance')) {
         showToast('warning', 'You don\'t have permission to request advances.');
         return;
@@ -4255,7 +4145,7 @@ function showAdvanceModal() {
 }
 
 function showExpenseModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addExpense')) {
         showToast('warning', 'You don\'t have permission to add expenses.');
         return;
@@ -4270,7 +4160,7 @@ function showExpenseModal() {
 }
 
 function showBranchModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addBranch')) {
         showToast('warning', 'You don\'t have permission to add branches/camps.');
         return;
@@ -4282,7 +4172,7 @@ function showBranchModal() {
 }
 
 function showProjectModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addProject')) {
         showToast('warning', 'You don\'t have permission to add projects.');
         return;
@@ -4294,7 +4184,7 @@ function showProjectModal() {
 }
 
 function showCardModal() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addCard')) {
         showToast('warning', 'You don\'t have permission to add cards.');
         return;
@@ -4310,7 +4200,7 @@ function showCardModal() {
 }
 
 function showEmployeeModal(employeeId = null) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addEmployee')) {
         showToast('warning', 'You don\'t have permission to add employees.');
         return;
@@ -4345,10 +4235,10 @@ function showEmployeeModal(employeeId = null) {
 }
 
 // ============================================
-// SAVE FUNCTIONS
+// SAVE FUNCTIONS (Simplified - all work the same)
 // ============================================
 async function saveAdvance() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addAdvance')) {
         showToast('warning', 'You don\'t have permission to request advances.');
         return;
@@ -4410,7 +4300,7 @@ async function saveAdvance() {
 }
 
 async function saveExpense() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addExpense')) {
         showToast('warning', 'You don\'t have permission to add expenses.');
         return;
@@ -4511,7 +4401,7 @@ async function saveExpense() {
 }
 
 async function saveBranch() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addBranch')) {
         showToast('warning', 'You don\'t have permission to add branches/camps.');
         return;
@@ -4552,7 +4442,7 @@ async function saveBranch() {
 }
 
 async function saveProject() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addProject')) {
         showToast('warning', 'You don\'t have permission to add projects.');
         return;
@@ -4588,7 +4478,7 @@ async function saveProject() {
 }
 
 async function saveCard() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addCard')) {
         showToast('warning', 'You don\'t have permission to add cards.');
         return;
@@ -4631,7 +4521,7 @@ async function saveCard() {
 }
 
 async function saveEmployee() {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addEmployee')) {
         showToast('warning', 'You don\'t have permission to add employees.');
         return;
@@ -4705,7 +4595,7 @@ async function saveEmployee() {
 // DELETE FUNCTIONS
 // ============================================
 async function deleteEmployee(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteEmployee')) {
         showToast('warning', 'You don\'t have permission to delete employees.');
         return;
@@ -4721,7 +4611,7 @@ async function deleteEmployee(id) {
 }
 
 async function deleteCard(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteCard')) {
         showToast('warning', 'You don\'t have permission to delete cards.');
         return;
@@ -4737,7 +4627,7 @@ async function deleteCard(id) {
 }
 
 async function deleteBranch(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteBranch')) {
         showToast('warning', 'You don\'t have permission to delete branches/camps.');
         return;
@@ -4753,7 +4643,7 @@ async function deleteBranch(id) {
 }
 
 async function deleteProject(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteProject')) {
         showToast('warning', 'You don\'t have permission to delete projects.');
         return;
@@ -4769,7 +4659,7 @@ async function deleteProject(id) {
 }
 
 async function deleteAdvance(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteAdvance')) {
         showToast('warning', 'You don\'t have permission to delete advances.');
         return;
@@ -4785,7 +4675,7 @@ async function deleteAdvance(id) {
 }
 
 async function deleteExpense(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'deleteExpense')) {
         showToast('warning', 'You don\'t have permission to delete expenses.');
         return;
@@ -4862,7 +4752,7 @@ function showLoading(show) {
 }
 
 function editEmployee(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'addEmployee')) {
         showToast('warning', 'You don\'t have permission to edit employees.');
         return;
@@ -4995,7 +4885,7 @@ function viewExpense(id) {
 }
 
 async function returnAdvance(id) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     const advance = appState.advances.find(a => a.id === id);
     if (!advance) {
         showToast('danger', 'Advance not found');
@@ -5043,7 +4933,7 @@ async function returnAdvance(id) {
 // APPROVAL FUNCTIONS
 // ============================================
 function showApprovalModal(id, isAdvance) {
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'approveRequests')) {
         showToast('warning', 'You don\'t have permission to approve requests.');
         return;
@@ -5077,7 +4967,7 @@ async function processApproval() {
     const decision = document.getElementById('aprDecision').value;
     const remarks = document.getElementById('aprRemarks').value || '';
     
-    const user = CloudStore.getCurrentUser();
+    const user = CloudStore?.getCurrentUser();
     if (!hasPermission(user?.role, 'approveRequests')) {
         showToast('warning', 'You don\'t have permission to approve requests.');
         return;
@@ -5193,13 +5083,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ============================================
-// INITIALIZE
-// ============================================
-initializeApp();
-
 console.log('🏗️ Project Fund Management System - Complete');
-console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Features:');
 console.log('   - Fund Management (Refill & Transfer)');
 console.log('   - Camp-based Fund Allocation');
