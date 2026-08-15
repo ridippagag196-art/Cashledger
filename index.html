@@ -20,6 +20,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <style>
+        /* All styles remain the same */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -1879,7 +1880,7 @@
 
 <script>
 // ============================================
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION - FIXED
 // ============================================
 const firebaseConfig = {
     apiKey: "AIzaSyAgLXzqiGKiotxlevleo3-2lXGtksBfVd4",
@@ -1891,27 +1892,66 @@ const firebaseConfig = {
     measurementId: "G-NPJ6KZYWP3"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase with error handling
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        console.log('✅ Firebase initialized successfully');
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+    } else {
+        console.log('✅ Firebase already initialized');
+        firebase.app();
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+    }
+} catch (error) {
+    console.error('❌ Firebase init error:', error);
+    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Init Error';
+    document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+}
+
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+// Test connection immediately
+db.collection('users').limit(1).get()
+    .then(() => {
+        console.log('✅ Firestore connected successfully');
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+        document.getElementById('loginBtn').disabled = false;
+    })
+    .catch((error) => {
+        console.error('❌ Firestore connection failed:', error);
+        document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #f6c23e;"></i> Connecting...';
+        document.getElementById('connectionStatus').className = 'cloud-badge connection-status connecting';
+        
+        // Retry after 3 seconds
+        setTimeout(() => {
+            db.collection('users').limit(1).get()
+                .then(() => {
+                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
+                    document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+                    document.getElementById('loginBtn').disabled = false;
+                    showToast('success', 'Firebase connected successfully!');
+                })
+                .catch(() => {
+                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #e74a3b;"></i> Offline';
+                    document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+                    showToast('warning', 'Firebase connection failed. Please check your internet.');
+                });
+        }, 3000);
+    });
 
 // Enable offline persistence
 db.enablePersistence({
     synchronizeTabs: true
-})
-.then(() => {
-    console.log('☁️ Firebase connected with offline support');
-    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #1cc88a;"></i> Online';
-    document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
-})
-.catch((err) => {
-    console.warn('Firebase persistence error:', err);
-    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color: #f6c23e;"></i> Offline Mode';
-    document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+}).catch((err) => {
+    console.warn('Persistence warning:', err);
 });
 
-console.log('☁️ Firebase Connected Successfully!');
+console.log('☁️ Firebase Initialized');
 
 // ============================================
 // PERMISSIONS SYSTEM
