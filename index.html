@@ -422,7 +422,7 @@
                                 </div>
                             </div>
 
-                            <!-- Monthly Quick Summary -->
+                            <!-- Monthly Quick Summary (FIXED) -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <div class="monthly-summary">
@@ -437,12 +437,12 @@
                                                 <div class="fw-bold text-success" id="monthRefills">₹0</div>
                                             </div>
                                             <div class="col-md-3">
-                                                <small class="text-muted">Total Expenses</small>
-                                                <div class="fw-bold text-danger" id="monthExpenses">₹0</div>
+                                                <small class="text-muted">Total Allocations</small>
+                                                <div class="fw-bold text-primary" id="monthAllocations">₹0</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <small class="text-muted">Net Balance</small>
-                                                <div class="fw-bold text-primary" id="monthNet">₹0</div>
+                                                <div class="fw-bold" id="monthNet">₹0</div>
                                             </div>
                                         </div>
                                     </div>
@@ -543,7 +543,7 @@
                             </div>
                         </div>
 
-                        <!-- ===== FUND MANAGEMENT (UPDATED) ===== -->
+                        <!-- ===== FUND MANAGEMENT (FIXED) ===== -->
                         <div id="page-fundManagement" class="page-content" style="display:none;">
                             <div class="company-header">
                                 <h4><i class="fas fa-money-bill-wave me-2 text-primary"></i>Fund Management</h4>
@@ -580,12 +580,12 @@
                                 </div>
                             </div>
 
-                            <!-- Filter Section -->
+                            <!-- Filter Section (FIXED - Month filter now works) -->
                             <div class="filter-section">
                                 <div class="row align-items-end">
                                     <div class="col-md-3">
                                         <div class="filter-label">Month Filter</div>
-                                        <input type="month" class="form-control form-control-sm" id="fundMonthFilter" onchange="loadFundManagement()">
+                                        <input type="month" class="form-control form-control-sm" id="fundMonthFilter" onchange="loadFundManagement()" value="">
                                     </div>
                                     <div class="col-md-3">
                                         <div class="filter-label">Camp Filter</div>
@@ -651,11 +651,11 @@
                             </div>
                         </div>
 
-                        <!-- ===== MONTHLY REPORT PAGE (NEW) ===== -->
+                        <!-- ===== MONTHLY REPORT PAGE ===== -->
                         <div id="page-monthlyReport" class="page-content" style="display:none;">
                             <div class="company-header">
                                 <h4><i class="fas fa-calendar-alt me-2 text-primary"></i>Monthly Report &amp; Filter</h4>
-                                <small>Track month-wise refills, expenses, and transactions in sequence</small>
+                                <small>Track month-wise refills, allocations, and expenses in sequence</small>
                             </div>
 
                             <!-- Filter Section -->
@@ -1366,7 +1366,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Refill Month</label>
-                            <input type="month" class="form-control" id="refillMonth">
+                            <input type="month" class="form-control" id="refillMonth" value="">
                             <small class="text-muted">Defaults to current month. Used for tracking monthly refills.</small>
                         </div>
                         <div class="mb-3">
@@ -1405,7 +1405,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Allocation Month</label>
-                            <input type="month" class="form-control" id="allocMonth">
+                            <input type="month" class="form-control" id="allocMonth" value="">
                             <small class="text-muted">Defaults to current month. Used for tracking monthly allocations.</small>
                         </div>
                         <div class="mb-3">
@@ -1560,9 +1560,9 @@
             auditCollection: db.collection('audit'),
             permissionsCollection: db.collection('permissions'),
             fundsCollection: db.collection('funds'),
-            refillsCollection: db.collection('refills'), // NEW: track refills
-            allocationsCollection: db.collection('allocations'), // NEW: track allocations
-            transactionsCollection: db.collection('transactions'), // NEW: unified transaction log
+            refillsCollection: db.collection('refills'),
+            allocationsCollection: db.collection('allocations'),
+            transactionsCollection: db.collection('transactions'),
             currentUser: null,
             listeners: [],
 
@@ -1586,7 +1586,6 @@
                 return null;
             },
 
-            // Listeners with branch isolation
             listenToBranches(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
@@ -1675,22 +1674,10 @@
                 this.listeners.push(l);
                 return l;
             },
-            // NEW: Listen to transactions for monthly reporting
             listenToTransactions(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.transactionsCollection.orderBy('timestamp', 'desc');
-                if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
-            },
-            listenToRefills(cb) {
-                const u = this.getCurrentUser();
-                const p = getUserPermissions(u?.role);
-                let q = this.refillsCollection.orderBy('month', 'desc');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
                 const l = q.onSnapshot(snap => { const arr = [];
                     snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
@@ -1705,7 +1692,7 @@
                 return { id: snap.docs[0].id, ...snap.docs[0].data() };
             },
 
-            async updateFund(camp, amount, type, remark, month = null) {
+            async updateFund(camp, amount, type, remark, month) {
                 const snap = await this.fundsCollection.where('camp', '==', camp).get();
                 let ref;
                 if (snap.empty) {
@@ -1718,12 +1705,13 @@
                 }
 
                 // Log transaction for monthly reporting
+                const monthVal = month || new Date().toISOString().slice(0, 7);
                 const transactionData = {
-                    type: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER',
+                    type: type === 'add' ? 'REFILL' : 'FUND_TRANSFER',
                     entityType: 'Fund',
                     entityId: camp,
                     amount: amount,
-                    month: month || new Date().toISOString().slice(0, 7),
+                    month: monthVal,
                     branch: camp === '__main__' ? 'Main Branch' : camp,
                     description: `${type === 'add' ? 'Refill' : 'Transfer'} ${amount} to ${camp} (${remark||''})`,
                     timestamp: new Date().toISOString(),
@@ -1738,7 +1726,6 @@
 
             async addRefill(data) {
                 const r = await this.refillsCollection.add(data);
-                // Also add to transactions
                 await this.transactionsCollection.add({
                     type: 'REFILL',
                     entityType: 'Refill',
@@ -1773,17 +1760,31 @@
             async addProject(d) { const r = await this.projectsCollection.add(d); return { id: r.id, ...d }; },
             async addEmployee(d) { const r = await this.employeesCollection.add(d); return { id: r.id, ...d }; },
             async updateEmployee(id, d) { await this.employeesCollection.doc(id).update(d); return { id, ...d }; },
-            async addAdvance(d) { const r = await this.advancesCollection.add(d); return { id: r.id, ...d }; },
+            async addAdvance(d) {
+                const r = await this.advancesCollection.add(d);
+                await this.transactionsCollection.add({
+                    type: 'ADVANCE',
+                    entityType: 'Advance',
+                    entityId: r.id,
+                    amount: d.amount || 0,
+                    month: new Date().toISOString().slice(0, 7),
+                    branch: d.branch || 'Unknown',
+                    description: d.purpose || 'Advance',
+                    timestamp: d.createdAt || new Date().toISOString(),
+                    user: this.getCurrentUser()?.username || 'system'
+                });
+                return { id: r.id, ...d };
+            },
             async updateAdvance(id, d) { await this.advancesCollection.doc(id).update(d); return { id, ...d }; },
             async addExpense(d) {
                 const r = await this.expensesCollection.add(d);
-                // Add to transactions
+                const monthVal = d.date ? d.date.slice(0, 7) : new Date().toISOString().slice(0, 7);
                 await this.transactionsCollection.add({
                     type: 'EXPENSE',
                     entityType: 'Expense',
                     entityId: r.id,
                     amount: d.amount || 0,
-                    month: d.date ? d.date.slice(0, 7) : new Date().toISOString().slice(0, 7),
+                    month: monthVal,
                     branch: d.branch || 'Unknown',
                     description: `${d.category||'Expense'} - ${d.description||''}`,
                     timestamp: d.createdAt || new Date().toISOString(),
@@ -2084,6 +2085,7 @@
                 loadFundManagement();
                 populateAllocSelect(); });
             CloudStore.listenToTransactions((t) => { appState.transactions = t;
+                updateDashboard();
                 loadMonthlyReport(); });
             if (hasPermission(user.role, 'viewAudit')) {
                 CloudStore.listenToAudit((l) => { appState.auditLogs = l;
@@ -2092,7 +2094,7 @@
         }
 
         // ======================================================================
-        // UPDATE DASHBOARD
+        // UPDATE DASHBOARD (FIXED - Now shows actual monthly data)
         // ======================================================================
         function updateDashboard() {
             const user = CloudStore.getCurrentUser();
@@ -2116,17 +2118,24 @@
             const low = campFunds.filter(f => f.balance < 10000);
             document.getElementById('pendingRefill').textContent = '₹' + (low.length * 5000).toLocaleString();
 
-            // Monthly summary
+            // Monthly summary - FIXED: Now correctly calculates from transactions
             const currentMonth = new Date().toISOString().slice(0, 7);
             document.getElementById('currentMonthDisplay').textContent = new Date().toLocaleString('default', { month: 'long',
                 year: 'numeric' });
-            const monthRefills = transactions.filter(t => t.type === 'REFILL' && t.month === currentMonth)
+
+            // Get all transactions for current month
+            const monthTransactions = transactions.filter(t => t.month === currentMonth);
+            const monthRefills = monthTransactions.filter(t => t.type === 'REFILL')
                 .reduce((s, t) => s + (t.amount || 0), 0);
-            const monthExpenses = transactions.filter(t => t.type === 'EXPENSE' && t.month === currentMonth)
+            const monthAllocations = monthTransactions.filter(t => t.type === 'ALLOCATION')
                 .reduce((s, t) => s + (t.amount || 0), 0);
+            const monthExpenses = monthTransactions.filter(t => t.type === 'EXPENSE')
+                .reduce((s, t) => s + (t.amount || 0), 0);
+
             document.getElementById('monthRefills').textContent = '₹' + monthRefills.toLocaleString();
-            document.getElementById('monthExpenses').textContent = '₹' + monthExpenses.toLocaleString();
-            document.getElementById('monthNet').textContent = '₹' + (monthRefills - monthExpenses).toLocaleString();
+            document.getElementById('monthAllocations').textContent = '₹' + monthAllocations.toLocaleString();
+            document.getElementById('monthNet').textContent = '₹' + (monthRefills - monthAllocations - monthExpenses)
+                .toLocaleString();
 
             updateAttentionList();
 
@@ -2450,7 +2459,7 @@
         }
 
         // ======================================================================
-        // FUND MANAGEMENT (UPDATED WITH FILTERS)
+        // FUND MANAGEMENT (FIXED - Month filter now actually works)
         // ======================================================================
         function loadFundManagement() {
             const user = CloudStore.getCurrentUser();
@@ -2477,13 +2486,21 @@
             const campFilter = document.getElementById('fundCampFilter')?.value || '';
             const statusFilter = document.getElementById('fundStatusFilter')?.value || '';
 
-            // Filter cards
+            // Filter cards by month (using created/updated date)
             let filteredCards = [...cards];
             if (campFilter) filteredCards = filteredCards.filter(c => c.branch === campFilter);
             if (statusFilter === 'active') filteredCards = filteredCards.filter(c => c.status === 'active');
             else if (statusFilter === 'utilized') filteredCards = filteredCards.filter(c => (c.utilized || 0) > 0);
             else if (statusFilter === 'high') filteredCards = filteredCards.filter(c => c.limit > 0 && (c.utilized / c
                 .limit) > 0.8);
+
+            // Month filter - filter cards that were updated/created in the selected month
+            if (monthFilter) {
+                filteredCards = filteredCards.filter(c => {
+                    const date = c.updatedAt || c.createdAt || '';
+                    return date && date.startsWith(monthFilter);
+                });
+            }
 
             const tb = document.getElementById('fundBody');
             if (filteredCards.length === 0) { tb.innerHTML =
@@ -2545,7 +2562,7 @@
         }
 
         // ======================================================================
-        // MONTHLY REPORT (NEW)
+        // MONTHLY REPORT
         // ======================================================================
         function loadMonthlyReport() {
             const user = CloudStore.getCurrentUser();
@@ -2582,7 +2599,7 @@
             }
             if (typeFilter !== 'all') filtered = filtered.filter(t => t.type === typeFilter.toUpperCase());
 
-            // Sort by timestamp
+            // Sort by timestamp (oldest first for running balance)
             filtered.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
             // Calculate totals
@@ -2596,7 +2613,7 @@
             document.getElementById('reportTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
             document.getElementById('reportNetBalance').textContent = '₹' + netBalance.toLocaleString();
 
-            // Render table
+            // Render table with running balance
             const tb = document.getElementById('reportBody');
             if (filtered.length === 0) {
                 tb.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions found</td></tr>`;
@@ -2604,7 +2621,7 @@
                 let runningBalance = 0;
                 tb.innerHTML = filtered.map((t, i) => {
                     const amount = t.amount || 0;
-                    if (t.type === 'REFILL' || t.type === 'FUND_ADD') runningBalance += amount;
+                    if (t.type === 'REFILL') runningBalance += amount;
                     else runningBalance -= amount;
                     const iconMap = { REFILL: 'fa-arrow-down text-success', ALLOCATION: 'fa-arrow-right text-primary',
                         EXPENSE: 'fa-arrow-up text-danger', ADVANCE: 'fa-hand-holding-usd text-warning' };
@@ -2615,7 +2632,7 @@
                                 <td><i class="fas ${icon} me-1"></i> ${t.type || 'N/A'}</td>
                                 <td>${t.description || 'N/A'}</td>
                                 <td>${t.branch || 'N/A'}</td>
-                                <td class="${t.type==='REFILL'||t.type==='FUND_ADD'?'text-success':'text-danger'}">₹${amount.toLocaleString()}</td>
+                                <td class="${t.type==='REFILL'?'text-success':'text-danger'}">₹${amount.toLocaleString()}</td>
                                 <td class="fw-bold">₹${runningBalance.toLocaleString()}</td>
                             </tr>`;
                 }).join('');
@@ -2635,7 +2652,7 @@
             transactions.forEach(t => {
                 if (!t.month) return;
                 if (!monthMap[t.month]) monthMap[t.month] = { refills: 0, allocations: 0, expenses: 0 };
-                if (t.type === 'REFILL' || t.type === 'FUND_ADD') monthMap[t.month].refills += (t.amount || 0);
+                if (t.type === 'REFILL') monthMap[t.month].refills += (t.amount || 0);
                 else if (t.type === 'ALLOCATION') monthMap[t.month].allocations += (t.amount || 0);
                 else if (t.type === 'EXPENSE') monthMap[t.month].expenses += (t.amount || 0);
             });
@@ -2693,7 +2710,7 @@
         }
 
         // ======================================================================
-        // ALLOCATE TO CARD (UPDATED WITH MONTH)
+        // ALLOCATE TO CARD
         // ======================================================================
         function showAllocateToCardModal() {
             const user = CloudStore.getCurrentUser();
@@ -2703,7 +2720,6 @@
             const main = appState.funds.find(f => f.camp === '__main__');
             document.getElementById('allocAvailableMain').textContent = '₹' + (main ? main.balance : 0).toLocaleString();
             document.getElementById('allocateCardForm').reset();
-            // Set default month
             document.getElementById('allocMonth').value = new Date().toISOString().slice(0, 7);
             new bootstrap.Modal(document.getElementById('allocateCardModal')).show();
         }
@@ -2738,7 +2754,6 @@
                     await CloudStore.updateFund(card.branch, amount, 'add', remarks || `Card ${card.cardNumber} allocation`,
                         month);
                 }
-                // Log allocation
                 await CloudStore.addAllocation({
                     cardId: cardId,
                     cardNumber: card.cardNumber,
@@ -2757,7 +2772,7 @@
         }
 
         // ======================================================================
-        // REFILL (UPDATED WITH MONTH)
+        // REFILL
         // ======================================================================
         function showRefillModal() {
             const user = CloudStore.getCurrentUser();
@@ -2789,7 +2804,7 @@
         }
 
         // ======================================================================
-        // RETURN FROM CARD (UPDATED)
+        // RETURN FROM CARD
         // ======================================================================
         async function returnFromCard(cardId) {
             const user = CloudStore.getCurrentUser();
@@ -3115,7 +3130,7 @@
         }
 
         // ======================================================================
-        // MODAL HELPERS (unchanged)
+        // MODAL HELPERS
         // ======================================================================
         function showAdvanceModal() {
             const user = CloudStore.getCurrentUser();
@@ -3654,6 +3669,8 @@
             updateDateTime();
             setInterval(updateDateTime, 1000);
             await loadAllPermissions();
+            // Set default month filter
+            document.getElementById('fundMonthFilter').value = new Date().toISOString().slice(0, 7);
             const userId = localStorage.getItem('pf_user_id');
             if (userId) {
                 try {
@@ -3672,7 +3689,7 @@
         initializeApp();
         console.log('🏗️ Project Fund Management System - Card-Based Allocation with Monthly Tracking');
         console.log('✅ Funds are allocated directly to SBI Visa Cards');
-        console.log('✅ Monthly refill and allocation tracking');
+        console.log('✅ Monthly refill and allocation tracking with proper filtering');
         console.log('✅ Filter by year, month, and transaction type');
         console.log('✅ Transaction sequence with running balance');
         console.log('🔑 First user registration becomes Super Admin');
