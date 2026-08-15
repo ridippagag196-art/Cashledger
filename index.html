@@ -1693,13 +1693,43 @@ async function initializeApp() {
                 const user = { id: userDoc.id, ...userDoc.data() };
                 CloudStore.setCurrentUser(user);
                 localStorage.setItem('pf_user_data', JSON.stringify(user));
-                showDashboard();
-                return;
-            }
-        } catch (error) {
-            console.error('Error restoring session:', error);
+                function showDashboard() {
+    // ... existing code ...
+    
+    const user = CloudStore.getCurrentUser();
+    if (user) {
+        // ... existing code ...
+        
+        // ✅ Role-based button visibility
+        const isAdmin = user.role === 'admin';
+        const isManager = user.role === 'manager' || user.role === 'accounts';
+        
+        // Add Employee button - Only Admin can add employees
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        if (addEmployeeBtn) {
+            addEmployeeBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        }
+        
+        // Add Branch button - Admin can add, Managers can add
+        const addBranchBtn = document.querySelector('#page-branches .btn-primary');
+        if (addBranchBtn) {
+            addBranchBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
+        }
+        
+        // Add Project button - Admin can add, Managers can add
+        const addProjectBtn = document.querySelector('#page-projects .btn-primary');
+        if (addProjectBtn) {
+            addProjectBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
+        }
+        
+        // Add Card button - Admin can add, Managers can add
+        const addCardBtn = document.querySelector('#page-cards .btn-primary');
+        if (addCardBtn) {
+            addCardBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
         }
     }
+    
+    // ... rest of the function ...
 }
 
 // ============================================
@@ -1937,38 +1967,73 @@ function setupRealtimeListeners() {
     CloudStore.listenToEmployees((employees) => {
         appState.employees = employees;
         updateDashboard();
-        loadEmployees();
-        generateReports();
-    });
+        function loadEmployees() {
+    const user = CloudStore.getCurrentUser();
+    const employees = appState.employees;
+    const tbody = document.getElementById('employeesBody');
     
-    CloudStore.listenToAdvances((advances) => {
-        appState.advances = advances;
-        updateDashboard();
-        loadAdvances();
-        loadMyDashboard();
-        loadApprovals();
-    });
-    
-    CloudStore.listenToExpenses((expenses) => {
-        appState.expenses = expenses;
-        updateDashboard();
-        loadExpenses();
-        loadMyDashboard();
-        loadApprovals();
-    });
-    
-    CloudStore.listenToCards((cards) => {
-        appState.cards = cards;
-        updateDashboard();
-        loadCards();
-    });
-    
-    if (user.role === 'admin' || user.role === 'auditor') {
-        CloudStore.listenToAudit((logs) => {
-            appState.auditLogs = logs;
-            loadAuditLogs();
-        });
+    // Role-based filtering
+    let filteredEmployees = employees;
+    if (user?.role === 'manager') {
+        filteredEmployees = employees.filter(e => e.branch === user.branch);
+    } else if (user?.role === 'employee') {
+        filteredEmployees = employees.filter(e => e.id === user.id);
     }
+    
+    if (filteredEmployees.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees found</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = filteredEmployees.map(e => {
+        const empAdvances = appState.advances.filter(a => a.employeeId === e.id);
+        const totalAdvances = empAdvances.reduce((sum, a) => sum + (a.amount || 0), 0);
+        const outstanding = empAdvances
+            .filter(a => a.status === 'issued')
+            .reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
+        
+        // ✅ Role-based permissions
+        const isAdmin = user?.role === 'admin';
+        const isManager = user?.role === 'manager';
+        const isAccounts = user?.role === 'accounts';
+        
+        // ✅ Only Admin can delete
+        const canDelete = isAdmin;
+        // ✅ Admin and Manager/Accounts can edit (but we'll restrict edit to Admin only)
+        const canEdit = isAdmin;
+        const canView = isAdmin || isManager || isAccounts;
+        
+        return `
+            <tr>
+                <td><code>${e.employeeId}</code></td>
+                <td><strong>${e.name}</strong></td>
+                <td>${e.branch || 'N/A'}</td>
+                <td>${e.designation || 'N/A'}</td>
+                <td><span class="role-badge ${e.role || 'employee'}">${(e.role || 'employee').toUpperCase()}</span></td>
+                <td>₹${totalAdvances.toLocaleString()}</td>
+                <td><span class="${outstanding > 0 ? 'text-danger fw-bold' : 'text-success'}">₹${outstanding.toLocaleString()}</span></td>
+                <td><span class="badge ${e.isActive !== false ? 'bg-success' : 'bg-danger'}">${e.isActive !== false ? 'Active' : 'Inactive'}</span></td>
+                <td>
+                    ${canEdit ? `
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${e.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    ` : ''}
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${e.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : ''}
+                    ${canView && !canEdit ? `
+                        <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${e.id}')">
+                            <i class="fas fa-book"></i>
+                        </button>
+                        <span class="badge bg-secondary">View Only</span>
+                    ` : ''}
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // ============================================
@@ -2344,14 +2409,27 @@ async function deleteBranch(id) {
 // PROJECT FUNCTIONS
 // ============================================
 function loadProjects() {
+    const user = CloudStore.getCurrentUser();
     const projects = appState.projects;
     const tbody = document.getElementById('projectsBody');
-    if (projects.length === 0) {
+    
+    // ✅ Role-based filtering
+    let filteredProjects = projects;
+    if (user?.role === 'manager') {
+        // Manager sees only projects from their branch
+        filteredProjects = projects.filter(p => p.branch === user.branch);
+    }
+    
+    if (filteredProjects.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No projects found</td></tr>`;
         return;
     }
     
-    tbody.innerHTML = projects.map(p => {
+    // ✅ Role-based permissions
+    const isAdmin = user?.role === 'admin';
+    const canDelete = isAdmin; // Only Admin can delete
+    
+    tbody.innerHTML = filteredProjects.map(p => {
         const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
         const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
         const available = (p.allocatedFund || 0) - utilized;
@@ -2374,64 +2452,18 @@ function loadProjects() {
                 </td>
                 <td><span class="badge ${p.status === 'active' ? 'bg-success' : 'bg-secondary'}">${p.status || 'Active'}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="badge bg-secondary">View Only</span>
+                    `}
                 </td>
             </tr>
         `;
     }).join('');
 }
-
-function showProjectModal() {
-    populateBranchSelectors();
-    const modal = new bootstrap.Modal(document.getElementById('projectModal'));
-    document.getElementById('projectForm').reset();
-    modal.show();
-}
-
-async function saveProject() {
-    const name = document.getElementById('projectName').value.trim();
-    const branch = document.getElementById('projectBranch').value;
-    const allocatedFund = parseFloat(document.getElementById('projectFund').value);
-    const description = document.getElementById('projectDescription').value.trim();
-    
-    if (!name || !branch || !allocatedFund || allocatedFund <= 0) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    showLoading(true);
-    try {
-        const data = {
-            name,
-            branch,
-            allocatedFund,
-            description,
-            status: 'active',
-            createdAt: new Date().toISOString()
-        };
-        await CloudStore.addProject(data);
-        await addAuditLog('CREATE_PROJECT', 'Project', name);
-        bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-        showToast('success', `Project ${name} added successfully`);
-    } catch (error) {
-        showToast('danger', 'Failed to add project: ' + error.message);
-    }
-    showLoading(false);
-}
-
-async function deleteProject(id) {
-    if (!confirm('Delete this project and all associated data?')) return;
-    try {
-        await CloudStore.projectsCollection.doc(id).delete();
-        await addAuditLog('DELETE_PROJECT', 'Project', id);
-        showToast('success', 'Project deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
 // ============================================
 // EMPLOYEE FUNCTIONS
 // ============================================
@@ -3690,14 +3722,63 @@ function showPage(page) {
         case 'myDashboard': loadMyDashboard(); break;
         case 'advances': loadAdvances(); break;
         case 'expenses': loadExpenses(); break;
-        case 'cards': loadCards(); break;
-        case 'branches': loadBranches(); break;
-        case 'projects': loadProjects(); break;
-        case 'employees': loadEmployees(); break;
-        case 'approvals': loadApprovals(); break;
-        case 'reports': generateReports(); break;
-        case 'audit': loadAuditLogs(); break;
+        case 'cards': lfunction loadCards() {
+    const user = CloudStore.getCurrentUser();
+    
+    // ✅ Only allow access for Admin/Manager/Accounts
+    if (user?.role !== 'admin' && user?.role !== 'manager' && user?.role !== 'accounts') {
+        document.getElementById('cardsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. Only Admin, Managers, and Accounts can view cards.
+                </td>
+            </tr>
+        `;
+        return;
     }
+    
+    const cards = appState.cards;
+    const tbody = document.getElementById('cardsBody');
+    if (cards.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No cards found</td></tr>`;
+        return;
+    }
+    
+    // ✅ Role-based permissions
+    const isAdmin = user?.role === 'admin';
+    const canDelete = isAdmin; // Only Admin can delete
+    
+    tbody.innerHTML = cards.map(c => {
+        const utilized = c.utilized || 0;
+        const available = c.limit - utilized;
+        const percentUsed = c.limit > 0 ? (utilized / c.limit) * 100 : 0;
+        
+        return `
+            <tr>
+                <td>XXXX ${c.cardNumber || 'N/A'}</td>
+                <td>${c.branch || 'N/A'}</td>
+                <td>${c.projectName || 'N/A'}</td>
+                <td>${c.holderName || 'N/A'}</td>
+                <td>₹${(c.limit || 0).toLocaleString()}</td>
+                <td>₹${utilized.toLocaleString()}</td>
+                <td>₹${available.toLocaleString()}</td>
+                <td>
+                    <span class="badge ${percentUsed > 80 ? 'bg-danger' : percentUsed > 50 ? 'bg-warning' : 'bg-success'}">
+                        ${percentUsed.toFixed(0)}%
+                    </span>
+                </td>
+                <td>
+                    ${canDelete ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${c.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : `
+                        <span class="badge bg-secondary">View Only</span>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // ============================================
