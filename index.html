@@ -20,6 +20,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <style>
+        /* All existing styles remain the same */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -503,6 +504,40 @@
             font-weight: 600;
         }
         
+        .permission-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .permission-toggle .toggle-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .permission-toggle .form-check-input {
+            width: 40px;
+            height: 20px;
+        }
+        
+        .permission-card {
+            background: #f8f9fc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .permission-card .permission-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .permission-card .permission-desc {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
         .project-card {
             border-radius: 12px;
             padding: 15px;
@@ -550,6 +585,20 @@
         
         .employee-view .my-dashboard-content {
             display: block !important;
+        }
+        
+        .permission-section {
+            border-left: 3px solid #4e73df;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .permission-section .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4e73df;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -686,37 +735,40 @@
                         <a class="nav-link" href="#" onclick="showPage('myDashboard')" id="myDashboardMenuLink">
                             <i class="fas fa-user"></i> My Dashboard
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('advances')">
+                        <a class="nav-link" href="#" onclick="showPage('advances')" id="advancesMenuLink">
                             <i class="fas fa-hand-holding-usd"></i> Advances
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('expenses')">
+                        <a class="nav-link" href="#" onclick="showPage('expenses')" id="expensesMenuLink">
                             <i class="fas fa-receipt"></i> Expenses
                         </a>
-                        <a class="nav-link" href="#" onclick="showPage('cards')" id="cardsMenu" style="display: none;">
+                        <a class="nav-link" href="#" onclick="showPage('cards')" id="cardsMenuLink">
                             <i class="fas fa-credit-card"></i> Cards
                         </a>
                         <div id="adminMenu" style="display: none;">
                             <div class="px-3 py-2 mt-2">
                                 <small class="text-uppercase" style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">Administration</small>
                             </div>
-                            <a class="nav-link" href="#" onclick="showPage('branches')">
+                            <a class="nav-link" href="#" onclick="showPage('permissions')" id="permissionsMenuLink">
+                                <i class="fas fa-lock"></i> Permissions
+                            </a>
+                            <a class="nav-link" href="#" onclick="showPage('branches')" id="branchesMenuLink">
                                 <i class="fas fa-building"></i> Branches
                             </a>
-                            <a class="nav-link" href="#" onclick="showPage('projects')">
+                            <a class="nav-link" href="#" onclick="showPage('projects')" id="projectsMenuLink">
                                 <i class="fas fa-project-diagram"></i> Projects
                             </a>
-                            <a class="nav-link" href="#" onclick="showPage('employees')">
+                            <a class="nav-link" href="#" onclick="showPage('employees')" id="employeesMenuLink">
                                 <i class="fas fa-users"></i> Employees
                                 <span class="badge bg-primary float-end" id="employeeCountBadge">0</span>
                             </a>
-                            <a class="nav-link" href="#" onclick="showPage('approvals')">
+                            <a class="nav-link" href="#" onclick="showPage('approvals')" id="approvalsMenuLink">
                                 <i class="fas fa-check-double"></i> Approvals
                                 <span class="badge bg-danger float-end" id="pendingCount">0</span>
                             </a>
-                            <a class="nav-link" href="#" onclick="showPage('reports')">
+                            <a class="nav-link" href="#" onclick="showPage('reports')" id="reportsMenuLink">
                                 <i class="fas fa-chart-bar"></i> Reports
                             </a>
-                            <a class="nav-link" href="#" onclick="showPage('audit')">
+                            <a class="nav-link" href="#" onclick="showPage('audit')" id="auditMenuLink">
                                 <i class="fas fa-history"></i> Audit Logs
                             </a>
                         </div>
@@ -989,11 +1041,36 @@
                         </div>
                     </div>
 
+                    <!-- Permissions Page (Admin Only) -->
+                    <div id="page-permissions" class="page-content" style="display: none;">
+                        <div class="company-header">
+                            <h4><i class="fas fa-lock me-2 text-primary"></i>Permission Management</h4>
+                            <small>Grant or restrict access to features for different roles</small>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="mb-3">
+                                <label class="fw-semibold">Select Role to Configure:</label>
+                                <select class="form-select mt-2" id="permissionRole" onchange="loadPermissions()">
+                                    <option value="admin">Admin (Super User - Full Access)</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="accounts">Accounts</option>
+                                    <option value="employee">Employee</option>
+                                    <option value="auditor">Auditor</option>
+                                </select>
+                            </div>
+
+                            <div id="permissionsContainer">
+                                <div class="text-center text-muted py-3">Select a role to configure permissions</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Advances Page -->
                     <div id="page-advances" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-hand-holding-usd me-2 text-primary"></i>Advances</h4>
-                            <button class="btn btn-primary" onclick="showAdvanceModal()">
+                            <button class="btn btn-primary" onclick="showAdvanceModal()" id="addAdvanceBtn">
                                 <i class="fas fa-plus me-2"></i>Request Advance
                             </button>
                         </div>
@@ -1025,7 +1102,7 @@
                     <div id="page-expenses" class="page-content" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4><i class="fas fa-receipt me-2 text-primary"></i>Expenses</h4>
-                            <button class="btn btn-success" onclick="showExpenseModal()">
+                            <button class="btn btn-success" onclick="showExpenseModal()" id="addExpenseBtn">
                                 <i class="fas fa-plus me-2"></i>Add Expense
                             </button>
                         </div>
@@ -1281,7 +1358,7 @@
     </div>
 </div>
 
-<!-- Modals -->
+<!-- All Modals remain the same as before -->
 <!-- Advance Modal -->
 <div class="modal fade" id="advanceModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -1686,6 +1763,413 @@ db.enablePersistence({
 console.log('☁️ Firebase Connected Successfully!');
 
 // ============================================
+// PERMISSION SYSTEM
+// ============================================
+const DefaultPermissions = {
+    admin: {
+        viewDashboard: true,
+        viewMyDashboard: true,
+        viewAdvances: true,
+        viewExpenses: true,
+        viewCards: true,
+        viewBranches: true,
+        viewProjects: true,
+        viewEmployees: true,
+        viewApprovals: true,
+        viewReports: true,
+        viewAudit: true,
+        viewPermissions: true,
+        addAdvance: true,
+        addExpense: true,
+        addCard: true,
+        addBranch: true,
+        addProject: true,
+        addEmployee: true,
+        deleteAdvance: true,
+        deleteExpense: true,
+        deleteCard: true,
+        deleteBranch: true,
+        deleteProject: true,
+        deleteEmployee: true,
+        approveRequests: true,
+        managePermissions: true
+    },
+    manager: {
+        viewDashboard: true,
+        viewMyDashboard: true,
+        viewAdvances: true,
+        viewExpenses: true,
+        viewCards: true,
+        viewBranches: true,
+        viewProjects: true,
+        viewEmployees: true,
+        viewApprovals: true,
+        viewReports: true,
+        viewAudit: false,
+        viewPermissions: false,
+        addAdvance: true,
+        addExpense: true,
+        addCard: true,
+        addBranch: true,
+        addProject: true,
+        addEmployee: false,
+        deleteAdvance: false,
+        deleteExpense: false,
+        deleteCard: false,
+        deleteBranch: false,
+        deleteProject: false,
+        deleteEmployee: false,
+        approveRequests: true,
+        managePermissions: false
+    },
+    accounts: {
+        viewDashboard: true,
+        viewMyDashboard: true,
+        viewAdvances: true,
+        viewExpenses: true,
+        viewCards: true,
+        viewBranches: true,
+        viewProjects: true,
+        viewEmployees: true,
+        viewApprovals: true,
+        viewReports: true,
+        viewAudit: false,
+        viewPermissions: false,
+        addAdvance: false,
+        addExpense: true,
+        addCard: false,
+        addBranch: false,
+        addProject: false,
+        addEmployee: false,
+        deleteAdvance: false,
+        deleteExpense: false,
+        deleteCard: false,
+        deleteBranch: false,
+        deleteProject: false,
+        deleteEmployee: false,
+        approveRequests: true,
+        managePermissions: false
+    },
+    employee: {
+        viewDashboard: false,
+        viewMyDashboard: true,
+        viewAdvances: true,
+        viewExpenses: true,
+        viewCards: false,
+        viewBranches: false,
+        viewProjects: false,
+        viewEmployees: false,
+        viewApprovals: false,
+        viewReports: false,
+        viewAudit: false,
+        viewPermissions: false,
+        addAdvance: true,
+        addExpense: true,
+        addCard: false,
+        addBranch: false,
+        addProject: false,
+        addEmployee: false,
+        deleteAdvance: false,
+        deleteExpense: false,
+        deleteCard: false,
+        deleteBranch: false,
+        deleteProject: false,
+        deleteEmployee: false,
+        approveRequests: false,
+        managePermissions: false
+    },
+    auditor: {
+        viewDashboard: true,
+        viewMyDashboard: true,
+        viewAdvances: true,
+        viewExpenses: true,
+        viewCards: true,
+        viewBranches: true,
+        viewProjects: true,
+        viewEmployees: true,
+        viewApprovals: false,
+        viewReports: true,
+        viewAudit: true,
+        viewPermissions: false,
+        addAdvance: false,
+        addExpense: false,
+        addCard: false,
+        addBranch: false,
+        addProject: false,
+        addEmployee: false,
+        deleteAdvance: false,
+        deleteExpense: false,
+        deleteCard: false,
+        deleteBranch: false,
+        deleteProject: false,
+        deleteEmployee: false,
+        approveRequests: false,
+        managePermissions: false
+    }
+};
+
+// Store permissions in Firebase
+let currentPermissions = {};
+
+function loadPermissions() {
+    const role = document.getElementById('permissionRole').value;
+    const container = document.getElementById('permissionsContainer');
+    
+    // Get permissions for this role
+    const perms = currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
+    
+    const permissionGroups = [
+        {
+            title: 'View Permissions',
+            icon: 'fa-eye',
+            permissions: [
+                { key: 'viewDashboard', label: 'View Dashboard', desc: 'Access to main dashboard' },
+                { key: 'viewMyDashboard', label: 'View My Dashboard', desc: 'Access to personal dashboard' },
+                { key: 'viewAdvances', label: 'View Advances', desc: 'View all advance requests' },
+                { key: 'viewExpenses', label: 'View Expenses', desc: 'View all expense submissions' },
+                { key: 'viewCards', label: 'View Cards', desc: 'View SBI Visa card details' },
+                { key: 'viewBranches', label: 'View Branches', desc: 'View branch information' },
+                { key: 'viewProjects', label: 'View Projects', desc: 'View project information' },
+                { key: 'viewEmployees', label: 'View Employees', desc: 'View employee list' },
+                { key: 'viewApprovals', label: 'View Approvals', desc: 'View pending approvals' },
+                { key: 'viewReports', label: 'View Reports', desc: 'View reports and analytics' },
+                { key: 'viewAudit', label: 'View Audit Logs', desc: 'View audit trail' },
+                { key: 'viewPermissions', label: 'View Permissions', desc: 'View permission settings' }
+            ]
+        },
+        {
+            title: 'Add/Create Permissions',
+            icon: 'fa-plus-circle',
+            permissions: [
+                { key: 'addAdvance', label: 'Add Advance', desc: 'Create advance requests' },
+                { key: 'addExpense', label: 'Add Expense', desc: 'Submit expenses' },
+                { key: 'addCard', label: 'Add Card', desc: 'Add new SBI Visa cards' },
+                { key: 'addBranch', label: 'Add Branch', desc: 'Create new branches' },
+                { key: 'addProject', label: 'Add Project', desc: 'Create new projects' },
+                { key: 'addEmployee', label: 'Add Employee', desc: 'Add new employees' }
+            ]
+        },
+        {
+            title: 'Delete Permissions',
+            icon: 'fa-trash',
+            permissions: [
+                { key: 'deleteAdvance', label: 'Delete Advance', desc: 'Delete advance requests' },
+                { key: 'deleteExpense', label: 'Delete Expense', desc: 'Delete expense submissions' },
+                { key: 'deleteCard', label: 'Delete Card', desc: 'Delete SBI Visa cards' },
+                { key: 'deleteBranch', label: 'Delete Branch', desc: 'Delete branches' },
+                { key: 'deleteProject', label: 'Delete Project', desc: 'Delete projects' },
+                { key: 'deleteEmployee', label: 'Delete Employee', desc: 'Delete employees' }
+            ]
+        },
+        {
+            title: 'Special Permissions',
+            icon: 'fa-star',
+            permissions: [
+                { key: 'approveRequests', label: 'Approve Requests', desc: 'Approve or reject requests' },
+                { key: 'managePermissions', label: 'Manage Permissions', desc: 'Edit permission settings' }
+            ]
+        }
+    ];
+    
+    // Only show manage permissions toggle for admin role
+    const isAdmin = role === 'admin';
+    const isSuperAdmin = CloudStore.getCurrentUser()?.role === 'admin';
+    
+    let html = `<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure permissions for <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong> role. Changes take effect immediately.</div>`;
+    
+    // Show permission toggles
+    permissionGroups.forEach(group => {
+        html += `
+            <div class="permission-section">
+                <div class="section-title"><i class="fas ${group.icon} me-2"></i>${group.title}</div>
+                <div class="row">
+        `;
+        
+        group.permissions.forEach(p => {
+            const isChecked = perms[p.key] || false;
+            const isDisabled = (role === 'admin' && p.key === 'managePermissions' && !isSuperAdmin) || (role === 'admin' && !isSuperAdmin);
+            
+            html += `
+                <div class="col-md-6">
+                    <div class="permission-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="permission-title">${p.label}</div>
+                                <div class="permission-desc">${p.desc}</div>
+                            </div>
+                            <div class="permission-toggle">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                           id="perm_${p.key}" 
+                                           ${isChecked ? 'checked' : ''} 
+                                           ${isDisabled ? 'disabled' : ''}
+                                           onchange="savePermission('${role}', '${p.key}', this.checked)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    });
+    
+    // Role description
+    const roleDescriptions = {
+        admin: 'Full access to all features. Can manage permissions and system settings.',
+        manager: 'Can manage their branch, approve requests, and view reports.',
+        accounts: 'Can view financial data, approve expenses, and generate reports.',
+        employee: 'Can submit advance requests and expenses, view personal dashboard.',
+        auditor: 'Read-only access to all data for audit purposes.'
+    };
+    
+    html += `
+        <div class="alert alert-secondary mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Role Description:</strong> ${roleDescriptions[role] || 'Custom role with configured permissions.'}
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+async function savePermission(role, key, value) {
+    const user = CloudStore.getCurrentUser();
+    if (user?.role !== 'admin') {
+        showToast('warning', 'Only Admins can manage permissions');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        // Update permissions in Firestore
+        const permDoc = await db.collection('permissions').doc(role).get();
+        let perms = {};
+        if (permDoc.exists) {
+            perms = permDoc.data();
+        }
+        perms[key] = value;
+        
+        await db.collection('permissions').doc(role).set(perms, { merge: true });
+        
+        // Update local cache
+        currentPermissions[role] = perms;
+        
+        showToast('success', `Permission "${key}" updated successfully`);
+        addAuditLog('UPDATE_PERMISSION', 'Permission', `${role}.${key}=${value}`);
+        
+        // Re-apply permissions for current user if their role was changed
+        if (user.role === role) {
+            applyPermissions();
+        }
+    } catch (error) {
+        showToast('danger', 'Failed to save permission: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+async function loadAllPermissions() {
+    try {
+        const snapshot = await db.collection('permissions').get();
+        currentPermissions = {};
+        snapshot.forEach(doc => {
+            currentPermissions[doc.id] = doc.data();
+        });
+        
+        // Merge with defaults
+        Object.keys(DefaultPermissions).forEach(role => {
+            if (!currentPermissions[role]) {
+                currentPermissions[role] = DefaultPermissions[role];
+            }
+        });
+    } catch (error) {
+        console.error('Error loading permissions:', error);
+        currentPermissions = DefaultPermissions;
+    }
+}
+
+function getUserPermissions(role) {
+    return currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
+}
+
+function hasPermission(role, permission) {
+    const perms = getUserPermissions(role);
+    return perms[permission] || false;
+}
+
+// ============================================
+// APPLY PERMISSIONS TO UI
+// ============================================
+function applyPermissions() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    const role = user.role;
+    const perms = getUserPermissions(role);
+    const isAdmin = role === 'admin';
+    
+    // Menu items
+    const menuItems = {
+        dashboardMenuLink: perms.viewDashboard,
+        myDashboardMenuLink: perms.viewMyDashboard,
+        advancesMenuLink: perms.viewAdvances,
+        expensesMenuLink: perms.viewExpenses,
+        cardsMenuLink: perms.viewCards,
+        branchesMenuLink: perms.viewBranches,
+        projectsMenuLink: perms.viewProjects,
+        employeesMenuLink: perms.viewEmployees,
+        approvalsMenuLink: perms.viewApprovals,
+        reportsMenuLink: perms.viewReports,
+        auditMenuLink: perms.viewAudit,
+        permissionsMenuLink: perms.viewPermissions && isAdmin
+    };
+    
+    Object.keys(menuItems).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = menuItems[id] ? 'block' : 'none';
+        }
+    });
+    
+    // Admin menu visibility
+    const adminMenu = document.getElementById('adminMenu');
+    if (adminMenu) {
+        const hasAdminAccess = menuItems.branchesMenuLink || menuItems.projectsMenuLink || 
+                              menuItems.employeesMenuLink || menuItems.approvalsMenuLink || 
+                              menuItems.reportsMenuLink || menuItems.auditMenuLink || 
+                              menuItems.permissionsMenuLink;
+        adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
+    }
+    
+    // Add buttons
+    const addButtons = {
+        addAdvanceBtn: perms.addAdvance,
+        addExpenseBtn: perms.addExpense,
+        addCardBtn: perms.addCard,
+        addBranchBtn: perms.addBranch,
+        addProjectBtn: perms.addProject,
+        addEmployeeBtn: perms.addEmployee
+    };
+    
+    Object.keys(addButtons).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = addButtons[id] ? 'inline-block' : 'none';
+        }
+    });
+    
+    // If employee, show My Dashboard by default
+    if (role === 'employee' && !perms.viewDashboard) {
+        document.getElementById('page-dashboard').style.display = 'none';
+        document.getElementById('page-myDashboard').style.display = 'block';
+        document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
+        document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.remove('active');
+    }
+}
+
+// ============================================
 // DATA STORE - Cloud Sync
 // ============================================
 const CloudStore = {
@@ -1698,6 +2182,7 @@ const CloudStore = {
     cardsCollection: db.collection('cards'),
     notificationsCollection: db.collection('notifications'),
     auditCollection: db.collection('audit'),
+    permissionsCollection: db.collection('permissions'),
     
     currentUser: null,
     listeners: [],
@@ -2029,6 +2514,9 @@ async function initializeApp() {
     updateDateTime();
     setInterval(updateDateTime, 1000);
     
+    // Load permissions
+    await loadAllPermissions();
+    
     const userId = localStorage.getItem('pf_user_id');
     if (userId) {
         try {
@@ -2187,7 +2675,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
 });
 
 // ============================================
-// SHOW DASHBOARD
+// SHOW DASHBOARD - UPDATED WITH PERMISSIONS
 // ============================================
 function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
@@ -2201,59 +2689,12 @@ function showDashboard() {
         document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
         document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
         
-        // ROLE-BASED MENU VISIBILITY
-        const isAdmin = user.role === 'admin';
-        const isManager = user.role === 'manager' || user.role === 'accounts';
-        const isEmployee = user.role === 'employee';
-        const isAccounts = user.role === 'accounts';
+        // Apply permissions
+        applyPermissions();
         
-        // Hide main Dashboard for employees
-        const dashboardLink = document.getElementById('dashboardMenuLink');
-        if (dashboardLink) {
-            dashboardLink.style.display = isEmployee ? 'none' : 'block';
-        }
-        
-        // Show My Dashboard for everyone
-        const myDashboardLink = document.getElementById('myDashboardMenuLink');
-        if (myDashboardLink) {
-            myDashboardLink.style.display = 'block';
-        }
-        
-        // Admin menu (Branches, Projects, Employees, Approvals, Reports, Audit)
-        document.getElementById('adminMenu').style.display = (isAdmin || isManager || isAccounts) ? 'block' : 'none';
-        
-        // Cards menu - only for Admin/Manager/Accounts
-        document.getElementById('cardsMenu').style.display = (isAdmin || isManager) ? 'block' : 'none';
-        
-        // Hide audit for non-admins
-        const auditLink = document.querySelector('#adminMenu .nav-link[onclick*="audit"]');
-        if (auditLink) {
-            auditLink.style.display = isAdmin ? 'block' : 'none';
-        }
-        
-        // Role-based button visibility
-        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-        if (addEmployeeBtn) {
-            addEmployeeBtn.style.display = isAdmin ? 'inline-block' : 'none';
-        }
-        
-        const addBranchBtn = document.getElementById('addBranchBtn');
-        if (addBranchBtn) {
-            addBranchBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
-        }
-        
-        const addProjectBtn = document.getElementById('addProjectBtn');
-        if (addProjectBtn) {
-            addProjectBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
-        }
-        
-        const addCardBtn = document.getElementById('addCardBtn');
-        if (addCardBtn) {
-            addCardBtn.style.display = (isAdmin || isManager) ? 'inline-block' : 'none';
-        }
-        
-        // If employee, automatically show My Dashboard
-        if (isEmployee) {
+        // Default page
+        const perms = getUserPermissions(user.role);
+        if (user.role === 'employee' || !perms.viewDashboard) {
             document.getElementById('page-dashboard').style.display = 'none';
             document.getElementById('page-myDashboard').style.display = 'block';
             document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
@@ -2283,7 +2724,7 @@ function setupRealtimeListeners() {
         appState.branches = branches;
         updateDashboard();
         populateBranchSelectors();
-        loadBranches();
+        if (hasPermission(user.role, 'viewBranches')) loadBranches();
         generateReports();
     });
     
@@ -2291,40 +2732,40 @@ function setupRealtimeListeners() {
         appState.projects = projects;
         updateDashboard();
         populateProjectSelectors();
-        loadProjects();
+        if (hasPermission(user.role, 'viewProjects')) loadProjects();
         generateReports();
     });
     
     CloudStore.listenToEmployees((employees) => {
         appState.employees = employees;
         updateDashboard();
-        loadEmployees();
+        if (hasPermission(user.role, 'viewEmployees')) loadEmployees();
         generateReports();
     });
     
     CloudStore.listenToAdvances((advances) => {
         appState.advances = advances;
         updateDashboard();
-        loadAdvances();
+        if (hasPermission(user.role, 'viewAdvances')) loadAdvances();
         loadMyDashboard();
-        loadApprovals();
+        if (hasPermission(user.role, 'viewApprovals')) loadApprovals();
     });
     
     CloudStore.listenToExpenses((expenses) => {
         appState.expenses = expenses;
         updateDashboard();
-        loadExpenses();
+        if (hasPermission(user.role, 'viewExpenses')) loadExpenses();
         loadMyDashboard();
-        loadApprovals();
+        if (hasPermission(user.role, 'viewApprovals')) loadApprovals();
     });
     
     CloudStore.listenToCards((cards) => {
         appState.cards = cards;
         updateDashboard();
-        loadCards();
+        if (hasPermission(user.role, 'viewCards')) loadCards();
     });
     
-    if (user.role === 'admin' || user.role === 'auditor') {
+    if (hasPermission(user.role, 'viewAudit')) {
         CloudStore.listenToAudit((logs) => {
             appState.auditLogs = logs;
             loadAuditLogs();
@@ -2371,7 +2812,7 @@ function updateDashboard() {
     document.getElementById('pendingVerification').textContent = '₹' + pendingVerification.toLocaleString();
     
     const isManager = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts';
-    if (isManager) {
+    if (isManager && hasPermission(user?.role, 'viewCards')) {
         const totalCardLimit = cards.reduce((sum, c) => sum + (c.limit || 0), 0);
         const totalCardUtilized = cards.reduce((sum, c) => sum + (c.utilized || 0), 0);
         document.getElementById('cardTotalFunds').textContent = '₹' + totalCardLimit.toLocaleString();
@@ -2603,12 +3044,23 @@ function populateProjectSelectors() {
 }
 
 // ============================================
-// LOAD FUNCTIONS - WITH ROLE-BASED PERMISSIONS
+// LOAD FUNCTIONS - WITH PERMISSION CHECKS
 // ============================================
 
 // EMPLOYEES
 function loadEmployees() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewEmployees')) {
+        document.getElementById('employeesBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view employees.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     const employees = appState.employees;
     const tbody = document.getElementById('employeesBody');
     
@@ -2624,7 +3076,8 @@ function loadEmployees() {
         return;
     }
     
-    const isAdmin = user?.role === 'admin';
+    const canEdit = hasPermission(user?.role, 'addEmployee');
+    const canDelete = hasPermission(user?.role, 'deleteEmployee');
     
     tbody.innerHTML = filteredEmployees.map(e => {
         const empAdvances = appState.advances.filter(a => a.employeeId === e.id);
@@ -2644,19 +3097,19 @@ function loadEmployees() {
                 <td><span class="${outstanding > 0 ? 'text-danger fw-bold' : 'text-success'}">₹${outstanding.toLocaleString()}</span></td>
                 <td><span class="badge ${e.isActive !== false ? 'bg-success' : 'bg-danger'}">${e.isActive !== false ? 'Active' : 'Inactive'}</span></td>
                 <td>
-                    ${isAdmin ? `
+                    ${canEdit ? `
                         <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${e.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
+                    ` : ''}
+                    ${canDelete ? `
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${e.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
-                    ` : `
-                        <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${e.id}')">
-                            <i class="fas fa-book"></i>
-                        </button>
-                        <span class="badge bg-secondary">View Only</span>
-                    `}
+                    ` : ''}
+                    <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${e.id}')">
+                        <i class="fas fa-book"></i>
+                    </button>
                 </td>
             </tr>
         `;
@@ -2666,12 +3119,11 @@ function loadEmployees() {
 // CARDS
 function loadCards() {
     const user = CloudStore.getCurrentUser();
-    
-    if (user?.role !== 'admin' && user?.role !== 'manager' && user?.role !== 'accounts') {
+    if (!hasPermission(user?.role, 'viewCards')) {
         document.getElementById('cardsBody').innerHTML = `
             <tr>
                 <td colspan="9" class="text-center text-muted">
-                    <i class="fas fa-lock me-2"></i>Access restricted. Only Admin, Managers, and Accounts can view cards.
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view cards.
                 </td>
             </tr>
         `;
@@ -2685,7 +3137,7 @@ function loadCards() {
         return;
     }
     
-    const isAdmin = user?.role === 'admin';
+    const canDelete = hasPermission(user?.role, 'deleteCard');
     
     tbody.innerHTML = cards.map(c => {
         const utilized = c.utilized || 0;
@@ -2707,7 +3159,7 @@ function loadCards() {
                     </span>
                 </td>
                 <td>
-                    ${isAdmin ? `
+                    ${canDelete ? `
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${c.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -2723,6 +3175,17 @@ function loadCards() {
 // BRANCHES
 function loadBranches() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewBranches')) {
+        document.getElementById('branchesBody').innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view branches.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     const branches = appState.branches;
     const tbody = document.getElementById('branchesBody');
     
@@ -2736,7 +3199,7 @@ function loadBranches() {
         return;
     }
     
-    const isAdmin = user?.role === 'admin';
+    const canDelete = hasPermission(user?.role, 'deleteBranch');
     
     tbody.innerHTML = filteredBranches.map(b => {
         const branchProjects = appState.projects.filter(p => p.branch === b.name);
@@ -2752,7 +3215,7 @@ function loadBranches() {
                 <td>${branchEmployees.length}</td>
                 <td>₹${totalFund.toLocaleString()}</td>
                 <td>
-                    ${isAdmin ? `
+                    ${canDelete ? `
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteBranch('${b.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -2768,6 +3231,17 @@ function loadBranches() {
 // PROJECTS
 function loadProjects() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewProjects')) {
+        document.getElementById('projectsBody').innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view projects.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     const projects = appState.projects;
     const tbody = document.getElementById('projectsBody');
     
@@ -2781,7 +3255,7 @@ function loadProjects() {
         return;
     }
     
-    const isAdmin = user?.role === 'admin';
+    const canDelete = hasPermission(user?.role, 'deleteProject');
     
     tbody.innerHTML = filteredProjects.map(p => {
         const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
@@ -2806,7 +3280,7 @@ function loadProjects() {
                 </td>
                 <td><span class="badge ${p.status === 'active' ? 'bg-success' : 'bg-secondary'}">${p.status || 'Active'}</span></td>
                 <td>
-                    ${isAdmin ? `
+                    ${canDelete ? `
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -2822,6 +3296,17 @@ function loadProjects() {
 // ADVANCES
 function loadAdvances() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewAdvances')) {
+        document.getElementById('advancesBody').innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view advances.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     let advances = appState.advances;
     
     if (user?.role === 'employee') {
@@ -2838,6 +3323,8 @@ function loadAdvances() {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">No advances found</td></tr>`;
         return;
     }
+    
+    const canDelete = hasPermission(user?.role, 'deleteAdvance');
     
     tbody.innerHTML = advances.map(a => {
         const spent = (a.amount || 0) - (a.remainingAmount || 0);
@@ -2861,7 +3348,7 @@ function loadAdvances() {
                             <i class="fas fa-hand-holding-usd"></i> Return
                         </button>
                     ` : ''}
-                    ${user?.role === 'admin' ? `
+                    ${canDelete ? `
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteAdvance('${a.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -2875,6 +3362,17 @@ function loadAdvances() {
 // EXPENSES
 function loadExpenses() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewExpenses')) {
+        document.getElementById('expensesBody').innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view expenses.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     let expenses = appState.expenses;
     
     if (user?.role === 'employee') {
@@ -2892,6 +3390,8 @@ function loadExpenses() {
         return;
     }
     
+    const canDelete = hasPermission(user?.role, 'deleteExpense');
+    
     tbody.innerHTML = expenses.map(e => `
         <tr>
             <td><code>${e.id || 'N/A'}</code></td>
@@ -2907,7 +3407,7 @@ function loadExpenses() {
                 <button class="btn btn-sm btn-outline-info me-1" onclick="viewExpense('${e.id}')">
                     <i class="fas fa-eye"></i>
                 </button>
-                ${user?.role === 'admin' ? `
+                ${canDelete ? `
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${e.id}')">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -2918,27 +3418,40 @@ function loadExpenses() {
 }
 
 // ============================================
-// NAVIGATION
+// NAVIGATION - WITH PERMISSION CHECKS
 // ============================================
 function showPage(page) {
     const user = CloudStore.getCurrentUser();
+    const role = user?.role;
     
-    const restrictedPages = ['branches', 'projects', 'employees', 'reports', 'audit'];
-    const isAdmin = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts';
-    const isSuperAdmin = user?.role === 'admin';
+    // Permission mapping for pages
+    const pagePermissions = {
+        dashboard: 'viewDashboard',
+        myDashboard: 'viewMyDashboard',
+        advances: 'viewAdvances',
+        expenses: 'viewExpenses',
+        cards: 'viewCards',
+        branches: 'viewBranches',
+        projects: 'viewProjects',
+        employees: 'viewEmployees',
+        approvals: 'viewApprovals',
+        reports: 'viewReports',
+        audit: 'viewAudit',
+        permissions: 'viewPermissions'
+    };
     
-    if (page === 'cards' && !isAdmin) {
-        showToast('warning', 'Access denied. Only Admins, Managers, and Accounts can view cards.');
-        return;
+    // Check if user has permission for this page
+    if (page !== 'dashboard' && page !== 'myDashboard') {
+        const perm = pagePermissions[page];
+        if (!hasPermission(role, perm)) {
+            showToast('warning', `Access denied. You don't have permission to view ${page}.`);
+            return;
+        }
     }
     
-    if (restrictedPages.includes(page) && !isAdmin) {
-        showToast('warning', 'Access denied. You do not have permission to view this page.');
-        return;
-    }
-    
-    if (page === 'audit' && !isSuperAdmin) {
-        showToast('warning', 'Access denied. Only Admins can view audit logs.');
+    // Special case: permissions page only for admin
+    if (page === 'permissions' && role !== 'admin') {
+        showToast('warning', 'Access denied. Only Admins can manage permissions.');
         return;
     }
     
@@ -2966,6 +3479,7 @@ function showPage(page) {
         case 'approvals': loadApprovals(); break;
         case 'reports': generateReports(); break;
         case 'audit': loadAuditLogs(); break;
+        case 'permissions': loadPermissions(); break;
     }
 }
 
@@ -2974,7 +3488,16 @@ function showPage(page) {
 // ============================================
 function loadApprovals() {
     const user = CloudStore.getCurrentUser();
-    if (!user || (user.role !== 'admin' && user.role !== 'manager' && user.role !== 'accounts')) return;
+    if (!hasPermission(user?.role, 'viewApprovals')) {
+        document.getElementById('approvalsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view approvals.
+                </td>
+            </tr>
+        `;
+        return;
+    }
     
     const filter = document.getElementById('approvalFilter')?.value || 'all';
     
@@ -3023,6 +3546,7 @@ function loadApprovals() {
     
     document.getElementById('approvalCount').textContent = pendingItems.filter(i => i.status === 'pending').length;
     
+    const canApprove = hasPermission(user?.role, 'approveRequests');
     const tbody = document.getElementById('approvalsBody');
     if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No pending requests</td></tr>`;
@@ -3040,7 +3564,7 @@ function loadApprovals() {
             <td>${item.purpose}</td>
             <td><span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').replace('_', ' ')}</span></td>
             <td>
-                ${item.status === 'pending' ? `
+                ${canApprove && item.status === 'pending' ? `
                     <button class="btn btn-sm btn-success me-1" onclick="showApprovalModal('${item.id}', ${item.isAdvance})">
                         <i class="fas fa-check"></i>
                     </button>
@@ -3054,138 +3578,23 @@ function loadApprovals() {
     `).join('');
 }
 
-function showApprovalModal(id, isAdvance) {
-    const item = isAdvance ? 
-        appState.advances.find(a => a.id === id) : 
-        appState.expenses.find(e => e.id === id);
-    
-    if (!item) return;
-    
-    document.getElementById('aprId').textContent = id;
-    document.getElementById('aprType').textContent = isAdvance ? 'Advance' : 'Expense';
-    document.getElementById('aprEmployee').textContent = item.employeeName || 'N/A';
-    document.getElementById('aprBranch').textContent = item.branch || 'N/A';
-    document.getElementById('aprProject').textContent = item.projectName || 'N/A';
-    document.getElementById('aprAmount').textContent = '₹' + (item.amount || 0).toLocaleString();
-    document.getElementById('aprPurpose').textContent = isAdvance ? (item.purpose || 'N/A') : (item.category || 'N/A');
-    document.getElementById('aprDescription').textContent = item.description || 'No description';
-    document.getElementById('aprRemarks').value = '';
-    document.getElementById('aprDecision').value = 'approved';
-    document.getElementById('approvalModal').dataset.txnId = id;
-    document.getElementById('approvalModal').dataset.isAdvance = isAdvance;
-    
-    new bootstrap.Modal(document.getElementById('approvalModal')).show();
-}
-
-async function processApproval() {
-    const id = document.getElementById('approvalModal').dataset.txnId;
-    const isAdvance = document.getElementById('approvalModal').dataset.isAdvance === 'true';
-    const decision = document.getElementById('aprDecision').value;
-    const remarks = document.getElementById('aprRemarks').value || '';
-    
-    const user = CloudStore.getCurrentUser();
-    
-    showLoading(true);
-    try {
-        if (isAdvance) {
-            const advance = appState.advances.find(a => a.id === id);
-            if (!advance) throw new Error('Advance not found');
-            
-            const updateData = {
-                status: decision === 'approved' ? 'issued' : decision === 'rejected' ? 'rejected' : 'send_back',
-                approvedBy: user.username,
-                approvalDate: new Date().toISOString(),
-                remarks: remarks,
-                updatedAt: new Date().toISOString()
-            };
-            
-            if (decision === 'approved') {
-                updateData.remainingAmount = advance.amount;
-            }
-            
-            await CloudStore.updateAdvance(id, updateData);
-            
-            await CloudStore.addNotification({
-                userId: advance.employeeId,
-                type: 'ADVANCE_' + decision.toUpperCase(),
-                title: `Advance ${decision === 'approved' ? 'Approved' : decision === 'rejected' ? 'Rejected' : 'Sent Back'}`,
-                message: `Your advance request for ₹${(advance.amount || 0).toLocaleString()} was ${decision}`,
-                entityId: id,
-                severity: decision === 'approved' ? 'success' : 'danger',
-                read: false,
-                createdAt: new Date().toISOString()
-            });
-            
-            await addAuditLog('APPROVE_ADVANCE', 'Advance', id);
-            
-        } else {
-            const expense = appState.expenses.find(e => e.id === id);
-            if (!expense) throw new Error('Expense not found');
-            
-            const updateData = {
-                status: decision === 'approved' ? 'approved' : decision === 'rejected' ? 'rejected' : 'send_back',
-                approvedBy: user.username,
-                approvalDate: new Date().toISOString(),
-                remarks: remarks,
-                updatedAt: new Date().toISOString()
-            };
-            
-            await CloudStore.updateExpense(id, updateData);
-            
-            await CloudStore.addNotification({
-                userId: expense.employeeId,
-                type: 'EXPENSE_' + decision.toUpperCase(),
-                title: `Expense ${decision === 'approved' ? 'Approved' : decision === 'rejected' ? 'Rejected' : 'Sent Back'}`,
-                message: `Your expense of ₹${(expense.amount || 0).toLocaleString()} was ${decision}`,
-                entityId: id,
-                severity: decision === 'approved' ? 'success' : 'danger',
-                read: false,
-                createdAt: new Date().toISOString()
-            });
-            
-            await addAuditLog('APPROVE_EXPENSE', 'Expense', id);
-        }
-        
-        bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
-        showToast('success', `Request ${decision} successfully`);
-    } catch (error) {
-        showToast('danger', 'Failed to process: ' + error.message);
-    }
-    showLoading(false);
-}
-
-function viewApproval(id, isAdvance) {
-    const item = isAdvance ? 
-        appState.advances.find(a => a.id === id) : 
-        appState.expenses.find(e => e.id === id);
-    
-    if (!item) return;
-    
-    const details = `
-        <div class="row small">
-            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div>
-            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance ? 'Advance' : 'Expense'}</div>
-            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName || 'N/A'}</div>
-            <div class="col-5"><strong>Branch:</strong></div><div class="col-7">${item.branch || 'N/A'}</div>
-            <div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName || 'N/A'}</div>
-            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount || 0).toLocaleString()}</div>
-            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').replace('_', ' ')}</span></div>
-            <div class="col-5"><strong>Approved By:</strong></div><div class="col-7">${item.approvedBy || 'N/A'}</div>
-            <div class="col-5"><strong>Approval Date:</strong></div><div class="col-7">${item.approvalDate ? new Date(item.approvalDate).toLocaleString() : 'N/A'}</div>
-            <div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${item.remarks || 'No remarks'}</div>
-        </div>
-    `;
-    
-    showCustomModal('Approval Details', details);
-}
-
 // ============================================
 // REPORTS
 // ============================================
-let branchChartInstance = null;
-let employeeChartInstance = null;
-
 function generateReports() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewReports')) {
+        document.getElementById('reportBody').innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view reports.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Rest of the reports function remains the same
     const branches = appState.branches;
     const projects = appState.projects;
     const employees = appState.employees;
@@ -3233,184 +3642,16 @@ function generateReports() {
     updateEmployeeChart(employees);
 }
 
-function updateBranchChart(branches, projects) {
-    const ctx = document.getElementById('branchChart').getContext('2d');
-    if (branchChartInstance) branchChartInstance.destroy();
-    
-    const branchData = branches.map(b => {
-        const branchProjects = projects.filter(p => p.branch === b.name);
-        const totalFund = branchProjects.reduce((sum, p) => sum + (p.allocatedFund || 0), 0);
-        const branchExpenses = appState.expenses.filter(e => e.branch === b.name && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = branchExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        return {
-            name: b.name,
-            totalFund: totalFund,
-            utilized: utilized,
-            available: totalFund - utilized
-        };
-    });
-    
-    branchChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: branchData.map(d => d.name),
-            datasets: [
-                {
-                    label: 'Total Fund',
-                    data: branchData.map(d => d.totalFund),
-                    backgroundColor: '#4e73df',
-                    borderColor: '#224abe',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Utilized',
-                    data: branchData.map(d => d.utilized),
-                    backgroundColor: '#e74a3b',
-                    borderColor: '#c0392b',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Available',
-                    data: branchData.map(d => d.available),
-                    backgroundColor: '#1cc88a',
-                    borderColor: '#13855c',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '₹' + context.parsed.y.toLocaleString();
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₹' + value.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function updateEmployeeChart(employees) {
-    const ctx = document.getElementById('employeeChart').getContext('2d');
-    if (employeeChartInstance) employeeChartInstance.destroy();
-    
-    const empData = employees.map(e => {
-        const empAdvances = appState.advances.filter(a => a.employeeId === e.id && a.status === 'issued');
-        const outstanding = empAdvances.reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
-        return {
-            name: e.name,
-            outstanding: outstanding
-        };
-    }).filter(d => d.outstanding > 0);
-    
-    if (empData.length === 0) {
-        employeeChartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['No Outstanding'],
-                datasets: [{ data: [1], backgroundColor: ['#ddd'] }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-        return;
-    }
-    
-    const colors = ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796', '#6f42c1', '#fd7e14'];
-    employeeChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: empData.map(d => d.name),
-            datasets: [{
-                data: empData.map(d => d.outstanding),
-                backgroundColor: colors.slice(0, empData.length),
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ₹' + context.parsed.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function exportReport() {
-    const projects = appState.projects;
-    let csv = 'Branch,Project,Total Fund,Utilized,Available,% Used\n';
-    projects.forEach(p => {
-        const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
-        const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-        const available = (p.allocatedFund || 0) - utilized;
-        const percentUsed = p.allocatedFund > 0 ? (utilized / p.allocatedFund) * 100 : 0;
-        csv += `${p.branch || 'N/A'},${p.name},${p.allocatedFund || 0},${utilized},${available},${percentUsed.toFixed(0)}%\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    showToast('success', 'Report exported');
-}
-
 // ============================================
 // AUDIT LOGS
 // ============================================
-async function addAuditLog(action, entityType, entityId) {
-    const user = CloudStore.getCurrentUser();
-    try {
-        await CloudStore.addAuditLog({
-            timestamp: new Date().toISOString(),
-            user: user?.username || 'system',
-            role: user?.role || 'system',
-            action: action,
-            entityType: entityType,
-            entityId: entityId,
-            details: `${action} on ${entityType}: ${entityId}`
-        });
-    } catch (error) {
-        console.error('Error adding audit log:', error);
-    }
-}
-
 function loadAuditLogs() {
     const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
+    if (!hasPermission(user?.role, 'viewAudit')) {
         document.getElementById('auditBody').innerHTML = `
             <tr>
                 <td colspan="5" class="text-center text-muted">
-                    <i class="fas fa-lock me-2"></i>Access restricted. Only Admins can view audit logs.
+                    <i class="fas fa-lock me-2"></i>Access restricted. You don't have permission to view audit logs.
                 </td>
             </tr>
         `;
@@ -3436,9 +3677,14 @@ function loadAuditLogs() {
 }
 
 // ============================================
-// SHOW FUNCTIONS (Modals)
+// SHOW FUNCTIONS (Modals) - WITH PERMISSION CHECKS
 // ============================================
 function showAdvanceModal() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addAdvance')) {
+        showToast('warning', 'You don\'t have permission to request advances.');
+        return;
+    }
     populateBranchSelectors();
     populateProjectSelectors();
     const modal = new bootstrap.Modal(document.getElementById('advanceModal'));
@@ -3447,6 +3693,11 @@ function showAdvanceModal() {
 }
 
 function showExpenseModal() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addExpense')) {
+        showToast('warning', 'You don\'t have permission to add expenses.');
+        return;
+    }
     populateBranchSelectors();
     populateProjectSelectors();
     uploadedFiles = [];
@@ -3457,6 +3708,11 @@ function showExpenseModal() {
 }
 
 function showBranchModal() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addBranch')) {
+        showToast('warning', 'You don\'t have permission to add branches.');
+        return;
+    }
     populateBranchSelectors();
     const modal = new bootstrap.Modal(document.getElementById('branchModal'));
     document.getElementById('branchForm').reset();
@@ -3464,6 +3720,11 @@ function showBranchModal() {
 }
 
 function showProjectModal() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addProject')) {
+        showToast('warning', 'You don\'t have permission to add projects.');
+        return;
+    }
     populateBranchSelectors();
     const modal = new bootstrap.Modal(document.getElementById('projectModal'));
     document.getElementById('projectForm').reset();
@@ -3471,6 +3732,11 @@ function showProjectModal() {
 }
 
 function showCardModal() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addCard')) {
+        showToast('warning', 'You don\'t have permission to add cards.');
+        return;
+    }
     populateBranchSelectors();
     populateProjectSelectors();
     const holderSelect = document.getElementById('cardHolder');
@@ -3483,8 +3749,8 @@ function showCardModal() {
 
 function showEmployeeModal(employeeId = null) {
     const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can add/edit employees');
+    if (!hasPermission(user?.role, 'addEmployee')) {
+        showToast('warning', 'You don\'t have permission to add employees.');
         return;
     }
     
@@ -3521,6 +3787,11 @@ function showEmployeeModal(employeeId = null) {
 // ============================================
 async function saveAdvance() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addAdvance')) {
+        showToast('warning', 'You don\'t have permission to request advances.');
+        return;
+    }
+    
     const branch = document.getElementById('advBranch').value;
     const project = document.getElementById('advProject').value;
     const amount = parseFloat(document.getElementById('advAmount').value);
@@ -3555,8 +3826,11 @@ async function saveAdvance() {
         await CloudStore.addAdvance(data);
         await addAuditLog('CREATE_ADVANCE', 'Advance', amount);
         
-        const managers = appState.employees.filter(e => e.role === 'manager' || e.role === 'admin');
-        managers.forEach(m => {
+        // Notify users with approve permission
+        const approvers = appState.employees.filter(e => 
+            hasPermission(e.role, 'approveRequests')
+        );
+        approvers.forEach(m => {
             CloudStore.addNotification({
                 userId: m.id,
                 type: 'NEW_ADVANCE',
@@ -3579,6 +3853,11 @@ async function saveAdvance() {
 
 async function saveExpense() {
     const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addExpense')) {
+        showToast('warning', 'You don\'t have permission to add expenses.');
+        return;
+    }
+    
     const branch = document.getElementById('expBranch').value;
     const project = document.getElementById('expProject').value;
     const category = document.getElementById('expCategory').value;
@@ -3651,8 +3930,10 @@ async function saveExpense() {
             });
         }
         
-        const managers = appState.employees.filter(e => e.role === 'manager' || e.role === 'admin' || e.role === 'accounts');
-        managers.forEach(m => {
+        const approvers = appState.employees.filter(e => 
+            hasPermission(e.role, 'approveRequests')
+        );
+        approvers.forEach(m => {
             CloudStore.addNotification({
                 userId: m.id,
                 type: 'NEW_EXPENSE',
@@ -3672,271 +3953,6 @@ async function saveExpense() {
         console.error(error);
     }
     showLoading(false);
-}
-
-async function saveBranch() {
-    const name = document.getElementById('branchName').value.trim();
-    const location = document.getElementById('branchLocation').value.trim();
-    const managerId = document.getElementById('branchManager').value;
-    
-    if (!name || !location) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    const manager = appState.employees.find(e => e.id === managerId);
-    
-    showLoading(true);
-    try {
-        const data = {
-            name,
-            location,
-            managerId: managerId || null,
-            managerName: manager ? manager.name : null,
-            createdAt: new Date().toISOString()
-        };
-        await CloudStore.addBranch(data);
-        await addAuditLog('CREATE_BRANCH', 'Branch', name);
-        bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
-        showToast('success', `Branch ${name} added successfully`);
-    } catch (error) {
-        showToast('danger', 'Failed to add branch: ' + error.message);
-    }
-    showLoading(false);
-}
-
-async function saveProject() {
-    const name = document.getElementById('projectName').value.trim();
-    const branch = document.getElementById('projectBranch').value;
-    const allocatedFund = parseFloat(document.getElementById('projectFund').value);
-    const description = document.getElementById('projectDescription').value.trim();
-    
-    if (!name || !branch || !allocatedFund || allocatedFund <= 0) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    showLoading(true);
-    try {
-        const data = {
-            name,
-            branch,
-            allocatedFund,
-            description,
-            status: 'active',
-            createdAt: new Date().toISOString()
-        };
-        await CloudStore.addProject(data);
-        await addAuditLog('CREATE_PROJECT', 'Project', name);
-        bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-        showToast('success', `Project ${name} added successfully`);
-    } catch (error) {
-        showToast('danger', 'Failed to add project: ' + error.message);
-    }
-    showLoading(false);
-}
-
-async function saveCard() {
-    const cardNumber = document.getElementById('cardNumber').value.trim();
-    const branch = document.getElementById('cardBranch').value;
-    const project = document.getElementById('cardProject').value;
-    const holderId = document.getElementById('cardHolder').value;
-    const limit = parseFloat(document.getElementById('cardLimit').value);
-    
-    if (!cardNumber || !branch || !project || !holderId || !limit) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    const holder = appState.employees.find(e => e.id === holderId);
-    const projectData = appState.projects.find(p => p.name === project);
-    
-    showLoading(true);
-    try {
-        const data = {
-            cardNumber: cardNumber.padStart(4, '0'),
-            branch: branch,
-            projectId: projectData?.id || null,
-            projectName: project,
-            holderId: holderId,
-            holderName: holder ? holder.name : 'N/A',
-            limit: limit,
-            utilized: 0,
-            status: 'active',
-            createdAt: new Date().toISOString()
-        };
-        await CloudStore.addCard(data);
-        await addAuditLog('CREATE_CARD', 'Card', cardNumber);
-        bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
-        showToast('success', 'Card added successfully');
-    } catch (error) {
-        showToast('danger', 'Failed to add card: ' + error.message);
-    }
-    showLoading(false);
-}
-
-async function saveEmployee() {
-    const id = document.getElementById('editEmployeeId').value;
-    const employeeId = document.getElementById('empEmployeeId').value.trim();
-    const name = document.getElementById('empName').value.trim();
-    const email = document.getElementById('empEmail').value.trim();
-    const mobile = document.getElementById('empMobile').value.trim();
-    const branch = document.getElementById('empBranch').value;
-    const designation = document.getElementById('empDesignation').value.trim();
-    const role = document.getElementById('empRole').value;
-    const username = document.getElementById('empUsername').value.trim();
-    const password = document.getElementById('empPassword').value;
-    
-    if (!employeeId || !name || !email || !mobile || !branch || !designation || !username) {
-        showToast('warning', 'Please fill all required fields');
-        return;
-    }
-    
-    showLoading(true);
-    try {
-        if (id) {
-            await CloudStore.updateEmployee(id, {
-                employeeId, name, email, mobile, branch, designation, role,
-                updatedAt: new Date().toISOString()
-            });
-            showToast('success', 'Employee updated successfully');
-        } else {
-            if (!password || password.length < 6) {
-                showToast('warning', 'Password must be at least 6 characters');
-                showLoading(false);
-                return;
-            }
-            
-            const userData = {
-                username,
-                password,
-                fullName: name,
-                role,
-                branch,
-                employeeId,
-                createdAt: new Date().toISOString()
-            };
-            await CloudStore.addUser(userData);
-            
-            await CloudStore.addEmployee({
-                employeeId,
-                name,
-                email,
-                mobile,
-                branch,
-                designation,
-                role,
-                isActive: true,
-                createdAt: new Date().toISOString()
-            });
-            showToast('success', 'Employee added successfully');
-        }
-        
-        bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
-        await addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
-    } catch (error) {
-        showToast('danger', 'Failed to save: ' + error.message);
-    }
-    showLoading(false);
-}
-
-// ============================================
-// DELETE FUNCTIONS (Only Admin)
-// ============================================
-async function deleteEmployee(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete employees');
-        return;
-    }
-    if (!confirm('Delete this employee and all associated data?')) return;
-    try {
-        await CloudStore.employeesCollection.doc(id).delete();
-        await addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
-        showToast('success', 'Employee deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
-async function deleteCard(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete cards');
-        return;
-    }
-    if (!confirm('Delete this card?')) return;
-    try {
-        await CloudStore.cardsCollection.doc(id).delete();
-        await addAuditLog('DELETE_CARD', 'Card', id);
-        showToast('success', 'Card deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
-async function deleteBranch(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete branches');
-        return;
-    }
-    if (!confirm('Delete this branch and all associated data?')) return;
-    try {
-        await CloudStore.branchesCollection.doc(id).delete();
-        await addAuditLog('DELETE_BRANCH', 'Branch', id);
-        showToast('success', 'Branch deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
-async function deleteProject(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete projects');
-        return;
-    }
-    if (!confirm('Delete this project and all associated data?')) return;
-    try {
-        await CloudStore.projectsCollection.doc(id).delete();
-        await addAuditLog('DELETE_PROJECT', 'Project', id);
-        showToast('success', 'Project deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
-async function deleteAdvance(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete advances');
-        return;
-    }
-    if (!confirm('Delete this advance?')) return;
-    try {
-        await CloudStore.advancesCollection.doc(id).delete();
-        await addAuditLog('DELETE_ADVANCE', 'Advance', id);
-        showToast('success', 'Advance deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
-}
-
-async function deleteExpense(id) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can delete expenses');
-        return;
-    }
-    if (!confirm('Delete this expense?')) return;
-    try {
-        await CloudStore.expensesCollection.doc(id).delete();
-        await addAuditLog('DELETE_EXPENSE', 'Expense', id);
-        showToast('success', 'Expense deleted');
-    } catch (error) {
-        showToast('danger', 'Failed to delete: ' + error.message);
-    }
 }
 
 // ============================================
@@ -4002,8 +4018,8 @@ function showLoading(show) {
 
 function editEmployee(id) {
     const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can edit employees');
+    if (!hasPermission(user?.role, 'addEmployee')) {
+        showToast('warning', 'You don\'t have permission to edit employees.');
         return;
     }
     showEmployeeModal(id);
@@ -4134,18 +4150,25 @@ function viewExpense(id) {
 }
 
 async function returnAdvance(id) {
+    const user = CloudStore.getCurrentUser();
+    const advance = appState.advances.find(a => a.id === id);
+    if (!advance) {
+        showToast('danger', 'Advance not found');
+        return;
+    }
+    
+    // Only the owner or someone with delete permission can return
+    if (user?.id !== advance.employeeId && !hasPermission(user?.role, 'deleteAdvance')) {
+        showToast('warning', 'You don\'t have permission to return this advance.');
+        return;
+    }
+    
     const amount = prompt('Enter amount being returned:');
     if (amount === null) return;
     
     const returnAmount = parseFloat(amount);
     if (isNaN(returnAmount) || returnAmount <= 0) {
         showToast('warning', 'Invalid amount');
-        return;
-    }
-    
-    const advance = appState.advances.find(a => a.id === id);
-    if (!advance) {
-        showToast('danger', 'Advance not found');
         return;
     }
     
@@ -4173,6 +4196,105 @@ async function returnAdvance(id) {
 }
 
 // ============================================
+// DELETE FUNCTIONS - WITH PERMISSION CHECKS
+// ============================================
+async function deleteEmployee(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteEmployee')) {
+        showToast('warning', 'You don\'t have permission to delete employees.');
+        return;
+    }
+    if (!confirm('Delete this employee and all associated data?')) return;
+    try {
+        await CloudStore.employeesCollection.doc(id).delete();
+        await addAuditLog('DELETE_EMPLOYEE', 'Employee', id);
+        showToast('success', 'Employee deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+async function deleteCard(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteCard')) {
+        showToast('warning', 'You don\'t have permission to delete cards.');
+        return;
+    }
+    if (!confirm('Delete this card?')) return;
+    try {
+        await CloudStore.cardsCollection.doc(id).delete();
+        await addAuditLog('DELETE_CARD', 'Card', id);
+        showToast('success', 'Card deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+async function deleteBranch(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteBranch')) {
+        showToast('warning', 'You don\'t have permission to delete branches.');
+        return;
+    }
+    if (!confirm('Delete this branch and all associated data?')) return;
+    try {
+        await CloudStore.branchesCollection.doc(id).delete();
+        await addAuditLog('DELETE_BRANCH', 'Branch', id);
+        showToast('success', 'Branch deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+async function deleteProject(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteProject')) {
+        showToast('warning', 'You don\'t have permission to delete projects.');
+        return;
+    }
+    if (!confirm('Delete this project and all associated data?')) return;
+    try {
+        await CloudStore.projectsCollection.doc(id).delete();
+        await addAuditLog('DELETE_PROJECT', 'Project', id);
+        showToast('success', 'Project deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+async function deleteAdvance(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteAdvance')) {
+        showToast('warning', 'You don\'t have permission to delete advances.');
+        return;
+    }
+    if (!confirm('Delete this advance?')) return;
+    try {
+        await CloudStore.advancesCollection.doc(id).delete();
+        await addAuditLog('DELETE_ADVANCE', 'Advance', id);
+        showToast('success', 'Advance deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+async function deleteExpense(id) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'deleteExpense')) {
+        showToast('warning', 'You don\'t have permission to delete expenses.');
+        return;
+    }
+    if (!confirm('Delete this expense?')) return;
+    try {
+        await CloudStore.expensesCollection.doc(id).delete();
+        await addAuditLog('DELETE_EXPENSE', 'Expense', id);
+        showToast('success', 'Expense deleted');
+    } catch (error) {
+        showToast('danger', 'Failed to delete: ' + error.message);
+    }
+}
+
+// ============================================
 // KEYBOARD SHORTCUTS
 // ============================================
 document.addEventListener('keydown', function(e) {
@@ -4188,6 +4310,520 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================
+// CHART FUNCTIONS
+// ============================================
+let branchChartInstance = null;
+let employeeChartInstance = null;
+
+function updateBranchChart(branches, projects) {
+    const ctx = document.getElementById('branchChart').getContext('2d');
+    if (branchChartInstance) branchChartInstance.destroy();
+    
+    const branchData = branches.map(b => {
+        const branchProjects = projects.filter(p => p.branch === b.name);
+        const totalFund = branchProjects.reduce((sum, p) => sum + (p.allocatedFund || 0), 0);
+        const branchExpenses = appState.expenses.filter(e => e.branch === b.name && (e.status === 'approved' || e.status === 'completed'));
+        const utilized = branchExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+        return {
+            name: b.name,
+            totalFund: totalFund,
+            utilized: utilized,
+            available: totalFund - utilized
+        };
+    });
+    
+    branchChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: branchData.map(d => d.name),
+            datasets: [
+                {
+                    label: 'Total Fund',
+                    data: branchData.map(d => d.totalFund),
+                    backgroundColor: '#4e73df',
+                    borderColor: '#224abe',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Utilized',
+                    data: branchData.map(d => d.utilized),
+                    backgroundColor: '#e74a3b',
+                    borderColor: '#c0392b',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Available',
+                    data: branchData.map(d => d.available),
+                    backgroundColor: '#1cc88a',
+                    borderColor: '#13855c',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₹' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateEmployeeChart(employees) {
+    const ctx = document.getElementById('employeeChart').getContext('2d');
+    if (employeeChartInstance) employeeChartInstance.destroy();
+    
+    const empData = employees.map(e => {
+        const empAdvances = appState.advances.filter(a => a.employeeId === e.id && a.status === 'issued');
+        const outstanding = empAdvances.reduce((sum, a) => sum + (a.remainingAmount || a.amount || 0), 0);
+        return {
+            name: e.name,
+            outstanding: outstanding
+        };
+    }).filter(d => d.outstanding > 0);
+    
+    if (empData.length === 0) {
+        employeeChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['No Outstanding'],
+                datasets: [{ data: [1], backgroundColor: ['#ddd'] }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        return;
+    }
+    
+    const colors = ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b', '#36b9cc', '#858796', '#6f42c1', '#fd7e14'];
+    employeeChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: empData.map(d => d.name),
+            datasets: [{
+                data: empData.map(d => d.outstanding),
+                backgroundColor: colors.slice(0, empData.length),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ₹' + context.parsed.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function exportReport() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'viewReports')) {
+        showToast('warning', 'You don\'t have permission to export reports.');
+        return;
+    }
+    
+    const projects = appState.projects;
+    let csv = 'Branch,Project,Total Fund,Utilized,Available,% Used\n';
+    projects.forEach(p => {
+        const projectExpenses = appState.expenses.filter(e => e.projectId === p.id && (e.status === 'approved' || e.status === 'completed'));
+        const utilized = projectExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+        const available = (p.allocatedFund || 0) - utilized;
+        const percentUsed = p.allocatedFund > 0 ? (utilized / p.allocatedFund) * 100 : 0;
+        csv += `${p.branch || 'N/A'},${p.name},${p.allocatedFund || 0},${utilized},${available},${percentUsed.toFixed(0)}%\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    showToast('success', 'Report exported');
+}
+
+// ============================================
+// SAVE FUNCTIONS (Branch, Project, Card, Employee)
+// ============================================
+async function saveBranch() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addBranch')) {
+        showToast('warning', 'You don\'t have permission to add branches.');
+        return;
+    }
+    
+    const name = document.getElementById('branchName').value.trim();
+    const location = document.getElementById('branchLocation').value.trim();
+    const managerId = document.getElementById('branchManager').value;
+    
+    if (!name || !location) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    const manager = appState.employees.find(e => e.id === managerId);
+    
+    showLoading(true);
+    try {
+        const data = {
+            name,
+            location,
+            managerId: managerId || null,
+            managerName: manager ? manager.name : null,
+            createdAt: new Date().toISOString()
+        };
+        await CloudStore.addBranch(data);
+        await addAuditLog('CREATE_BRANCH', 'Branch', name);
+        bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
+        showToast('success', `Branch ${name} added successfully`);
+    } catch (error) {
+        showToast('danger', 'Failed to add branch: ' + error.message);
+    }
+    showLoading(false);
+}
+
+async function saveProject() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addProject')) {
+        showToast('warning', 'You don\'t have permission to add projects.');
+        return;
+    }
+    
+    const name = document.getElementById('projectName').value.trim();
+    const branch = document.getElementById('projectBranch').value;
+    const allocatedFund = parseFloat(document.getElementById('projectFund').value);
+    const description = document.getElementById('projectDescription').value.trim();
+    
+    if (!name || !branch || !allocatedFund || allocatedFund <= 0) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        const data = {
+            name,
+            branch,
+            allocatedFund,
+            description,
+            status: 'active',
+            createdAt: new Date().toISOString()
+        };
+        await CloudStore.addProject(data);
+        await addAuditLog('CREATE_PROJECT', 'Project', name);
+        bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+        showToast('success', `Project ${name} added successfully`);
+    } catch (error) {
+        showToast('danger', 'Failed to add project: ' + error.message);
+    }
+    showLoading(false);
+}
+
+async function saveCard() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addCard')) {
+        showToast('warning', 'You don\'t have permission to add cards.');
+        return;
+    }
+    
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const branch = document.getElementById('cardBranch').value;
+    const project = document.getElementById('cardProject').value;
+    const holderId = document.getElementById('cardHolder').value;
+    const limit = parseFloat(document.getElementById('cardLimit').value);
+    
+    if (!cardNumber || !branch || !project || !holderId || !limit) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    const holder = appState.employees.find(e => e.id === holderId);
+    const projectData = appState.projects.find(p => p.name === project);
+    
+    showLoading(true);
+    try {
+        const data = {
+            cardNumber: cardNumber.padStart(4, '0'),
+            branch: branch,
+            projectId: projectData?.id || null,
+            projectName: project,
+            holderId: holderId,
+            holderName: holder ? holder.name : 'N/A',
+            limit: limit,
+            utilized: 0,
+            status: 'active',
+            createdAt: new Date().toISOString()
+        };
+        await CloudStore.addCard(data);
+        await addAuditLog('CREATE_CARD', 'Card', cardNumber);
+        bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
+        showToast('success', 'Card added successfully');
+    } catch (error) {
+        showToast('danger', 'Failed to add card: ' + error.message);
+    }
+    showLoading(false);
+}
+
+async function saveEmployee() {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'addEmployee')) {
+        showToast('warning', 'You don\'t have permission to add employees.');
+        return;
+    }
+    
+    const id = document.getElementById('editEmployeeId').value;
+    const employeeId = document.getElementById('empEmployeeId').value.trim();
+    const name = document.getElementById('empName').value.trim();
+    const email = document.getElementById('empEmail').value.trim();
+    const mobile = document.getElementById('empMobile').value.trim();
+    const branch = document.getElementById('empBranch').value;
+    const designation = document.getElementById('empDesignation').value.trim();
+    const role = document.getElementById('empRole').value;
+    const username = document.getElementById('empUsername').value.trim();
+    const password = document.getElementById('empPassword').value;
+    
+    if (!employeeId || !name || !email || !mobile || !branch || !designation || !username) {
+        showToast('warning', 'Please fill all required fields');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        if (id) {
+            await CloudStore.updateEmployee(id, {
+                employeeId, name, email, mobile, branch, designation, role,
+                updatedAt: new Date().toISOString()
+            });
+            showToast('success', 'Employee updated successfully');
+        } else {
+            if (!password || password.length < 6) {
+                showToast('warning', 'Password must be at least 6 characters');
+                showLoading(false);
+                return;
+            }
+            
+            const userData = {
+                username,
+                password,
+                fullName: name,
+                role,
+                branch,
+                employeeId,
+                createdAt: new Date().toISOString()
+            };
+            await CloudStore.addUser(userData);
+            
+            await CloudStore.addEmployee({
+                employeeId,
+                name,
+                email,
+                mobile,
+                branch,
+                designation,
+                role,
+                isActive: true,
+                createdAt: new Date().toISOString()
+            });
+            showToast('success', 'Employee added successfully');
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+        await addAuditLog(id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 'Employee', name);
+    } catch (error) {
+        showToast('danger', 'Failed to save: ' + error.message);
+    }
+    showLoading(false);
+}
+
+// ============================================
+// APPROVAL FUNCTIONS
+// ============================================
+function showApprovalModal(id, isAdvance) {
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'approveRequests')) {
+        showToast('warning', 'You don\'t have permission to approve requests.');
+        return;
+    }
+    
+    const item = isAdvance ? 
+        appState.advances.find(a => a.id === id) : 
+        appState.expenses.find(e => e.id === id);
+    
+    if (!item) return;
+    
+    document.getElementById('aprId').textContent = id;
+    document.getElementById('aprType').textContent = isAdvance ? 'Advance' : 'Expense';
+    document.getElementById('aprEmployee').textContent = item.employeeName || 'N/A';
+    document.getElementById('aprBranch').textContent = item.branch || 'N/A';
+    document.getElementById('aprProject').textContent = item.projectName || 'N/A';
+    document.getElementById('aprAmount').textContent = '₹' + (item.amount || 0).toLocaleString();
+    document.getElementById('aprPurpose').textContent = isAdvance ? (item.purpose || 'N/A') : (item.category || 'N/A');
+    document.getElementById('aprDescription').textContent = item.description || 'No description';
+    document.getElementById('aprRemarks').value = '';
+    document.getElementById('aprDecision').value = 'approved';
+    document.getElementById('approvalModal').dataset.txnId = id;
+    document.getElementById('approvalModal').dataset.isAdvance = isAdvance;
+    
+    new bootstrap.Modal(document.getElementById('approvalModal')).show();
+}
+
+async function processApproval() {
+    const id = document.getElementById('approvalModal').dataset.txnId;
+    const isAdvance = document.getElementById('approvalModal').dataset.isAdvance === 'true';
+    const decision = document.getElementById('aprDecision').value;
+    const remarks = document.getElementById('aprRemarks').value || '';
+    
+    const user = CloudStore.getCurrentUser();
+    if (!hasPermission(user?.role, 'approveRequests')) {
+        showToast('warning', 'You don\'t have permission to approve requests.');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        if (isAdvance) {
+            const advance = appState.advances.find(a => a.id === id);
+            if (!advance) throw new Error('Advance not found');
+            
+            const updateData = {
+                status: decision === 'approved' ? 'issued' : decision === 'rejected' ? 'rejected' : 'send_back',
+                approvedBy: user.username,
+                approvalDate: new Date().toISOString(),
+                remarks: remarks,
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (decision === 'approved') {
+                updateData.remainingAmount = advance.amount;
+            }
+            
+            await CloudStore.updateAdvance(id, updateData);
+            
+            await CloudStore.addNotification({
+                userId: advance.employeeId,
+                type: 'ADVANCE_' + decision.toUpperCase(),
+                title: `Advance ${decision === 'approved' ? 'Approved' : decision === 'rejected' ? 'Rejected' : 'Sent Back'}`,
+                message: `Your advance request for ₹${(advance.amount || 0).toLocaleString()} was ${decision}`,
+                entityId: id,
+                severity: decision === 'approved' ? 'success' : 'danger',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+            
+            await addAuditLog('APPROVE_ADVANCE', 'Advance', id);
+            
+        } else {
+            const expense = appState.expenses.find(e => e.id === id);
+            if (!expense) throw new Error('Expense not found');
+            
+            const updateData = {
+                status: decision === 'approved' ? 'approved' : decision === 'rejected' ? 'rejected' : 'send_back',
+                approvedBy: user.username,
+                approvalDate: new Date().toISOString(),
+                remarks: remarks,
+                updatedAt: new Date().toISOString()
+            };
+            
+            await CloudStore.updateExpense(id, updateData);
+            
+            await CloudStore.addNotification({
+                userId: expense.employeeId,
+                type: 'EXPENSE_' + decision.toUpperCase(),
+                title: `Expense ${decision === 'approved' ? 'Approved' : decision === 'rejected' ? 'Rejected' : 'Sent Back'}`,
+                message: `Your expense of ₹${(expense.amount || 0).toLocaleString()} was ${decision}`,
+                entityId: id,
+                severity: decision === 'approved' ? 'success' : 'danger',
+                read: false,
+                createdAt: new Date().toISOString()
+            });
+            
+            await addAuditLog('APPROVE_EXPENSE', 'Expense', id);
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
+        showToast('success', `Request ${decision} successfully`);
+    } catch (error) {
+        showToast('danger', 'Failed to process: ' + error.message);
+    }
+    showLoading(false);
+}
+
+function viewApproval(id, isAdvance) {
+    const item = isAdvance ? 
+        appState.advances.find(a => a.id === id) : 
+        appState.expenses.find(e => e.id === id);
+    
+    if (!item) return;
+    
+    const details = `
+        <div class="row small">
+            <div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div>
+            <div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance ? 'Advance' : 'Expense'}</div>
+            <div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName || 'N/A'}</div>
+            <div class="col-5"><strong>Branch:</strong></div><div class="col-7">${item.branch || 'N/A'}</div>
+            <div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName || 'N/A'}</div>
+            <div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount || 0).toLocaleString()}</div>
+            <div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').replace('_', ' ')}</span></div>
+            <div class="col-5"><strong>Approved By:</strong></div><div class="col-7">${item.approvedBy || 'N/A'}</div>
+            <div class="col-5"><strong>Approval Date:</strong></div><div class="col-7">${item.approvalDate ? new Date(item.approvalDate).toLocaleString() : 'N/A'}</div>
+            <div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${item.remarks || 'No remarks'}</div>
+        </div>
+    `;
+    
+    showCustomModal('Approval Details', details);
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+async function addAuditLog(action, entityType, entityId) {
+    const user = CloudStore.getCurrentUser();
+    try {
+        await CloudStore.addAuditLog({
+            timestamp: new Date().toISOString(),
+            user: user?.username || 'system',
+            role: user?.role || 'system',
+            action: action,
+            entityType: entityType,
+            entityId: entityId,
+            details: `${action} on ${entityType}: ${entityId}`
+        });
+    } catch (error) {
+        console.error('Error adding audit log:', error);
+    }
+}
+
+// ============================================
 // INITIALIZE
 // ============================================
 initializeApp();
@@ -4197,12 +4833,11 @@ console.log('☁️ Firebase Connected Successfully!');
 console.log('📊 Project: cashflowpro-253b0');
 console.log('✅ Features:');
 console.log('   - Role-Based Access Control (RBAC)');
+console.log('   - Granular Permission Management');
+console.log('   - Admins can grant/restrict permissions per role');
 console.log('   - Employees see ONLY My Dashboard');
-console.log('   - Employees see only their own data');
 console.log('   - Managers see their branch data');
-console.log('   - Admins see everything');
 console.log('   - Only Admins can Delete (Employees, Cards, Branches, Projects)');
-console.log('   - Managers/Accounts can Add but NOT Delete');
 console.log('   - Complete Audit Trail');
 console.log('🌍 Data synced across all devices and branches');
 console.log('🔑 First user registration becomes Super Admin');
