@@ -726,23 +726,28 @@
                         </div>
                     </div>
                     <nav class="nav flex-column">
-                        <a class="nav-link" href="#" onclick="showPage('dashboard')" id="dashboardMenuLink">
+                        <!-- ✅ Dashboard - Always visible -->
+                        <a class="nav-link active" href="#" onclick="showPage('dashboard')" id="dashboardMenuLink">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
+                        <!-- ✅ My Dashboard - Always visible -->
                         <a class="nav-link" href="#" onclick="showPage('myDashboard')" id="myDashboardMenuLink">
                             <i class="fas fa-user"></i> My Dashboard
                         </a>
+                        <!-- ✅ Advances - Always visible -->
                         <a class="nav-link" href="#" onclick="showPage('advances')" id="advancesMenuLink">
                             <i class="fas fa-hand-holding-usd"></i> Advances
                         </a>
+                        <!-- ✅ Expenses - Always visible -->
                         <a class="nav-link" href="#" onclick="showPage('expenses')" id="expensesMenuLink">
                             <i class="fas fa-receipt"></i> Expenses
                         </a>
+                        <!-- ✅ Cards - Always visible for Admin -->
                         <a class="nav-link" href="#" onclick="showPage('cards')" id="cardsMenuLink">
                             <i class="fas fa-credit-card"></i> Cards
                         </a>
                         <!-- ✅ ADMIN MENU - Always visible for Admin -->
-                        <div id="adminMenu" style="display: none;">
+                        <div id="adminMenu">
                             <div class="px-3 py-2 mt-2">
                                 <small class="text-uppercase" style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">Administration</small>
                             </div>
@@ -2099,20 +2104,20 @@ function applyPermissions() {
     const perms = getUserPermissions(role);
     const isAdmin = role === 'admin';
     
-    // ✅ Menu items visibility
+    // ✅ Menu items visibility - everything visible for Admin
     const menuItems = {
-        dashboardMenuLink: perms.viewDashboard,
-        myDashboardMenuLink: perms.viewMyDashboard,
-        advancesMenuLink: perms.viewAdvances,
-        expensesMenuLink: perms.viewExpenses,
-        cardsMenuLink: perms.viewCards,
-        branchesMenuLink: perms.viewBranches,
-        projectsMenuLink: perms.viewProjects,
-        employeesMenuLink: perms.viewEmployees,
-        approvalsMenuLink: perms.viewApprovals,
-        reportsMenuLink: perms.viewReports,
-        auditMenuLink: perms.viewAudit,
-        permissionsMenuLink: perms.viewPermissions && isAdmin
+        dashboardMenuLink: true, // Always visible
+        myDashboardMenuLink: true, // Always visible
+        advancesMenuLink: true, // Always visible
+        expensesMenuLink: true, // Always visible
+        cardsMenuLink: isAdmin || perms.viewCards,
+        branchesMenuLink: isAdmin || perms.viewBranches,
+        projectsMenuLink: isAdmin || perms.viewProjects,
+        employeesMenuLink: isAdmin || perms.viewEmployees,
+        approvalsMenuLink: isAdmin || perms.viewApprovals,
+        reportsMenuLink: isAdmin || perms.viewReports,
+        auditMenuLink: isAdmin || perms.viewAudit,
+        permissionsMenuLink: isAdmin && perms.viewPermissions
     };
     
     Object.keys(menuItems).forEach(id => {
@@ -2122,10 +2127,9 @@ function applyPermissions() {
         }
     });
     
-    // ✅ Admin menu visibility - ALWAYS show for Admin
+    // ✅ Admin menu - ALWAYS visible for Admin
     const adminMenu = document.getElementById('adminMenu');
     if (adminMenu) {
-        // ✅ FIX: Admin always sees the admin menu
         if (isAdmin) {
             adminMenu.style.display = 'block';
         } else {
@@ -3629,7 +3633,10 @@ function showPage(page) {
         permissions: 'viewPermissions'
     };
     
-    if (page !== 'dashboard' && page !== 'myDashboard') {
+    // ✅ Admin can access everything, no restrictions
+    if (role === 'admin') {
+        // Admin has full access - skip permission checks
+    } else if (page !== 'dashboard' && page !== 'myDashboard') {
         const perm = pagePermissions[page];
         if (!hasPermission(role, perm)) {
             showToast('warning', `Access denied. You don't have permission to view ${page}.`);
