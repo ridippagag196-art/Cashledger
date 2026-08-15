@@ -776,7 +776,7 @@
                         <a class="nav-link" href="#" onclick="showPage('myDashboard')" id="myDashboardMenuLink">
                             <i class="fas fa-user"></i> My Dashboard
                         </a>
-                        <!-- ⭐ FUND MANAGEMENT MENU ITEM - ADDED HERE ⭐ -->
+                        <!-- ⭐ FUND MANAGEMENT - ADDED HERE ⭐ -->
                         <a class="nav-link" href="#" onclick="showPage('fundManagement')" id="fundMenuLink">
                             <i class="fas fa-money-bill-wave"></i> Fund Management
                         </a>
@@ -1977,190 +1977,6 @@ const DefaultPermissions = {
 let currentPermissions = {};
 
 // ============================================
-// PERMISSION FUNCTIONS
-// ============================================
-function loadPermissions() {
-    const role = document.getElementById('permissionRole').value;
-    const container = document.getElementById('permissionsContainer');
-    
-    const perms = currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
-    
-    const permissionGroups = [
-        {
-            title: 'View Permissions',
-            icon: 'fa-eye',
-            permissions: [
-                { key: 'viewDashboard', label: 'Dashboard' },
-                { key: 'viewMyDashboard', label: 'My Dashboard' },
-                { key: 'viewAdvances', label: 'Advances' },
-                { key: 'viewExpenses', label: 'Expenses' },
-                { key: 'viewCards', label: 'Cards' },
-                { key: 'viewBranches', label: 'Branches/Camps' },
-                { key: 'viewProjects', label: 'Projects' },
-                { key: 'viewEmployees', label: 'Employees' },
-                { key: 'viewApprovals', label: 'Approvals' },
-                { key: 'viewReports', label: 'Reports' },
-                { key: 'viewAudit', label: 'Audit Logs' },
-                { key: 'viewPermissions', label: 'Permissions' },
-                { key: 'viewFundManagement', label: 'Fund Management' }
-            ]
-        },
-        {
-            title: 'Add/Create Permissions',
-            icon: 'fa-plus-circle',
-            permissions: [
-                { key: 'addAdvance', label: 'Add Advance' },
-                { key: 'addExpense', label: 'Add Expense' },
-                { key: 'addCard', label: 'Add Card' },
-                { key: 'addBranch', label: 'Add Branch/Camp' },
-                { key: 'addProject', label: 'Add Project' },
-                { key: 'addEmployee', label: 'Add Employee' }
-            ]
-        },
-        {
-            title: 'Delete Permissions',
-            icon: 'fa-trash',
-            permissions: [
-                { key: 'deleteAdvance', label: 'Delete Advance' },
-                { key: 'deleteExpense', label: 'Delete Expense' },
-                { key: 'deleteCard', label: 'Delete Card' },
-                { key: 'deleteBranch', label: 'Delete Branch/Camp' },
-                { key: 'deleteProject', label: 'Delete Project' },
-                { key: 'deleteEmployee', label: 'Delete Employee' }
-            ]
-        },
-        {
-            title: 'Special Permissions',
-            icon: 'fa-star',
-            permissions: [
-                { key: 'approveRequests', label: 'Approve Requests' },
-                { key: 'managePermissions', label: 'Manage Permissions' },
-                { key: 'viewAllBranches', label: 'View All Branches/Camps' },
-                { key: 'manageFunds', label: 'Manage Funds' }
-            ]
-        }
-    ];
-    
-    const isSuperAdmin = CloudStore.getCurrentUser()?.role === 'admin';
-    
-    let html = `<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure permissions for <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong> role. Changes take effect immediately.</div>`;
-    
-    permissionGroups.forEach(group => {
-        html += `
-            <div class="permission-section">
-                <div class="section-title"><i class="fas ${group.icon} me-2"></i>${group.title}</div>
-                <div class="row">
-        `;
-        
-        group.permissions.forEach(p => {
-            const isChecked = perms[p.key] || false;
-            const isDisabled = (role === 'admin' && p.key === 'managePermissions' && !isSuperAdmin) || (role === 'admin' && !isSuperAdmin);
-            
-            html += `
-                <div class="col-md-6">
-                    <div class="permission-card">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="permission-title">${p.label}</div>
-                            </div>
-                            <div class="permission-toggle">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                           id="perm_${p.key}" 
-                                           ${isChecked ? 'checked' : ''} 
-                                           ${isDisabled ? 'disabled' : ''}
-                                           onchange="savePermission('${role}', '${p.key}', this.checked)">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += `</div></div>`;
-    });
-    
-    const roleDescriptions = {
-        admin: 'Full access to all features. Can manage permissions and system settings. Sees ALL branches/camps.',
-        manager: 'Can manage their camp, approve requests, and view reports. Sees ONLY their camp.',
-        accounts: 'Can view financial data, approve expenses, and generate reports. Sees ONLY their camp.',
-        employee: 'Can submit advance requests and expenses, view personal dashboard. Sees ONLY their camp.',
-        auditor: 'Read-only access to all data for audit purposes. Sees ALL branches/camps.'
-    };
-    
-    html += `
-        <div class="alert alert-secondary mt-3">
-            <i class="fas fa-info-circle me-2"></i>
-            <strong>Role Description:</strong> ${roleDescriptions[role] || 'Custom role with configured permissions.'}
-        </div>
-    `;
-    
-    container.innerHTML = html;
-}
-
-async function savePermission(role, key, value) {
-    const user = CloudStore.getCurrentUser();
-    if (user?.role !== 'admin') {
-        showToast('warning', 'Only Admins can manage permissions');
-        return;
-    }
-    
-    showLoading(true);
-    try {
-        const permDoc = await db.collection('permissions').doc(role).get();
-        let perms = {};
-        if (permDoc.exists) {
-            perms = permDoc.data();
-        }
-        perms[key] = value;
-        
-        await db.collection('permissions').doc(role).set(perms, { merge: true });
-        
-        currentPermissions[role] = perms;
-        
-        showToast('success', `Permission "${key}" updated successfully`);
-        await CloudStore.addAuditLog({ action: 'UPDATE_PERMISSION', entityType: 'Permission', entityId: `${role}.${key}`, details: `${key}=${value}` });
-        
-        if (user.role === role) {
-            applyPermissions();
-        }
-    } catch (error) {
-        showToast('danger', 'Failed to save permission: ' + error.message);
-        console.error(error);
-    }
-    showLoading(false);
-}
-
-async function loadAllPermissions() {
-    try {
-        const snapshot = await db.collection('permissions').get();
-        currentPermissions = {};
-        snapshot.forEach(doc => {
-            currentPermissions[doc.id] = doc.data();
-        });
-        
-        Object.keys(DefaultPermissions).forEach(role => {
-            if (!currentPermissions[role]) {
-                currentPermissions[role] = DefaultPermissions[role];
-            }
-        });
-    } catch (error) {
-        console.error('Error loading permissions:', error);
-        currentPermissions = DefaultPermissions;
-    }
-}
-
-function getUserPermissions(role) {
-    return currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
-}
-
-function hasPermission(role, permission) {
-    const perms = getUserPermissions(role);
-    return perms[permission] || false;
-}
-
-// ============================================
 // DATA STORE - Cloud Sync with Branch Isolation
 // ============================================
 const CloudStore = {
@@ -2521,6 +2337,264 @@ let branchChartInstance = null;
 let employeeChartInstance = null;
 
 // ============================================
+// PERMISSION FUNCTIONS
+// ============================================
+function loadPermissions() {
+    const role = document.getElementById('permissionRole').value;
+    const container = document.getElementById('permissionsContainer');
+    
+    const perms = currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
+    
+    const permissionGroups = [
+        {
+            title: 'View Permissions',
+            icon: 'fa-eye',
+            permissions: [
+                { key: 'viewDashboard', label: 'Dashboard' },
+                { key: 'viewMyDashboard', label: 'My Dashboard' },
+                { key: 'viewFundManagement', label: 'Fund Management' },
+                { key: 'viewAdvances', label: 'Advances' },
+                { key: 'viewExpenses', label: 'Expenses' },
+                { key: 'viewCards', label: 'Cards' },
+                { key: 'viewBranches', label: 'Branches/Camps' },
+                { key: 'viewProjects', label: 'Projects' },
+                { key: 'viewEmployees', label: 'Employees' },
+                { key: 'viewApprovals', label: 'Approvals' },
+                { key: 'viewReports', label: 'Reports' },
+                { key: 'viewAudit', label: 'Audit Logs' },
+                { key: 'viewPermissions', label: 'Permissions' }
+            ]
+        },
+        {
+            title: 'Add/Create Permissions',
+            icon: 'fa-plus-circle',
+            permissions: [
+                { key: 'addAdvance', label: 'Add Advance' },
+                { key: 'addExpense', label: 'Add Expense' },
+                { key: 'addCard', label: 'Add Card' },
+                { key: 'addBranch', label: 'Add Branch/Camp' },
+                { key: 'addProject', label: 'Add Project' },
+                { key: 'addEmployee', label: 'Add Employee' }
+            ]
+        },
+        {
+            title: 'Delete Permissions',
+            icon: 'fa-trash',
+            permissions: [
+                { key: 'deleteAdvance', label: 'Delete Advance' },
+                { key: 'deleteExpense', label: 'Delete Expense' },
+                { key: 'deleteCard', label: 'Delete Card' },
+                { key: 'deleteBranch', label: 'Delete Branch/Camp' },
+                { key: 'deleteProject', label: 'Delete Project' },
+                { key: 'deleteEmployee', label: 'Delete Employee' }
+            ]
+        },
+        {
+            title: 'Special Permissions',
+            icon: 'fa-star',
+            permissions: [
+                { key: 'approveRequests', label: 'Approve Requests' },
+                { key: 'managePermissions', label: 'Manage Permissions' },
+                { key: 'viewAllBranches', label: 'View All Branches/Camps' },
+                { key: 'manageFunds', label: 'Manage Funds' }
+            ]
+        }
+    ];
+    
+    const isSuperAdmin = CloudStore.getCurrentUser()?.role === 'admin';
+    
+    let html = `<div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Configure permissions for <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong> role. Changes take effect immediately.</div>`;
+    
+    permissionGroups.forEach(group => {
+        html += `
+            <div class="permission-section">
+                <div class="section-title"><i class="fas ${group.icon} me-2"></i>${group.title}</div>
+                <div class="row">
+        `;
+        
+        group.permissions.forEach(p => {
+            const isChecked = perms[p.key] || false;
+            const isDisabled = (role === 'admin' && p.key === 'managePermissions' && !isSuperAdmin) || (role === 'admin' && !isSuperAdmin);
+            
+            html += `
+                <div class="col-md-6">
+                    <div class="permission-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="permission-title">${p.label}</div>
+                            </div>
+                            <div class="permission-toggle">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                           id="perm_${p.key}" 
+                                           ${isChecked ? 'checked' : ''} 
+                                           ${isDisabled ? 'disabled' : ''}
+                                           onchange="savePermission('${role}', '${p.key}', this.checked)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    });
+    
+    const roleDescriptions = {
+        admin: 'Full access to all features. Can manage permissions and system settings. Sees ALL branches/camps.',
+        manager: 'Can manage their camp, approve requests, and view reports. Sees ONLY their camp.',
+        accounts: 'Can view financial data, approve expenses, and generate reports. Sees ONLY their camp.',
+        employee: 'Can submit advance requests and expenses, view personal dashboard. Sees ONLY their camp.',
+        auditor: 'Read-only access to all data for audit purposes. Sees ALL branches/camps.'
+    };
+    
+    html += `
+        <div class="alert alert-secondary mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Role Description:</strong> ${roleDescriptions[role] || 'Custom role with configured permissions.'}
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+async function savePermission(role, key, value) {
+    const user = CloudStore.getCurrentUser();
+    if (user?.role !== 'admin') {
+        showToast('warning', 'Only Admins can manage permissions');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        const permDoc = await db.collection('permissions').doc(role).get();
+        let perms = {};
+        if (permDoc.exists) {
+            perms = permDoc.data();
+        }
+        perms[key] = value;
+        
+        await db.collection('permissions').doc(role).set(perms, { merge: true });
+        
+        currentPermissions[role] = perms;
+        
+        showToast('success', `Permission "${key}" updated successfully`);
+        await CloudStore.addAuditLog({ action: 'UPDATE_PERMISSION', entityType: 'Permission', entityId: `${role}.${key}`, details: `${key}=${value}` });
+        
+        if (user.role === role) {
+            applyPermissions();
+        }
+    } catch (error) {
+        showToast('danger', 'Failed to save permission: ' + error.message);
+        console.error(error);
+    }
+    showLoading(false);
+}
+
+async function loadAllPermissions() {
+    try {
+        const snapshot = await db.collection('permissions').get();
+        currentPermissions = {};
+        snapshot.forEach(doc => {
+            currentPermissions[doc.id] = doc.data();
+        });
+        
+        Object.keys(DefaultPermissions).forEach(role => {
+            if (!currentPermissions[role]) {
+                currentPermissions[role] = DefaultPermissions[role];
+            }
+        });
+    } catch (error) {
+        console.error('Error loading permissions:', error);
+        currentPermissions = DefaultPermissions;
+    }
+}
+
+function getUserPermissions(role) {
+    return currentPermissions[role] || DefaultPermissions[role] || DefaultPermissions.employee;
+}
+
+function hasPermission(role, permission) {
+    const perms = getUserPermissions(role);
+    return perms[permission] || false;
+}
+
+// ============================================
+// APPLY PERMISSIONS
+// ============================================
+function applyPermissions() {
+    const user = CloudStore.getCurrentUser();
+    if (!user) return;
+    
+    const role = user.role;
+    const perms = getUserPermissions(role);
+    const isAdmin = role === 'admin';
+    
+    // Show/hide menu items based on permissions
+    const menuItems = {
+        dashboardMenuLink: perms.viewDashboard,
+        myDashboardMenuLink: perms.viewMyDashboard,
+        fundMenuLink: perms.viewFundManagement,
+        advancesMenuLink: perms.viewAdvances,
+        expensesMenuLink: perms.viewExpenses,
+        cardsMenuLink: perms.viewCards,
+        branchesMenuLink: perms.viewBranches,
+        projectsMenuLink: perms.viewProjects,
+        employeesMenuLink: perms.viewEmployees,
+        approvalsMenuLink: perms.viewApprovals,
+        reportsMenuLink: perms.viewReports,
+        auditMenuLink: perms.viewAudit,
+        permissionsMenuLink: perms.viewPermissions && isAdmin
+    };
+    
+    Object.keys(menuItems).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = menuItems[id] ? 'block' : 'none';
+        }
+    });
+    
+    const adminMenu = document.getElementById('adminMenu');
+    if (adminMenu) {
+        const hasAdminAccess = menuItems.branchesMenuLink || menuItems.projectsMenuLink || 
+                              menuItems.employeesMenuLink || menuItems.approvalsMenuLink || 
+                              menuItems.reportsMenuLink || menuItems.auditMenuLink || 
+                              menuItems.permissionsMenuLink;
+        adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
+    }
+    
+    // Show/hide add buttons
+    const addButtons = {
+        addAdvanceBtn: perms.addAdvance,
+        addExpenseBtn: perms.addExpense,
+        addCardBtn: perms.addCard,
+        addBranchBtn: perms.addBranch,
+        addProjectBtn: perms.addProject,
+        addEmployeeBtn: perms.addEmployee
+    };
+    
+    Object.keys(addButtons).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = addButtons[id] ? 'inline-block' : 'none';
+        }
+    });
+    
+    // Update user branch display
+    if (user.branch) {
+        document.getElementById('userDeptDisplay').textContent = user.branch;
+    }
+    
+    if (role === 'employee' && !perms.viewDashboard) {
+        document.getElementById('page-dashboard').style.display = 'none';
+        document.getElementById('page-myDashboard').style.display = 'block';
+        document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
+        document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.remove('active');
+    }
+}
+
+// ============================================
 // FILE UPLOAD HANDLING
 // ============================================
 const dropArea = document.getElementById('dropArea');
@@ -2601,80 +2675,6 @@ function displayFiles() {
 function removeFile(index) {
     uploadedFiles.splice(index, 1);
     displayFiles();
-}
-
-// ============================================
-// APPLY PERMISSIONS
-// ============================================
-function applyPermissions() {
-    const user = CloudStore.getCurrentUser();
-    if (!user) return;
-    
-    const role = user.role;
-    const perms = getUserPermissions(role);
-    const isAdmin = role === 'admin';
-    const userBranch = user.branch || '';
-    
-    // Show/hide menu items based on permissions
-    const menuItems = {
-        dashboardMenuLink: perms.viewDashboard,
-        myDashboardMenuLink: perms.viewMyDashboard,
-        fundMenuLink: perms.viewFundManagement,
-        advancesMenuLink: perms.viewAdvances,
-        expensesMenuLink: perms.viewExpenses,
-        cardsMenuLink: perms.viewCards,
-        branchesMenuLink: perms.viewBranches,
-        projectsMenuLink: perms.viewProjects,
-        employeesMenuLink: perms.viewEmployees,
-        approvalsMenuLink: perms.viewApprovals,
-        reportsMenuLink: perms.viewReports,
-        auditMenuLink: perms.viewAudit,
-        permissionsMenuLink: perms.viewPermissions && isAdmin
-    };
-    
-    Object.keys(menuItems).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = menuItems[id] ? 'block' : 'none';
-        }
-    });
-    
-    const adminMenu = document.getElementById('adminMenu');
-    if (adminMenu) {
-        const hasAdminAccess = menuItems.branchesMenuLink || menuItems.projectsMenuLink || 
-                              menuItems.employeesMenuLink || menuItems.approvalsMenuLink || 
-                              menuItems.reportsMenuLink || menuItems.auditMenuLink || 
-                              menuItems.permissionsMenuLink;
-        adminMenu.style.display = hasAdminAccess ? 'block' : 'none';
-    }
-    
-    // Show/hide add buttons
-    const addButtons = {
-        addAdvanceBtn: perms.addAdvance,
-        addExpenseBtn: perms.addExpense,
-        addCardBtn: perms.addCard,
-        addBranchBtn: perms.addBranch,
-        addProjectBtn: perms.addProject,
-        addEmployeeBtn: perms.addEmployee
-    };
-    
-    Object.keys(addButtons).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = addButtons[id] ? 'inline-block' : 'none';
-        }
-    });
-    
-    if (userBranch) {
-        document.getElementById('userDeptDisplay').textContent = userBranch;
-    }
-    
-    if (role === 'employee' && !perms.viewDashboard) {
-        document.getElementById('page-dashboard').style.display = 'none';
-        document.getElementById('page-myDashboard').style.display = 'block';
-        document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.add('active');
-        document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.remove('active');
-    }
 }
 
 // ============================================
@@ -3743,6 +3743,9 @@ function loadFundManagement() {
     const campUtilized = campCards.reduce((sum, c) => sum + (c.utilized || 0), 0);
     document.getElementById('fundTotalCampAvailable').textContent = '₹' + (totalAllocated - campUtilized).toLocaleString();
     
+    // Update transfer modal available fund
+    document.getElementById('transferAvailableFund').textContent = '₹' + mainBalance.toLocaleString();
+    
     const tbody = document.getElementById('fundBody');
     if (campFunds.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No camp funds allocated yet</td></tr>`;
@@ -3889,8 +3892,8 @@ function showTransferFromCamp(camp) {
     
     showLoading(true);
     try {
-        CloudStore.updateFund(camp, returnAmount, 'subtract', `Return to main`);
-        CloudStore.updateFund('__main__', returnAmount, 'add', `Received from ${camp}`);
+        await CloudStore.updateFund(camp, returnAmount, 'subtract', `Return to main`);
+        await CloudStore.updateFund('__main__', returnAmount, 'add', `Received from ${camp}`);
         showToast('success', `₹${returnAmount.toLocaleString()} returned from ${camp} to main branch`);
     } catch (error) {
         showToast('danger', 'Failed: ' + error.message);
@@ -3975,6 +3978,18 @@ function updateBranchChart(branches) {
             available: totalLimit - totalUtilized
         };
     }).filter(d => d.totalLimit > 0);
+    
+    if (branchData.length === 0) {
+        branchChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['No Data'],
+                datasets: [{ label: 'No Data', data: [0], backgroundColor: '#ddd' }]
+            },
+            options: { responsive: true }
+        });
+        return;
+    }
     
     branchChartInstance = new Chart(ctx, {
         type: 'bar',
