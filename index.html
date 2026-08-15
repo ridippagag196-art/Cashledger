@@ -28,170 +28,43 @@
             --shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
             --shadow-hover: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gray-100);
-            min-height: 100vh;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gray-100); min-height: 100vh; }
+
         /* ===== LOGIN ===== */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 440px;
-            animation: slideUp 0.6s ease;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .login-card .brand {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .login-card .brand i {
-            font-size: 3.5rem;
-            color: #4e73df;
-            background: rgba(78, 115, 223, 0.1);
-            padding: 20px;
-            border-radius: 50%;
-        }
-        .login-card .brand h3 {
-            margin-top: 15px;
-            font-weight: 700;
-            color: var(--gray-800);
-        }
-        .login-card .brand p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-        }
-        .login-card .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid var(--gray-200);
-            transition: all 0.3s;
-        }
-        .login-card .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
-        }
-        .login-card .btn-login {
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            transition: all 0.3s;
-            color: white;
-        }
-        .login-card .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        .login-card .setup-info {
-            background: var(--gray-100);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .login-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 440px; animation: slideUp 0.6s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .login-card .brand { text-align: center; margin-bottom: 30px; }
+        .login-card .brand i { font-size: 3.5rem; color: #4e73df; background: rgba(78,115,223,0.1); padding: 20px; border-radius: 50%; }
+        .login-card .brand h3 { margin-top: 15px; font-weight: 700; color: var(--gray-800); }
+        .login-card .brand p { color: var(--gray-600); font-size: 0.9rem; }
+        .login-card .form-control { border-radius: 10px; padding: 12px 15px; border: 2px solid var(--gray-200); transition: all 0.3s; }
+        .login-card .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(78,115,223,0.1); }
+        .login-card .btn-login { padding: 12px; border-radius: 10px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; transition: all 0.3s; color: white; }
+        .login-card .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .login-card .setup-info { background: var(--gray-100); padding: 15px; border-radius: 10px; margin-top: 20px; }
 
         /* ===== SIDEBAR ===== */
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(180deg, var(--gray-800) 0%, #1a202c 100%);
-            padding: 0;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .sidebar .user-profile {
-            padding: 25px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .sidebar .user-profile .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 2rem;
-            color: white;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-        }
-        .sidebar .user-profile h6 {
-            color: white;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
-        .sidebar .user-profile small {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8rem;
-        }
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            padding: 12px 20px;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-            cursor: pointer;
-        }
-        .sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border-left-color: var(--primary);
-        }
-        .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border-left-color: var(--primary);
-        }
-        .sidebar .nav-link i {
-            width: 25px;
-            margin-right: 10px;
-        }
+        .sidebar { min-height: 100vh; background: linear-gradient(180deg, var(--gray-800) 0%, #1a202c 100%); padding: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+        .sidebar .user-profile { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar .user-profile .avatar { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 2rem; color: white; border: 3px solid rgba(255,255,255,0.2); }
+        .sidebar .user-profile h6 { color: white; margin-bottom: 2px; font-weight: 600; }
+        .sidebar .user-profile small { color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.7); padding: 12px 20px; transition: all 0.3s; border-left: 3px solid transparent; cursor: pointer; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.05); color: white; border-left-color: var(--primary); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.08); color: white; border-left-color: var(--primary); }
+        .sidebar .nav-link i { width: 25px; margin-right: 10px; }
 
         /* ===== BADGES ===== */
-        .role-badge {
-            display: inline-block;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        .role-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .role-badge.admin { background: var(--danger); color: white; }
         .role-badge.manager { background: var(--warning); color: #333; }
         .role-badge.employee { background: var(--primary); color: white; }
         .role-badge.accounts { background: var(--success); color: white; }
         .role-badge.auditor { background: #858796; color: white; }
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
         .status-pending { background: var(--warning); color: #fff; }
         .status-approved { background: var(--success); color: #fff; }
         .status-rejected { background: var(--danger); color: #fff; }
@@ -202,262 +75,73 @@
         .status-send_back { background: #858796; color: #fff; }
 
         /* ===== MAIN ===== */
-        .main-content {
-            padding: 25px;
-            max-height: 100vh;
-            overflow-y: auto;
-            background: var(--gray-100);
-        }
-        .page-content {
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .main-content { padding: 25px; max-height: 100vh; overflow-y: auto; background: var(--gray-100); }
+        .page-content { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ===== STAT CARDS ===== */
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s;
-            border-left: 4px solid;
-            height: 100%;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-        .stat-card .stat-icon {
-            font-size: 2.2rem;
-            opacity: 0.4;
-        }
-        .stat-card .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        .stat-card .stat-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: #999;
-            font-weight: 600;
-        }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); transition: all 0.3s; border-left: 4px solid; height: 100%; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .stat-card .stat-icon { font-size: 2.2rem; opacity: 0.4; }
+        .stat-card .stat-value { font-size: 1.8rem; font-weight: 700; }
+        .stat-card .stat-label { font-size: 0.7rem; text-transform: uppercase; color: #999; font-weight: 600; }
 
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
+        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
 
         /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-        .toast-custom {
-            background: white;
-            border-radius: 12px;
-            padding: 15px 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            margin-bottom: 10px;
-            min-width: 320px;
-            animation: slideInRight 0.4s ease;
-            border-left: 4px solid;
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast-custom { background: white; border-radius: 12px; padding: 15px 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 10px; min-width: 320px; animation: slideInRight 0.4s ease; border-left: 4px solid; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
 
         /* ===== UPLOAD ===== */
-        .upload-area {
-            border: 2px dashed #ddd;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: var(--gray-100);
-        }
-        .upload-area.dragover {
-            border-color: var(--success);
-            background: #f0fff4;
-        }
-        .file-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .file-item:hover {
-            background: var(--gray-100);
-        }
+        .upload-area { border: 2px dashed #ddd; border-radius: 12px; padding: 30px; text-align: center; transition: all 0.3s; cursor: pointer; }
+        .upload-area:hover { border-color: var(--primary); background: var(--gray-100); }
+        .upload-area.dragover { border-color: var(--success); background: #f0fff4; }
+        .file-list { max-height: 300px; overflow-y: auto; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+        .file-item:hover { background: var(--gray-100); }
         .file-item .file-icon { font-size: 1.2rem; margin-right: 10px; }
         .file-item .file-name { flex: 1; }
         .file-item .file-size { color: #999; font-size: 0.8rem; }
 
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9998;
-        }
-        .cloud-badge {
-            background: var(--primary);
-            color: white;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-        }
+        .spinner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; align-items: center; justify-content: center; z-index: 9998; }
+        .cloud-badge { background: var(--primary); color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; }
         .connection-status.online { background: var(--success); color: white; }
         .connection-status.offline { background: var(--danger); color: white; }
         .connection-status.connecting { background: var(--warning); color: #333; }
 
         /* ===== ALERTS ===== */
-        .alert-card {
-            background: #fff3cd;
-            border-left: 4px solid var(--warning);
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        .alert-card.danger {
-            background: #f8d7da;
-            border-left-color: var(--danger);
-        }
-        .alert-card.success {
-            background: #d4edda;
-            border-left-color: var(--success);
-        }
-        .alert-card.info {
-            background: #d1ecf1;
-            border-left-color: var(--info);
-        }
+        .alert-card { background: #fff3cd; border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; }
+        .alert-card.danger { background: #f8d7da; border-left-color: var(--danger); }
+        .alert-card.success { background: #d4edda; border-left-color: var(--success); }
+        .alert-card.info { background: #d1ecf1; border-left-color: var(--info); }
 
         /* ===== PERMISSIONS ===== */
-        .permission-section {
-            border-left: 3px solid var(--primary);
-            padding-left: 15px;
-            margin-bottom: 20px;
-        }
-        .permission-section .section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--primary);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .permission-card {
-            background: var(--gray-100);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--gray-200);
-        }
-        .permission-card .permission-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .permission-card .permission-desc {
-            font-size: 0.8rem;
-            color: #999;
-        }
+        .permission-section { border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px; }
+        .permission-section .section-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; }
+        .permission-card { background: var(--gray-100); border-radius: 10px; padding: 15px; margin-bottom: 10px; border: 1px solid var(--gray-200); }
+        .permission-card .permission-title { font-weight: 600; font-size: 0.9rem; }
 
         /* ===== LEDGER ===== */
-        .ledger-entry {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            border-bottom: 1px solid #f0f0f0;
-        }
+        .ledger-entry { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
         .ledger-entry .debit { color: var(--danger); }
         .ledger-entry .credit { color: var(--success); }
         .ledger-entry .balance { font-weight: 600; }
 
-        /* ===== PROJECT CARDS ===== */
-        .project-card {
-            border-radius: 12px;
-            padding: 15px;
-            background: white;
-            box-shadow: var(--shadow);
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-        .project-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-        .project-card .progress { height: 8px; border-radius: 4px; }
+        /* ===== FILTER ===== */
+        .filter-section { background: white; border-radius: 12px; padding: 15px 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .filter-section .filter-label { font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 4px; }
 
-        /* ===== CAMP CARDS ===== */
-        .camp-card {
-            border-radius: 12px;
-            padding: 15px;
-            background: white;
-            box-shadow: var(--shadow);
-            margin-bottom: 15px;
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s;
-        }
-        .camp-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-        .camp-card .camp-name { font-weight: 600; font-size: 1.1rem; }
-        .camp-card .camp-details { font-size: 0.85rem; color: #666; }
-        .camp-card .fund-amount { font-size: 1.3rem; font-weight: 700; color: var(--success); }
+        /* ===== MONTHLY SUMMARY ===== */
+        .monthly-summary { background: white; border-radius: 12px; padding: 15px 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .monthly-summary .month-title { font-weight: 700; color: var(--primary); }
+        .monthly-summary .inflow { color: var(--success); }
+        .monthly-summary .outflow { color: var(--danger); }
 
-        /* ===== CARD PROGRESS ===== */
-        .card-progress {
-            height: 6px;
-            border-radius: 3px;
-            margin-top: 4px;
-        }
+        .card-progress { height: 6px; border-radius: 3px; margin-top: 4px; }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .sidebar {
-                min-height: auto;
-                height: auto;
-                position: relative;
-            }
-            .main-content {
-                max-height: none;
-                padding: 15px;
-            }
-            .login-card {
-                padding: 30px 20px;
-            }
-            .stat-card {
-                margin-bottom: 15px;
-            }
-        }
-
-        /* ===== PRINT ===== */
-        @media print {
-            .no-print { display: none !important; }
-            .main-content { max-height: none !important; overflow: visible !important; }
-            .stat-card { box-shadow: none !important; border: 1px solid #ddd; }
-        }
+        @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } }
+        @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
     </style>
 </head>
 <body>
@@ -591,6 +275,9 @@
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('fundManagement')" id="fundMenuLink">
                                 <i class="fas fa-money-bill-wave"></i> Fund Management
+                            </a>
+                            <a class="nav-link" href="#" onclick="showPage('monthlyReport')" id="monthlyReportMenuLink">
+                                <i class="fas fa-calendar-alt"></i> Monthly Report
                             </a>
                             <a class="nav-link" href="#" onclick="showPage('advances')" id="advancesMenuLink">
                                 <i class="fas fa-hand-holding-usd"></i> Advances
@@ -735,6 +422,33 @@
                                 </div>
                             </div>
 
+                            <!-- Monthly Quick Summary -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="monthly-summary">
+                                        <h6><i class="fas fa-calendar-alt me-2"></i>This Month Summary</h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <small class="text-muted">Month</small>
+                                                <div class="fw-bold" id="currentMonthDisplay">-</div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">Total Refills</small>
+                                                <div class="fw-bold text-success" id="monthRefills">₹0</div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">Total Expenses</small>
+                                                <div class="fw-bold text-danger" id="monthExpenses">₹0</div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">Net Balance</small>
+                                                <div class="fw-bold text-primary" id="monthNet">₹0</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Attention Required -->
                             <div class="row mb-4">
                                 <div class="col-md-12">
@@ -777,7 +491,6 @@
                                 <h4><i class="fas fa-user me-2 text-primary"></i>My Dashboard</h4>
                                 <small id="myDashDateTime" class="text-muted"></small>
                             </div>
-
                             <div class="row mb-4">
                                 <div class="col-md-3 mb-3">
                                     <div class="stat-card" style="border-left-color:var(--primary);">
@@ -804,21 +517,13 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="table-container">
                                         <h5><i class="fas fa-receipt me-2"></i>My Recent Expenses</h5>
                                         <div class="table-responsive">
                                             <table class="table table-hover table-sm" id="myExpensesTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Project</th>
-                                                        <th>Amount</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
+                                                <thead><tr><th>Date</th><th>Project</th><th>Amount</th><th>Status</th></tr></thead>
                                                 <tbody id="myExpensesBody"></tbody>
                                             </table>
                                         </div>
@@ -829,15 +534,7 @@
                                         <h5><i class="fas fa-hand-holding-usd me-2"></i>My Advances</h5>
                                         <div class="table-responsive">
                                             <table class="table table-hover table-sm" id="myAdvancesTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Amount</th>
-                                                        <th>Spent</th>
-                                                        <th>Balance</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
+                                                <thead><tr><th>Date</th><th>Amount</th><th>Spent</th><th>Balance</th><th>Status</th></tr></thead>
                                                 <tbody id="myAdvancesBody"></tbody>
                                             </table>
                                         </div>
@@ -868,7 +565,7 @@
                                 <div class="col-md-4">
                                     <div class="stat-card" style="border-left-color:var(--success);">
                                         <div>
-                                            <div class="stat-label">Total Camp Allocations</div>
+                                            <div class="stat-label">Total Card Allocations</div>
                                             <div class="stat-value text-success" id="fundTotalAllocated">₹0</div>
                                         </div>
                                     </div>
@@ -883,10 +580,40 @@
                                 </div>
                             </div>
 
+                            <!-- Filter Section -->
+                            <div class="filter-section">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Month Filter</div>
+                                        <input type="month" class="form-control form-control-sm" id="fundMonthFilter" onchange="loadFundManagement()">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Camp Filter</div>
+                                        <select class="form-select form-select-sm" id="fundCampFilter" onchange="loadFundManagement()">
+                                            <option value="">All Camps</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Status</div>
+                                        <select class="form-select form-select-sm" id="fundStatusFilter" onchange="loadFundManagement()">
+                                            <option value="">All</option>
+                                            <option value="active">Active Cards</option>
+                                            <option value="utilized">Has Utilization</option>
+                                            <option value="high">High Utilization (>80%)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetFundFilters()">
+                                            <i class="fas fa-undo"></i> Reset Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Card Allocations Table -->
                             <div class="table-container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5><i class="fas fa-credit-card me-2"></i>Card Allocations (Funds go directly to Cards)</h5>
+                                    <h5><i class="fas fa-credit-card me-2"></i>Card Allocations</h5>
                                     <button class="btn btn-sm btn-success" onclick="showAllocateToCardModal()">
                                         <i class="fas fa-credit-card"></i> Allocate to Card
                                     </button>
@@ -903,6 +630,7 @@
                                                 <th>Utilized (₹)</th>
                                                 <th>Available (₹)</th>
                                                 <th>% Used</th>
+                                                <th>Last Updated</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -916,16 +644,120 @@
                                 <h6><i class="fas fa-building me-2"></i>Camp Fund Tracking (for reference)</h6>
                                 <div class="table-responsive">
                                     <table class="table table-sm" id="campFundTracking">
+                                        <thead><tr><th>Camp</th><th>Total Allocated</th><th>Cards Active</th><th>Total Card Limit</th><th>Total Utilized</th></tr></thead>
+                                        <tbody id="campFundTrackingBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== MONTHLY REPORT PAGE (NEW) ===== -->
+                        <div id="page-monthlyReport" class="page-content" style="display:none;">
+                            <div class="company-header">
+                                <h4><i class="fas fa-calendar-alt me-2 text-primary"></i>Monthly Report &amp; Filter</h4>
+                                <small>Track month-wise refills, expenses, and transactions in sequence</small>
+                            </div>
+
+                            <!-- Filter Section -->
+                            <div class="filter-section">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Year</div>
+                                        <select class="form-select form-select-sm" id="reportYearFilter" onchange="loadMonthlyReport()">
+                                            <option value="all">All Years</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Month</div>
+                                        <select class="form-select form-select-sm" id="reportMonthFilter" onchange="loadMonthlyReport()">
+                                            <option value="all">All Months</option>
+                                            <option value="1">January</option>
+                                            <option value="2">February</option>
+                                            <option value="3">March</option>
+                                            <option value="4">April</option>
+                                            <option value="5">May</option>
+                                            <option value="6">June</option>
+                                            <option value="7">July</option>
+                                            <option value="8">August</option>
+                                            <option value="9">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="filter-label">Transaction Type</div>
+                                        <select class="form-select form-select-sm" id="reportTypeFilter" onchange="loadMonthlyReport()">
+                                            <option value="all">All</option>
+                                            <option value="refill">Refills</option>
+                                            <option value="allocation">Card Allocations</option>
+                                            <option value="expense">Expenses</option>
+                                            <option value="advance">Advances</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetReportFilters()">
+                                            <i class="fas fa-undo"></i> Reset Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Monthly Summary Cards -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="stat-card" style="border-left-color:var(--success);">
+                                        <div class="stat-label">Total Refills</div>
+                                        <div class="stat-value text-success" id="reportTotalRefills">₹0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card" style="border-left-color:var(--danger);">
+                                        <div class="stat-label">Total Allocations</div>
+                                        <div class="stat-value text-danger" id="reportTotalAllocations">₹0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card" style="border-left-color:var(--warning);">
+                                        <div class="stat-label">Total Expenses</div>
+                                        <div class="stat-value text-warning" id="reportTotalExpenses">₹0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card" style="border-left-color:var(--primary);">
+                                        <div class="stat-label">Net Balance</div>
+                                        <div class="stat-value text-primary" id="reportNetBalance">₹0</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Monthly Breakdown Chart -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="table-container">
+                                        <h5><i class="fas fa-chart-bar me-2"></i>Monthly Breakdown</h5>
+                                        <canvas id="monthlyChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Transaction Sequence Table -->
+                            <div class="table-container">
+                                <h5><i class="fas fa-list-ol me-2"></i>Transaction History (Filtered)</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="reportTable">
                                         <thead>
                                             <tr>
+                                                <th>#</th>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
                                                 <th>Camp</th>
-                                                <th>Total Allocated</th>
-                                                <th>Cards Active</th>
-                                                <th>Total Card Limit</th>
-                                                <th>Total Utilized</th>
+                                                <th>Amount</th>
+                                                <th>Balance After</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="campFundTrackingBody"></tbody>
+                                        <tbody id="reportBody"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -942,20 +774,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="advancesTable">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Employee</th>
-                                                <th>Camp</th>
-                                                <th>Project</th>
-                                                <th>Amount</th>
-                                                <th>Spent</th>
-                                                <th>Balance</th>
-                                                <th>Status</th>
-                                                <th>Date</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>ID</th><th>Employee</th><th>Camp</th><th>Project</th><th>Amount</th><th>Spent</th><th>Balance</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                                         <tbody id="advancesBody"></tbody>
                                     </table>
                                 </div>
@@ -973,20 +792,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="expensesTable">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Employee</th>
-                                                <th>Camp</th>
-                                                <th>Project</th>
-                                                <th>Category</th>
-                                                <th>Amount</th>
-                                                <th>Payment Method</th>
-                                                <th>Status</th>
-                                                <th>Date</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>ID</th><th>Employee</th><th>Camp</th><th>Project</th><th>Category</th><th>Amount</th><th>Payment Method</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                                         <tbody id="expensesBody"></tbody>
                                     </table>
                                 </div>
@@ -1004,19 +810,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="cardsTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Card Number</th>
-                                                <th>Camp</th>
-                                                <th>Project</th>
-                                                <th>Card Holder</th>
-                                                <th>Limit</th>
-                                                <th>Utilized</th>
-                                                <th>Available</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>Card Number</th><th>Camp</th><th>Project</th><th>Card Holder</th><th>Limit</th><th>Utilized</th><th>Available</th><th>Status</th><th>Actions</th></tr></thead>
                                         <tbody id="cardsBody"></tbody>
                                     </table>
                                 </div>
@@ -1034,18 +828,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="branchesTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                <th>Location</th>
-                                                <th>Manager</th>
-                                                <th>Projects</th>
-                                                <th>Employees</th>
-                                                <th>Card Limit</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>Name</th><th>Type</th><th>Location</th><th>Manager</th><th>Projects</th><th>Employees</th><th>Card Limit</th><th>Actions</th></tr></thead>
                                         <tbody id="branchesBody"></tbody>
                                     </table>
                                 </div>
@@ -1063,18 +846,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="projectsTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Camps</th>
-                                                <th>Total Fund Allocated</th>
-                                                <th>Utilized</th>
-                                                <th>Available</th>
-                                                <th>% Used</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>Name</th><th>Camps</th><th>Total Fund Allocated</th><th>Utilized</th><th>Available</th><th>% Used</th><th>Status</th><th>Actions</th></tr></thead>
                                         <tbody id="projectsBody"></tbody>
                                     </table>
                                 </div>
@@ -1092,19 +864,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="employeesTable">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Camp</th>
-                                                <th>Designation</th>
-                                                <th>Role</th>
-                                                <th>Advances</th>
-                                                <th>Outstanding</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>ID</th><th>Name</th><th>Camp</th><th>Designation</th><th>Role</th><th>Advances</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
                                         <tbody id="employeesBody"></tbody>
                                     </table>
                                 </div>
@@ -1116,9 +876,7 @@
                             <h4><i class="fas fa-check-double me-2 text-primary"></i>Pending Approvals</h4>
                             <div class="table-container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <span class="badge bg-warning" id="approvalCount">0</span> pending requests
-                                    </div>
+                                    <div><span class="badge bg-warning" id="approvalCount">0</span> pending requests</div>
                                     <div>
                                         <select class="form-select form-select-sm" id="approvalFilter" style="width:auto;display:inline-block;" onchange="loadApprovals()">
                                             <option value="all">All</option>
@@ -1131,19 +889,7 @@
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="approvalsTable">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Type</th>
-                                                <th>Employee</th>
-                                                <th>Camp</th>
-                                                <th>Project</th>
-                                                <th>Amount</th>
-                                                <th>Purpose</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>ID</th><th>Type</th><th>Employee</th><th>Camp</th><th>Project</th><th>Amount</th><th>Purpose</th><th>Status</th><th>Actions</th></tr></thead>
                                         <tbody id="approvalsBody"></tbody>
                                     </table>
                                 </div>
@@ -1174,16 +920,7 @@
                                 </button>
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="reportTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Camp</th>
-                                                <th>Project</th>
-                                                <th>Card Limit</th>
-                                                <th>Utilized</th>
-                                                <th>Available</th>
-                                                <th>% Used</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>Camp</th><th>Project</th><th>Card Limit</th><th>Utilized</th><th>Available</th><th>% Used</th></tr></thead>
                                         <tbody id="reportBody"></tbody>
                                     </table>
                                 </div>
@@ -1196,15 +933,7 @@
                             <div class="table-container">
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="auditTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Timestamp</th>
-                                                <th>User</th>
-                                                <th>Action</th>
-                                                <th>Entity</th>
-                                                <th>Changes</th>
-                                            </tr>
-                                        </thead>
+                                        <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Changes</th></tr></thead>
                                         <tbody id="auditBody"></tbody>
                                     </table>
                                 </div>
@@ -1621,7 +1350,7 @@
         </div>
     </div>
 
-    <!-- Refill Modal -->
+    <!-- Refill Modal (Enhanced) -->
     <div class="modal fade" id="refillModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1634,6 +1363,11 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Amount (₹) *</label>
                             <input type="number" class="form-control" id="refillAmount" min="1" placeholder="Enter amount to add" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Refill Month</label>
+                            <input type="month" class="form-control" id="refillMonth">
+                            <small class="text-muted">Defaults to current month. Used for tracking monthly refills.</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Source / Remarks</label>
@@ -1668,6 +1402,11 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Amount to Allocate (₹) *</label>
                             <input type="number" class="form-control" id="allocAmount" min="1" placeholder="Enter amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Allocation Month</label>
+                            <input type="month" class="form-control" id="allocMonth">
+                            <small class="text-muted">Defaults to current month. Used for tracking monthly allocations.</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Remarks</label>
@@ -1728,6 +1467,7 @@
                 viewAdvances: true, viewExpenses: true, viewCards: true,
                 viewBranches: true, viewProjects: true, viewEmployees: true,
                 viewApprovals: true, viewReports: true, viewAudit: true, viewPermissions: true,
+                viewMonthlyReport: true,
                 addAdvance: true, addExpense: true, addCard: true, addBranch: true,
                 addProject: true, addEmployee: true,
                 deleteAdvance: true, deleteExpense: true, deleteCard: true, deleteBranch: true,
@@ -1739,6 +1479,7 @@
                 viewAdvances: true, viewExpenses: true, viewCards: true,
                 viewBranches: true, viewProjects: true, viewEmployees: true,
                 viewApprovals: true, viewReports: true, viewAudit: false, viewPermissions: false,
+                viewMonthlyReport: false,
                 addAdvance: true, addExpense: true, addCard: true, addBranch: true,
                 addProject: true, addEmployee: false,
                 deleteAdvance: false, deleteExpense: false, deleteCard: false, deleteBranch: false,
@@ -1750,6 +1491,7 @@
                 viewAdvances: true, viewExpenses: true, viewCards: true,
                 viewBranches: true, viewProjects: true, viewEmployees: true,
                 viewApprovals: true, viewReports: true, viewAudit: false, viewPermissions: false,
+                viewMonthlyReport: true,
                 addAdvance: false, addExpense: true, addCard: false, addBranch: false,
                 addProject: false, addEmployee: false,
                 deleteAdvance: false, deleteExpense: false, deleteCard: false, deleteBranch: false,
@@ -1761,6 +1503,7 @@
                 viewAdvances: true, viewExpenses: true, viewCards: false,
                 viewBranches: false, viewProjects: false, viewEmployees: false,
                 viewApprovals: false, viewReports: false, viewAudit: false, viewPermissions: false,
+                viewMonthlyReport: false,
                 addAdvance: true, addExpense: true, addCard: false, addBranch: false,
                 addProject: false, addEmployee: false,
                 deleteAdvance: false, deleteExpense: false, deleteCard: false, deleteBranch: false,
@@ -1772,6 +1515,7 @@
                 viewAdvances: true, viewExpenses: true, viewCards: true,
                 viewBranches: true, viewProjects: true, viewEmployees: true,
                 viewApprovals: false, viewReports: true, viewAudit: true, viewPermissions: false,
+                viewMonthlyReport: true,
                 addAdvance: false, addExpense: false, addCard: false, addBranch: false,
                 addProject: false, addEmployee: false,
                 deleteAdvance: false, deleteExpense: false, deleteCard: false, deleteBranch: false,
@@ -1816,6 +1560,9 @@
             auditCollection: db.collection('audit'),
             permissionsCollection: db.collection('permissions'),
             fundsCollection: db.collection('funds'),
+            refillsCollection: db.collection('refills'), // NEW: track refills
+            allocationsCollection: db.collection('allocations'), // NEW: track allocations
+            transactionsCollection: db.collection('transactions'), // NEW: unified transaction log
             currentUser: null,
             listeners: [],
 
@@ -1928,6 +1675,29 @@
                 this.listeners.push(l);
                 return l;
             },
+            // NEW: Listen to transactions for monthly reporting
+            listenToTransactions(cb) {
+                const u = this.getCurrentUser();
+                const p = getUserPermissions(u?.role);
+                let q = this.transactionsCollection.orderBy('timestamp', 'desc');
+                if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
+                const l = q.onSnapshot(snap => { const arr = [];
+                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                    cb(arr); });
+                this.listeners.push(l);
+                return l;
+            },
+            listenToRefills(cb) {
+                const u = this.getCurrentUser();
+                const p = getUserPermissions(u?.role);
+                let q = this.refillsCollection.orderBy('month', 'desc');
+                if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
+                const l = q.onSnapshot(snap => { const arr = [];
+                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                    cb(arr); });
+                this.listeners.push(l);
+                return l;
+            },
 
             async getMainFund() {
                 const snap = await this.fundsCollection.where('camp', '==', '__main__').get();
@@ -1935,7 +1705,7 @@
                 return { id: snap.docs[0].id, ...snap.docs[0].data() };
             },
 
-            async updateFund(camp, amount, type, remark) {
+            async updateFund(camp, amount, type, remark, month = null) {
                 const snap = await this.fundsCollection.where('camp', '==', camp).get();
                 let ref;
                 if (snap.empty) {
@@ -1946,9 +1716,57 @@
                     const nb = type === 'add' ? cur + amount : cur - amount;
                     await ref.update({ balance: nb, updatedAt: new Date().toISOString() });
                 }
+
+                // Log transaction for monthly reporting
+                const transactionData = {
+                    type: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER',
+                    entityType: 'Fund',
+                    entityId: camp,
+                    amount: amount,
+                    month: month || new Date().toISOString().slice(0, 7),
+                    branch: camp === '__main__' ? 'Main Branch' : camp,
+                    description: `${type === 'add' ? 'Refill' : 'Transfer'} ${amount} to ${camp} (${remark||''})`,
+                    timestamp: new Date().toISOString(),
+                    user: this.getCurrentUser()?.username || 'system'
+                };
+                await this.transactionsCollection.add(transactionData);
+
                 await this.addAuditLog({ action: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER', entityType: 'Fund',
                     entityId: camp, details: `${type} ${amount} to ${camp} (${remark||''})` });
                 return ref;
+            },
+
+            async addRefill(data) {
+                const r = await this.refillsCollection.add(data);
+                // Also add to transactions
+                await this.transactionsCollection.add({
+                    type: 'REFILL',
+                    entityType: 'Refill',
+                    entityId: r.id,
+                    amount: data.amount,
+                    month: data.month,
+                    branch: 'Main Branch',
+                    description: data.remarks || 'Refill',
+                    timestamp: data.createdAt || new Date().toISOString(),
+                    user: this.getCurrentUser()?.username || 'system'
+                });
+                return { id: r.id, ...data };
+            },
+
+            async addAllocation(data) {
+                const r = await this.allocationsCollection.add(data);
+                await this.transactionsCollection.add({
+                    type: 'ALLOCATION',
+                    entityType: 'Allocation',
+                    entityId: r.id,
+                    amount: data.amount,
+                    month: data.month,
+                    branch: data.branch || 'Unknown',
+                    description: data.remarks || `Allocation to ${data.cardNumber}`,
+                    timestamp: data.createdAt || new Date().toISOString(),
+                    user: this.getCurrentUser()?.username || 'system'
+                });
+                return { id: r.id, ...data };
             },
 
             async addBranch(d) { const r = await this.branchesCollection.add(d); return { id: r.id, ...d }; },
@@ -1957,7 +1775,22 @@
             async updateEmployee(id, d) { await this.employeesCollection.doc(id).update(d); return { id, ...d }; },
             async addAdvance(d) { const r = await this.advancesCollection.add(d); return { id: r.id, ...d }; },
             async updateAdvance(id, d) { await this.advancesCollection.doc(id).update(d); return { id, ...d }; },
-            async addExpense(d) { const r = await this.expensesCollection.add(d); return { id: r.id, ...d }; },
+            async addExpense(d) {
+                const r = await this.expensesCollection.add(d);
+                // Add to transactions
+                await this.transactionsCollection.add({
+                    type: 'EXPENSE',
+                    entityType: 'Expense',
+                    entityId: r.id,
+                    amount: d.amount || 0,
+                    month: d.date ? d.date.slice(0, 7) : new Date().toISOString().slice(0, 7),
+                    branch: d.branch || 'Unknown',
+                    description: `${d.category||'Expense'} - ${d.description||''}`,
+                    timestamp: d.createdAt || new Date().toISOString(),
+                    user: this.getCurrentUser()?.username || 'system'
+                });
+                return { id: r.id, ...d };
+            },
             async updateExpense(id, d) { await this.expensesCollection.doc(id).update(d); return { id, ...d }; },
             async addCard(d) { const r = await this.cardsCollection.add(d); return { id: r.id, ...d }; },
             async updateCard(id, d) { await this.cardsCollection.doc(id).update(d); return { id, ...d }; },
@@ -1983,10 +1816,11 @@
         // APP STATE
         // ======================================================================
         let appState = { branches: [], projects: [], employees: [], advances: [], expenses: [], cards: [], auditLogs: [],
-            funds: [] };
+            funds: [], refills: [], allocations: [], transactions: [] };
         let uploadedFiles = [];
         let branchChartInstance = null,
-            employeeChartInstance = null;
+            employeeChartInstance = null,
+            monthlyChartInstance = null;
 
         // ======================================================================
         // TOAST / LOADING
@@ -2180,6 +2014,7 @@
                 dashboardMenuLink: perms.viewDashboard,
                 myDashboardMenuLink: perms.viewMyDashboard,
                 fundMenuLink: perms.viewFundManagement,
+                monthlyReportMenuLink: perms.viewMonthlyReport,
                 advancesMenuLink: perms.viewAdvances,
                 expensesMenuLink: perms.viewExpenses,
                 cardsMenuLink: perms.viewCards,
@@ -2214,7 +2049,8 @@
                 populateBranchSelectors();
                 loadBranches();
                 generateReports();
-                populateAllocSelect(); });
+                populateAllocSelect();
+                populateCampFilter(); });
             CloudStore.listenToProjects((p) => { appState.projects = p;
                 updateDashboard();
                 populateProjectSelectors();
@@ -2247,6 +2083,8 @@
                 updateDashboard();
                 loadFundManagement();
                 populateAllocSelect(); });
+            CloudStore.listenToTransactions((t) => { appState.transactions = t;
+                loadMonthlyReport(); });
             if (hasPermission(user.role, 'viewAudit')) {
                 CloudStore.listenToAudit((l) => { appState.auditLogs = l;
                     loadAuditLogs(); });
@@ -2258,7 +2096,7 @@
         // ======================================================================
         function updateDashboard() {
             const user = CloudStore.getCurrentUser();
-            const { branches, projects, employees, advances, expenses, cards, funds } = appState;
+            const { branches, projects, employees, advances, expenses, cards, funds, transactions } = appState;
             document.getElementById('totalBranches').textContent = branches.length;
             document.getElementById('totalProjects').textContent = projects.length;
             document.getElementById('totalEmployees').textContent = employees.length;
@@ -2277,6 +2115,18 @@
             document.getElementById('totalCampAvailable').textContent = '₹' + (totalAlloc - campUtil).toLocaleString();
             const low = campFunds.filter(f => f.balance < 10000);
             document.getElementById('pendingRefill').textContent = '₹' + (low.length * 5000).toLocaleString();
+
+            // Monthly summary
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            document.getElementById('currentMonthDisplay').textContent = new Date().toLocaleString('default', { month: 'long',
+                year: 'numeric' });
+            const monthRefills = transactions.filter(t => t.type === 'REFILL' && t.month === currentMonth)
+                .reduce((s, t) => s + (t.amount || 0), 0);
+            const monthExpenses = transactions.filter(t => t.type === 'EXPENSE' && t.month === currentMonth)
+                .reduce((s, t) => s + (t.amount || 0), 0);
+            document.getElementById('monthRefills').textContent = '₹' + monthRefills.toLocaleString();
+            document.getElementById('monthExpenses').textContent = '₹' + monthExpenses.toLocaleString();
+            document.getElementById('monthNet').textContent = '₹' + (monthRefills - monthExpenses).toLocaleString();
 
             updateAttentionList();
 
@@ -2426,6 +2276,19 @@
                 `<option value="${c.id}">XXXX ${c.cardNumber} - ${c.branch} (₹${(c.limit||0).toLocaleString()})</option>`
                 ).join('');
             if (cur && cards.some(c => c.id === cur)) sel.value = cur;
+        }
+
+        function populateCampFilter() {
+            const sel = document.getElementById('fundCampFilter');
+            if (!sel) return;
+            const user = CloudStore.getCurrentUser();
+            const perms = getUserPermissions(user?.role);
+            let branches = appState.branches;
+            if (!perms.viewAllBranches && user?.branch) branches = branches.filter(b => b.name === user.branch);
+            const cur = sel.value;
+            sel.innerHTML = '<option value="">All Camps</option>' + branches.map(b =>
+                `<option value="${b.name}">${b.name}</option>`).join('');
+            if (cur && branches.some(b => b.name === cur)) sel.value = cur;
         }
 
         // ======================================================================
@@ -2587,13 +2450,13 @@
         }
 
         // ======================================================================
-        // FUND MANAGEMENT (UPDATED: ALLOCATE TO CARD)
+        // FUND MANAGEMENT (UPDATED WITH FILTERS)
         // ======================================================================
         function loadFundManagement() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'viewFundManagement')) {
                 document.getElementById('fundBody').innerHTML =
-                    `<tr><td colspan="9" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
+                    `<tr><td colspan="10" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
                 return;
             }
             const funds = appState.funds;
@@ -2609,15 +2472,28 @@
             document.getElementById('fundTotalCampAvailable').textContent = '₹' + (totalCardLimit - totalCardUtil)
             .toLocaleString();
 
-            // Card table
+            // Get filters
+            const monthFilter = document.getElementById('fundMonthFilter')?.value || '';
+            const campFilter = document.getElementById('fundCampFilter')?.value || '';
+            const statusFilter = document.getElementById('fundStatusFilter')?.value || '';
+
+            // Filter cards
+            let filteredCards = [...cards];
+            if (campFilter) filteredCards = filteredCards.filter(c => c.branch === campFilter);
+            if (statusFilter === 'active') filteredCards = filteredCards.filter(c => c.status === 'active');
+            else if (statusFilter === 'utilized') filteredCards = filteredCards.filter(c => (c.utilized || 0) > 0);
+            else if (statusFilter === 'high') filteredCards = filteredCards.filter(c => c.limit > 0 && (c.utilized / c
+                .limit) > 0.8);
+
             const tb = document.getElementById('fundBody');
-            if (cards.length === 0) { tb.innerHTML =
-                `<tr><td colspan="9" class="text-center text-muted">No cards created yet. Add a card first.</td></tr>`; } else {
+            if (filteredCards.length === 0) { tb.innerHTML =
+                `<tr><td colspan="10" class="text-center text-muted">No cards match the filters</td></tr>`; } else {
                 const canManage = hasPermission(user?.role, 'manageFunds');
-                tb.innerHTML = cards.map(c => {
+                tb.innerHTML = filteredCards.map(c => {
                     const util = c.utilized || 0;
                     const avail = c.limit - util;
                     const pct = c.limit > 0 ? (util / c.limit) * 100 : 0;
+                    const updated = c.updatedAt || c.createdAt || '';
                     return `<tr>
                                 <td><strong>XXXX ${c.cardNumber||'N/A'}</strong></td>
                                 <td>${c.branch||'N/A'}</td>
@@ -2631,6 +2507,7 @@
                                         <div class="progress-bar ${pct>80?'bg-danger':pct>50?'bg-warning':'bg-success'}" style="width:${Math.min(pct,100)}%">${pct.toFixed(0)}%</div>
                                     </div>
                                 </td>
+                                <td>${updated?new Date(updated).toLocaleDateString():'N/A'}</td>
                                 <td>${canManage?`<button class="btn btn-sm btn-outline-primary me-1" onclick="showAllocateToCardModalFor('${c.id}')"><i class="fas fa-plus"></i> Add</button><button class="btn btn-sm btn-outline-danger" onclick="returnFromCard('${c.id}')"><i class="fas fa-minus"></i> Return</button>`:`<span class="badge bg-secondary">View Only</span>`}</td>
                             </tr>`;
                 }).join('');
@@ -2642,7 +2519,9 @@
             const camps = appState.branches;
             if (camps.length === 0) { ctb.innerHTML =
                 `<tr><td colspan="5" class="text-center text-muted">No camps</td></tr>`; return; }
-            ctb.innerHTML = camps.map(camp => {
+            let filteredCamps = camps;
+            if (campFilter) filteredCamps = filteredCamps.filter(b => b.name === campFilter);
+            ctb.innerHTML = filteredCamps.map(camp => {
                 const cCards = appState.cards.filter(c => c.branch === camp.name);
                 const totalLim = cCards.reduce((s, c) => s + (c.limit || 0), 0);
                 const totalUtil = cCards.reduce((s, c) => s + (c.utilized || 0), 0);
@@ -2658,7 +2537,164 @@
             }).join('');
         }
 
-        // ===== ALLOCATE TO CARD =====
+        function resetFundFilters() {
+            document.getElementById('fundMonthFilter').value = '';
+            document.getElementById('fundCampFilter').value = '';
+            document.getElementById('fundStatusFilter').value = '';
+            loadFundManagement();
+        }
+
+        // ======================================================================
+        // MONTHLY REPORT (NEW)
+        // ======================================================================
+        function loadMonthlyReport() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'viewMonthlyReport')) {
+                document.getElementById('reportBody').innerHTML =
+                    `<tr><td colspan="7" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
+                return;
+            }
+
+            // Populate year filter
+            const yearSel = document.getElementById('reportYearFilter');
+            const years = new Set();
+            appState.transactions.forEach(t => {
+                if (t.month) years.add(t.month.slice(0, 4));
+            });
+            const currentYear = new Date().getFullYear().toString();
+            if (!years.has(currentYear)) years.add(currentYear);
+            const yearCur = yearSel.value;
+            yearSel.innerHTML = '<option value="all">All Years</option>' +
+                Array.from(years).sort().reverse().map(y => `<option value="${y}">${y}</option>`).join('');
+            if (yearCur && years.has(yearCur)) yearSel.value = yearCur;
+
+            // Get filters
+            const yearFilter = document.getElementById('reportYearFilter').value;
+            const monthFilter = document.getElementById('reportMonthFilter').value;
+            const typeFilter = document.getElementById('reportTypeFilter').value;
+
+            // Filter transactions
+            let filtered = [...appState.transactions];
+            if (yearFilter !== 'all') filtered = filtered.filter(t => t.month && t.month.startsWith(yearFilter));
+            if (monthFilter !== 'all') {
+                const monthPad = String(monthFilter).padStart(2, '0');
+                filtered = filtered.filter(t => t.month && t.month.endsWith(monthPad));
+            }
+            if (typeFilter !== 'all') filtered = filtered.filter(t => t.type === typeFilter.toUpperCase());
+
+            // Sort by timestamp
+            filtered.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            // Calculate totals
+            const totalRefills = filtered.filter(t => t.type === 'REFILL').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalAllocations = filtered.filter(t => t.type === 'ALLOCATION').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalExpenses = filtered.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + (t.amount || 0), 0);
+            const netBalance = totalRefills - totalAllocations - totalExpenses;
+
+            document.getElementById('reportTotalRefills').textContent = '₹' + totalRefills.toLocaleString();
+            document.getElementById('reportTotalAllocations').textContent = '₹' + totalAllocations.toLocaleString();
+            document.getElementById('reportTotalExpenses').textContent = '₹' + totalExpenses.toLocaleString();
+            document.getElementById('reportNetBalance').textContent = '₹' + netBalance.toLocaleString();
+
+            // Render table
+            const tb = document.getElementById('reportBody');
+            if (filtered.length === 0) {
+                tb.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No transactions found</td></tr>`;
+            } else {
+                let runningBalance = 0;
+                tb.innerHTML = filtered.map((t, i) => {
+                    const amount = t.amount || 0;
+                    if (t.type === 'REFILL' || t.type === 'FUND_ADD') runningBalance += amount;
+                    else runningBalance -= amount;
+                    const iconMap = { REFILL: 'fa-arrow-down text-success', ALLOCATION: 'fa-arrow-right text-primary',
+                        EXPENSE: 'fa-arrow-up text-danger', ADVANCE: 'fa-hand-holding-usd text-warning' };
+                    const icon = iconMap[t.type] || 'fa-circle text-secondary';
+                    return `<tr>
+                                <td>${i + 1}</td>
+                                <td>${t.timestamp ? new Date(t.timestamp).toLocaleDateString() : 'N/A'}</td>
+                                <td><i class="fas ${icon} me-1"></i> ${t.type || 'N/A'}</td>
+                                <td>${t.description || 'N/A'}</td>
+                                <td>${t.branch || 'N/A'}</td>
+                                <td class="${t.type==='REFILL'||t.type==='FUND_ADD'?'text-success':'text-danger'}">₹${amount.toLocaleString()}</td>
+                                <td class="fw-bold">₹${runningBalance.toLocaleString()}</td>
+                            </tr>`;
+                }).join('');
+            }
+
+            // Update chart
+            updateMonthlyChart(filtered);
+        }
+
+        function updateMonthlyChart(transactions) {
+            const ctx = document.getElementById('monthlyChart')?.getContext('2d');
+            if (!ctx) return;
+            if (monthlyChartInstance) monthlyChartInstance.destroy();
+
+            // Group by month
+            const monthMap = {};
+            transactions.forEach(t => {
+                if (!t.month) return;
+                if (!monthMap[t.month]) monthMap[t.month] = { refills: 0, allocations: 0, expenses: 0 };
+                if (t.type === 'REFILL' || t.type === 'FUND_ADD') monthMap[t.month].refills += (t.amount || 0);
+                else if (t.type === 'ALLOCATION') monthMap[t.month].allocations += (t.amount || 0);
+                else if (t.type === 'EXPENSE') monthMap[t.month].expenses += (t.amount || 0);
+            });
+
+            const sortedMonths = Object.keys(monthMap).sort();
+            const labels = sortedMonths.map(m => {
+                const [year, month] = m.split('-');
+                return new Date(year, parseInt(month) - 1).toLocaleString('default', { month: 'short', year: 'numeric' });
+            });
+
+            const refillData = sortedMonths.map(m => monthMap[m].refills);
+            const allocationData = sortedMonths.map(m => monthMap[m].allocations);
+            const expenseData = sortedMonths.map(m => monthMap[m].expenses);
+
+            monthlyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Refills', data: refillData, backgroundColor: 'rgba(28, 200, 138, 0.7)',
+                            borderColor: '#1cc88a', borderWidth: 1 },
+                        { label: 'Allocations', data: allocationData, backgroundColor: 'rgba(78, 115, 223, 0.7)',
+                            borderColor: '#4e73df', borderWidth: 1 },
+                        { label: 'Expenses', data: expenseData, backgroundColor: 'rgba(231, 74, 59, 0.7)',
+                            borderColor: '#e74a3b', borderWidth: 1 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ₹' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: function(v) { return '₹' + v.toLocaleString(); } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function resetReportFilters() {
+            document.getElementById('reportYearFilter').value = 'all';
+            document.getElementById('reportMonthFilter').value = 'all';
+            document.getElementById('reportTypeFilter').value = 'all';
+            loadMonthlyReport();
+        }
+
+        // ======================================================================
+        // ALLOCATE TO CARD (UPDATED WITH MONTH)
+        // ======================================================================
         function showAllocateToCardModal() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'manageFunds')) { showToast('warning',
@@ -2667,6 +2703,8 @@
             const main = appState.funds.find(f => f.camp === '__main__');
             document.getElementById('allocAvailableMain').textContent = '₹' + (main ? main.balance : 0).toLocaleString();
             document.getElementById('allocateCardForm').reset();
+            // Set default month
+            document.getElementById('allocMonth').value = new Date().toISOString().slice(0, 7);
             new bootstrap.Modal(document.getElementById('allocateCardModal')).show();
         }
 
@@ -2678,6 +2716,7 @@
         async function processAllocateToCard() {
             const cardId = document.getElementById('allocCardSelect').value;
             const amount = parseFloat(document.getElementById('allocAmount').value);
+            const month = document.getElementById('allocMonth').value || new Date().toISOString().slice(0, 7);
             const remarks = document.getElementById('allocRemarks').value.trim();
             if (!cardId) { showToast('warning', 'Please select a card'); return; }
             if (!amount || amount <= 0) { showToast('warning', 'Enter a valid amount'); return; }
@@ -2687,24 +2726,71 @@
             if (!main || main.balance < amount) { showToast('warning', 'Insufficient main branch funds'); return; }
             showLoading(true);
             try {
-                await CloudStore.updateFund('__main__', amount, 'subtract', remarks || `Allocated to card ${card.cardNumber}`);
+                await CloudStore.updateFund('__main__', amount, 'subtract', remarks || `Allocated to card ${card.cardNumber}`,
+                    month);
                 await CloudStore.updateCard(cardId, { limit: (card.limit || 0) + amount, updatedAt: new Date()
                         .toISOString() });
                 const campFund = appState.funds.find(f => f.camp === card.branch);
                 if (campFund) {
-                    await CloudStore.updateFund(card.branch, amount, 'add', remarks || `Card ${card.cardNumber} allocation`);
+                    await CloudStore.updateFund(card.branch, amount, 'add', remarks || `Card ${card.cardNumber} allocation`,
+                        month);
                 } else {
-                    await CloudStore.updateFund(card.branch, amount, 'add', remarks || `Card ${card.cardNumber} allocation`);
+                    await CloudStore.updateFund(card.branch, amount, 'add', remarks || `Card ${card.cardNumber} allocation`,
+                        month);
                 }
+                // Log allocation
+                await CloudStore.addAllocation({
+                    cardId: cardId,
+                    cardNumber: card.cardNumber,
+                    branch: card.branch,
+                    amount: amount,
+                    month: month,
+                    remarks: remarks || `Allocation to ${card.cardNumber}`,
+                    createdAt: new Date().toISOString()
+                });
                 await CloudStore.addAuditLog({ action: 'ALLOCATE_TO_CARD', entityType: 'Card', entityId: cardId,
-                    details: `₹${amount} to ${card.cardNumber}` });
-                showToast('success', `₹${amount.toLocaleString()} allocated to card XXXX ${card.cardNumber}`);
+                    details: `₹${amount} to ${card.cardNumber} (${month})` });
+                showToast('success', `₹${amount.toLocaleString()} allocated to card XXXX ${card.cardNumber} for ${month}`);
                 bootstrap.Modal.getInstance(document.getElementById('allocateCardModal')).hide();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
             showLoading(false);
         }
 
-        // ===== RETURN FROM CARD =====
+        // ======================================================================
+        // REFILL (UPDATED WITH MONTH)
+        // ======================================================================
+        function showRefillModal() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'manageFunds')) { showToast('warning',
+                'You don\'t have permission to manage funds.'); return; }
+            document.getElementById('refillForm').reset();
+            document.getElementById('refillMonth').value = new Date().toISOString().slice(0, 7);
+            new bootstrap.Modal(document.getElementById('refillModal')).show();
+        }
+
+        async function processRefill() {
+            const amount = parseFloat(document.getElementById('refillAmount').value);
+            const month = document.getElementById('refillMonth').value || new Date().toISOString().slice(0, 7);
+            const remarks = document.getElementById('refillRemarks').value.trim();
+            if (!amount || amount <= 0) { showToast('warning', 'Enter a valid amount'); return; }
+            showLoading(true);
+            try {
+                await CloudStore.updateFund('__main__', amount, 'add', remarks || 'Refill', month);
+                await CloudStore.addRefill({
+                    amount: amount,
+                    month: month,
+                    remarks: remarks || 'Refill',
+                    createdAt: new Date().toISOString()
+                });
+                showToast('success', `₹${amount.toLocaleString()} added to main branch for ${month}`);
+                bootstrap.Modal.getInstance(document.getElementById('refillModal')).hide();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
+            showLoading(false);
+        }
+
+        // ======================================================================
+        // RETURN FROM CARD (UPDATED)
+        // ======================================================================
         async function returnFromCard(cardId) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'manageFunds')) { showToast('warning',
@@ -2713,6 +2799,7 @@
             if (!card) { showToast('danger', 'Card not found'); return; }
             const available = (card.limit || 0) - (card.utilized || 0);
             if (available <= 0) { showToast('warning', 'No available funds to return from this card'); return; }
+            const month = new Date().toISOString().slice(0, 7);
             const amt = prompt(
                 `Enter amount to return from card XXXX ${card.cardNumber} (Available: ₹${available.toLocaleString()}):`);
             if (amt === null) return;
@@ -2722,36 +2809,15 @@
             try {
                 await CloudStore.updateCard(cardId, { limit: (card.limit || 0) - amount, updatedAt: new Date()
                         .toISOString() });
-                await CloudStore.updateFund('__main__', amount, 'add', `Return from card ${card.cardNumber}`);
+                await CloudStore.updateFund('__main__', amount, 'add', `Return from card ${card.cardNumber}`, month);
                 const campFund = appState.funds.find(f => f.camp === card.branch);
                 if (campFund && campFund.balance >= amount) {
-                    await CloudStore.updateFund(card.branch, amount, 'subtract', `Return from card ${card.cardNumber}`);
+                    await CloudStore.updateFund(card.branch, amount, 'subtract', `Return from card ${card.cardNumber}`,
+                        month);
                 }
                 await CloudStore.addAuditLog({ action: 'RETURN_FROM_CARD', entityType: 'Card', entityId: cardId,
-                    details: `₹${amount} from ${card.cardNumber}` });
+                    details: `₹${amount} from ${card.cardNumber} (${month})` });
                 showToast('success', `₹${amount.toLocaleString()} returned from card to main branch`);
-            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
-            showLoading(false);
-        }
-
-        // ===== REFILL MAIN =====
-        function showRefillModal() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'manageFunds')) { showToast('warning',
-                'You don\'t have permission to manage funds.'); return; }
-            document.getElementById('refillForm').reset();
-            new bootstrap.Modal(document.getElementById('refillModal')).show();
-        }
-
-        async function processRefill() {
-            const amount = parseFloat(document.getElementById('refillAmount').value);
-            const remarks = document.getElementById('refillRemarks').value.trim();
-            if (!amount || amount <= 0) { showToast('warning', 'Enter a valid amount'); return; }
-            showLoading(true);
-            try {
-                await CloudStore.updateFund('__main__', amount, 'add', remarks || 'Refill');
-                showToast('success', `₹${amount.toLocaleString()} added to main branch`);
-                bootstrap.Modal.getInstance(document.getElementById('refillModal')).hide();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
             showLoading(false);
         }
@@ -2876,6 +2942,7 @@
                 dashboard: 'viewDashboard',
                 myDashboard: 'viewMyDashboard',
                 fundManagement: 'viewFundManagement',
+                monthlyReport: 'viewMonthlyReport',
                 advances: 'viewAdvances',
                 expenses: 'viewExpenses',
                 cards: 'viewCards',
@@ -2909,6 +2976,9 @@
                     break;
                 case 'fundManagement':
                     loadFundManagement();
+                    break;
+                case 'monthlyReport':
+                    loadMonthlyReport();
                     break;
                 case 'advances':
                     loadAdvances();
@@ -2957,6 +3027,7 @@
                     { key: 'viewDashboard', label: 'Dashboard' },
                     { key: 'viewMyDashboard', label: 'My Dashboard' },
                     { key: 'viewFundManagement', label: 'Fund Management' },
+                    { key: 'viewMonthlyReport', label: 'Monthly Report' },
                     { key: 'viewAdvances', label: 'Advances' },
                     { key: 'viewExpenses', label: 'Expenses' },
                     { key: 'viewCards', label: 'Cards' },
@@ -3044,7 +3115,7 @@
         }
 
         // ======================================================================
-        // MODAL HELPERS
+        // MODAL HELPERS (unchanged)
         // ======================================================================
         function showAdvanceModal() {
             const user = CloudStore.getCurrentUser();
@@ -3180,7 +3251,6 @@
             if (!branch || !project || !category || !paymentMethod || !amount) { showToast('warning',
                     'Please fill all required fields'); return; }
 
-            // Card validation
             if (paymentMethod === 'SBI Visa Card') {
                 const card = appState.cards.find(c => c.branch === branch && c.projectName === project && c.status ===
                     'active');
@@ -3213,7 +3283,6 @@
                 await CloudStore.addAuditLog({ action: 'CREATE_EXPENSE', entityType: 'Expense', entityId: data.id,
                     details: amount });
 
-                // Update card utilization
                 if (paymentMethod === 'SBI Visa Card') {
                     const card = appState.cards.find(c => c.branch === branch && c.projectName === project && c.status ===
                         'active');
@@ -3556,15 +3625,15 @@
                         e.preventDefault();
                         break;
                     case '4':
-                        showPage('advances');
+                        showPage('monthlyReport');
                         e.preventDefault();
                         break;
                     case '5':
-                        showPage('expenses');
+                        showPage('advances');
                         e.preventDefault();
                         break;
                     case '6':
-                        showPage('cards');
+                        showPage('expenses');
                         e.preventDefault();
                         break;
                 }
@@ -3601,11 +3670,13 @@
         }
 
         initializeApp();
-        console.log('🏗️ Project Fund Management System - Card-Based Allocation');
+        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Monthly Tracking');
         console.log('✅ Funds are allocated directly to SBI Visa Cards');
-        console.log('✅ Expenses reduce card utilization');
+        console.log('✅ Monthly refill and allocation tracking');
+        console.log('✅ Filter by year, month, and transaction type');
+        console.log('✅ Transaction sequence with running balance');
         console.log('🔑 First user registration becomes Super Admin');
-        console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Advances, Ctrl+5=Expenses, Ctrl+6=Cards');
+        console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
 </body>
 </html>
