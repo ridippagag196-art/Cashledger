@@ -103,10 +103,12 @@
         .connection-status.offline { background: var(--danger); color: white; }
         .connection-status.connecting { background: var(--warning); color: #333; }
 
-        .alert-card { background: #fff3cd; border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; }
+        .alert-card { background: #fff3cd; border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }
+        .alert-card:hover { transform: translateX(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .alert-card.danger { background: #f8d7da; border-left-color: var(--danger); }
         .alert-card.success { background: #d4edda; border-left-color: var(--success); }
         .alert-card.info { background: #d1ecf1; border-left-color: var(--info); }
+        .alert-card .badge { font-size: 0.7rem; }
 
         .permission-section { border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px; }
         .permission-section .section-title { font-size: 0.85rem; font-weight: 600; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; }
@@ -128,7 +130,6 @@
 
         .card-progress { height: 6px; border-radius: 3px; margin-top: 4px; }
 
-        /* ===== PAGINATION ===== */
         .pagination-container {
             display: flex;
             justify-content: space-between;
@@ -177,6 +178,22 @@
             font-size: 0.85rem;
         }
 
+        /* Alert clickable style */
+        .alert-clickable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .alert-clickable:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+        .alert-clickable .alert-arrow {
+            transition: transform 0.3s ease;
+        }
+        .alert-clickable:hover .alert-arrow {
+            transform: translateX(5px);
+        }
+
         @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } .pagination-container { flex-direction: column; align-items: center; } }
         @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
 
@@ -186,6 +203,14 @@
         
         .table-wrapper { overflow-x: auto; }
         .table-responsive-stack { display: block; width: 100%; overflow-x: auto; }
+
+        /* Quick action buttons in alerts */
+        .alert-action-btn {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -1395,8 +1420,8 @@
                             <input type="text" class="form-control form-control-sm" id="empUsername" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Password *</label>
-                            <input type="text" class="form-control form-control-sm" id="empPassword" placeholder="Min 6 characters" required minlength="6">
+                            <label class="form-label small">Password</label>
+                            <input type="password" class="form-control form-control-sm" id="empPassword" placeholder="Min 6 characters for new employee">
                         </div>
                     </form>
                 </div>
@@ -1685,7 +1710,6 @@
                 return null;
             },
 
-            // NEW: Sync user branch with employee record
             async syncUserBranch(userId, newBranch) {
                 if (!userId) return;
                 try {
@@ -1871,25 +1895,43 @@
             async addBranch(d) { const r = await this.branchesCollection.add(d); return { id: r.id, ...d }; },
             async addProject(d) { const r = await this.projectsCollection.add(d); return { id: r.id, ...d }; },
             async addEmployee(d) { const r = await this.employeesCollection.add(d); return { id: r.id, ...d }; },
+            
             async updateEmployee(id, d) {
-                await this.employeesCollection.doc(id).update(d);
-                // ALSO UPDATE USER RECORD IF EMPLOYEE ID MATCHES
-                const emp = await this.employeesCollection.doc(id).get();
+                const docRef = this.employeesCollection.doc(id);
+                const doc = await docRef.get();
+                if (!doc.exists) {
+                    throw new Error('Employee document not found in database.');
+                }
+                
+                await docRef.update(d);
+                
+                const emp = await docRef.get();
                 if (emp.exists) {
                     const empData = emp.data();
-                    const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
-                    if (!userSnap.empty) {
-                        const userDoc = userSnap.docs[0];
-                        await userDoc.ref.update({ branch: d.branch, fullName: d.name });
-                        if (this.currentUser && this.currentUser.id === userDoc.id) {
-                            this.currentUser.branch = d.branch;
-                            this.currentUser.fullName = d.name;
-                            localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
+                    try {
+                        const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
+                        if (!userSnap.empty) {
+                            const userDoc = userSnap.docs[0];
+                            await userDoc.ref.update({ 
+                                branch: d.branch || empData.branch,
+                                fullName: d.name || empData.name,
+                                role: d.role || empData.role,
+                                updatedAt: new Date().toISOString()
+                            });
+                            if (this.currentUser && this.currentUser.id === userDoc.id) {
+                                this.currentUser.branch = d.branch || empData.branch;
+                                this.currentUser.fullName = d.name || empData.name;
+                                this.currentUser.role = d.role || empData.role;
+                                localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
+                            }
                         }
+                    } catch (userErr) {
+                        console.warn('Could not update user account:', userErr);
                     }
                 }
                 return { id, ...d };
             },
+            
             async addAdvance(d) {
                 const r = await this.advancesCollection.add(d);
                 const monthVal = new Date().toISOString().slice(0, 7);
@@ -1948,7 +1990,7 @@
         // APP STATE
         // ======================================================================
         let appState = { branches: [], projects: [], employees: [], advances: [], expenses: [], cards: [], auditLogs: [],
-            funds: [], refills: [], allocations: [], transactions: [] };
+            funds: [], refills: [], allocations: [], transactions: [], users: [] };
         let uploadedFiles = [];
         let branchChartInstance = null,
             employeeChartInstance = null,
@@ -2296,8 +2338,26 @@
             document.getElementById('monthNet').textContent = '₹' + (totalRefills - totalAllocations - monthExpenses)
                 .toLocaleString();
 
-                    // ======================================================================
-        // UPDATE ATTENTION LIST - WITH CLICKABLE ALERTS
+            updateAttentionList();
+
+            let acts = [...advances, ...expenses];
+            if (user?.role === 'employee') acts = acts.filter(i => i.employeeId === user.id);
+            else if (user?.role === 'manager') {
+                const emp = employees.find(e => e.id === user.id);
+                if (emp) acts = acts.filter(i => i.branch === emp.branch);
+            }
+            acts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            acts = acts.slice(0, 10);
+            const tb = document.getElementById('recentActivityBody');
+            if (acts.length === 0) tb.innerHTML =
+                `<tr><td colspan="5" class="text-center text-muted">No recent activity</td></tr>`;
+            else tb.innerHTML = acts.map(i =>
+                `<tr><td>${i.createdAt?new Date(i.createdAt).toLocaleDateString():'N/A'}</td><td>${i.employeeName||i.name||'N/A'}</td><td>${i.type||'Transaction'}</td><td>₹${(i.amount||0).toLocaleString()}</td><td><span class="status-badge status-${i.status||'pending'}">${(i.status||'pending').replace('_',' ')}</span></td></tr>`
+                ).join('');
+        }
+
+        // ======================================================================
+        // ATTENTION LIST - WITH CLICKABLE ALERTS
         // ======================================================================
         function updateAttentionList() {
             const user = CloudStore.getCurrentUser();
@@ -2314,10 +2374,11 @@
                     alerts.push({ 
                         type: 'danger', 
                         icon: 'fa-file-invoice', 
-                        title: `${missingBills.length} Bills Missing`, 
+                        title: `${missingBills.length} Bill${missingBills.length > 1 ? 's' : ''} Missing`, 
                         message: 'Expenses approved without bill attachments',
                         action: 'viewMissingBills',
-                        data: missingBills
+                        data: missingBills,
+                        count: missingBills.length
                     });
                 }
             }
@@ -2332,10 +2393,11 @@
                 alerts.push({ 
                     type: 'danger', 
                     icon: 'fa-clock', 
-                    title: `${overdue.length} Advances Overdue`, 
+                    title: `${overdue.length} Advance${overdue.length > 1 ? 's' : ''} Overdue`, 
                     message: 'Advances not settled for more than 30 days',
                     action: 'viewOverdueAdvances',
-                    data: overdue
+                    data: overdue,
+                    count: overdue.length
                 });
             }
             
@@ -2350,10 +2412,11 @@
                 alerts.push({ 
                     type: 'warning', 
                     icon: 'fa-user', 
-                    title: `${empOut.length} Employees with Outstanding`, 
+                    title: `${empOut.length} Employee${empOut.length > 1 ? 's' : ''} with Outstanding`, 
                     message: 'Employees holding company cash',
                     action: 'viewEmployeesWithOutstanding',
-                    data: empOut
+                    data: empOut,
+                    count: empOut.length
                 });
             }
             
@@ -2366,10 +2429,11 @@
                     alerts.push({ 
                         type: 'warning', 
                         icon: 'fa-credit-card', 
-                        title: `${high.length} Cards Above 80% Utilization`, 
+                        title: `${high.length} Card${high.length > 1 ? 's' : ''} Above 80% Utilization`, 
                         message: 'Card utilization exceeding recommended limit',
                         action: 'viewHighUtilizationCards',
-                        data: high
+                        data: high,
+                        count: high.length
                     });
                 }
             }
@@ -2381,10 +2445,11 @@
                 alerts.push({ 
                     type: 'warning', 
                     icon: 'fa-exclamation-triangle', 
-                    title: `${lowFunds.length} Camps Low on Funds`, 
+                    title: `${lowFunds.length} Camp${lowFunds.length > 1 ? 's' : ''} Low on Funds`, 
                     message: 'Camp funds below ₹5,000',
                     action: 'viewLowFunds',
-                    data: lowFunds
+                    data: lowFunds,
+                    count: lowFunds.length
                 });
             }
             
@@ -2396,10 +2461,11 @@
                 alerts.push({ 
                     type: 'info', 
                     icon: 'fa-clock', 
-                    title: `${totalPending} Pending Approvals`, 
-                    message: `${pendingAdvances.length} advances and ${pendingExpenses.length} expenses pending approval`,
+                    title: `${totalPending} Pending Approval${totalPending > 1 ? 's' : ''}`, 
+                    message: `${pendingAdvances.length} advance${pendingAdvances.length > 1 ? 's' : ''} and ${pendingExpenses.length} expense${pendingExpenses.length > 1 ? 's' : ''} pending approval`,
                     action: 'viewPendingApprovals',
-                    data: { advances: pendingAdvances, expenses: pendingExpenses }
+                    data: { advances: pendingAdvances, expenses: pendingExpenses },
+                    count: totalPending
                 });
             }
             
@@ -2410,10 +2476,10 @@
             
             c.innerHTML = alerts.map(a => {
                 let badge = '';
-                if (a.data && Array.isArray(a.data) && a.data.length > 0) {
-                    badge = `<span class="badge bg-secondary ms-2">${a.data.length}</span>`;
+                if (a.count > 0) {
+                    badge = `<span class="badge bg-${a.type} ms-2">${a.count}</span>`;
                 }
-                return `<div class="alert-card ${a.type}" style="cursor:pointer;" onclick="handleAlertClick('${a.action}', '${a.type}')">
+                return `<div class="alert-card ${a.type} alert-clickable" onclick="handleAlertClick('${a.action}')">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
                             <i class="fas ${a.icon} me-2"></i>
@@ -2424,7 +2490,7 @@
                         </div>
                         <div>
                             ${badge}
-                            <i class="fas fa-chevron-right text-muted ms-2"></i>
+                            <i class="fas fa-chevron-right text-muted ms-2 alert-arrow"></i>
                         </div>
                     </div>
                 </div>`;
@@ -2437,7 +2503,7 @@
         // ======================================================================
         // HANDLE ALERT CLICKS
         // ======================================================================
-        function handleAlertClick(action, type) {
+        function handleAlertClick(action) {
             switch(action) {
                 case 'viewMissingBills':
                     viewMissingBills();
@@ -2482,9 +2548,9 @@
                 <div class="mb-3">
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>${missingBills.length}</strong> expenses approved without bill attachments
+                        <strong>${missingBills.length}</strong> expense${missingBills.length > 1 ? 's' : ''} approved without bill attachments
                     </div>
-                    <p class="text-muted small">Click on any expense to view details</p>
+                    <p class="text-muted small">Click "View" to see details or "Add Bill" to upload attachments</p>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">
@@ -2544,9 +2610,9 @@
                 <div class="mb-3">
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>${empOut.length}</strong> employees holding company cash
+                        <strong>${empOut.length}</strong> employee${empOut.length > 1 ? 's' : ''} holding company cash
                     </div>
-                    <p class="text-muted small">Click on any employee to view their ledger</p>
+                    <p class="text-muted small">Click "Ledger" to view transaction history or the envelope icon to contact</p>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">
@@ -2580,6 +2646,9 @@
                                             <button class="btn btn-sm btn-outline-success" onclick="contactEmployee('${emp.id}')">
                                                 <i class="fas fa-envelope"></i>
                                             </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="sendReminderToEmployee('${emp.id}')">
+                                                <i class="fas fa-bell"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 `;
@@ -2609,7 +2678,7 @@
                 <div class="mb-3">
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>${overdue.length}</strong> advances overdue (>30 days)
+                        <strong>${overdue.length}</strong> advance${overdue.length > 1 ? 's' : ''} overdue (>30 days)
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -2667,7 +2736,7 @@
                 <div class="mb-3">
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>${high.length}</strong> cards above 80% utilization
+                        <strong>${high.length}</strong> card${high.length > 1 ? 's' : ''} above 80% utilization
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -2730,7 +2799,7 @@
                 <div class="mb-3">
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>${lowFunds.length}</strong> camps with low funds (< ₹5,000)
+                        <strong>${lowFunds.length}</strong> camp${lowFunds.length > 1 ? 's' : ''} with low funds (< ₹5,000)
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -2783,7 +2852,7 @@
                 <div class="mb-3">
                     <div class="alert alert-info">
                         <i class="fas fa-clock me-2"></i>
-                        <strong>${pendingAdvances.length}</strong> advances and <strong>${pendingExpenses.length}</strong> expenses pending approval
+                        <strong>${pendingAdvances.length}</strong> advance${pendingAdvances.length > 1 ? 's' : ''} and <strong>${pendingExpenses.length}</strong> expense${pendingExpenses.length > 1 ? 's' : ''} pending approval
                     </div>
                 </div>
                 ${pendingAdvances.length > 0 ? `
@@ -2851,23 +2920,22 @@
                 return;
             }
             
-            // Open expense modal in edit mode for adding attachments
+            // Open expense modal
             showExpenseModal();
             
             // Pre-fill expense data
-            document.getElementById('expBranch').value = expense.branch || '';
-            document.getElementById('expProject').value = expense.projectName || '';
-            document.getElementById('expCategory').value = expense.category || '';
-            document.getElementById('expPaymentMethod').value = expense.paymentMethod || '';
-            document.getElementById('expAmount').value = expense.amount || '';
-            document.getElementById('expDate').value = expense.date || '';
-            document.getElementById('expDescription').value = expense.description || '';
-            document.getElementById('expVendor').value = expense.vendor || '';
-            document.getElementById('expBillNo').value = expense.billNo || '';
-            document.getElementById('expRemarks').value = expense.remarks || '';
-            
-            // Store the expense ID to update after file upload
-            document.getElementById('expenseForm').dataset.editId = expenseId;
+            setTimeout(() => {
+                document.getElementById('expBranch').value = expense.branch || '';
+                document.getElementById('expProject').value = expense.projectName || '';
+                document.getElementById('expCategory').value = expense.category || '';
+                document.getElementById('expPaymentMethod').value = expense.paymentMethod || '';
+                document.getElementById('expAmount').value = expense.amount || '';
+                document.getElementById('expDate').value = expense.date || '';
+                document.getElementById('expDescription').value = expense.description || '';
+                document.getElementById('expVendor').value = expense.vendor || '';
+                document.getElementById('expBillNo').value = expense.billNo || '';
+                document.getElementById('expRemarks').value = expense.remarks || '';
+            }, 500);
             
             showToast('info', 'Upload bill attachments for this expense');
         }
@@ -2890,7 +2958,6 @@
             
             showLoading(true);
             try {
-                // Add notification
                 await CloudStore.addNotification({
                     userId: advance.employeeId,
                     type: 'REMINDER',
@@ -2902,7 +2969,6 @@
                     createdAt: new Date().toISOString()
                 });
                 
-                // Add audit log
                 await CloudStore.addAuditLog({
                     action: 'SEND_REMINDER',
                     entityType: 'Advance',
@@ -2992,15 +3058,16 @@
                     action: 'SEND_BULK_REMINDER',
                     entityType: 'Employee',
                     entityId: employeeId,
-                    details: `Sent ${advances.length} reminders to ${employee.name}`
+                    details: `Sent ${advances.length} reminder${advances.length > 1 ? 's' : ''} to ${employee.name}`
                 });
                 
-                showToast('success', `${advances.length} reminder(s) sent to ${employee.name}`);
+                showToast('success', `${advances.length} reminder${advances.length > 1 ? 's' : ''} sent to ${employee.name}`);
             } catch (err) {
                 showToast('danger', 'Failed to send reminders: ' + err.message);
             }
             showLoading(false);
         }
+
         // ======================================================================
         // MY DASHBOARD
         // ======================================================================
@@ -3181,16 +3248,13 @@
                 return;
             }
 
-            // Get filters
             const search = document.getElementById('employeeSearch')?.value?.toLowerCase() || '';
             const roleFilter = document.getElementById('employeeRoleFilter')?.value || '';
             const statusFilter = document.getElementById('employeeStatusFilter')?.value || '';
             const pageSize = parseInt(document.getElementById('employeePageSize')?.value || 25);
 
-            // Filter data
             let filtered = [...appState.employees];
 
-            // Apply search filter
             if (search) {
                 filtered = filtered.filter(e =>
                     (e.name || '').toLowerCase().includes(search) ||
@@ -3200,33 +3264,27 @@
                 );
             }
 
-            // Apply role filter
             if (roleFilter) {
                 filtered = filtered.filter(e => e.role === roleFilter);
             }
 
-            // Apply status filter
             if (statusFilter) {
                 const isActive = statusFilter === 'active';
                 filtered = filtered.filter(e => (e.isActive !== false) === isActive);
             }
 
-            // Sort by name
             filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-            // Update pagination state
             employeePagination.filteredData = filtered;
             employeePagination.totalItems = filtered.length;
             employeePagination.pageSize = pageSize;
             employeePagination.currentPage = Math.min(employeePagination.currentPage, Math.ceil(filtered.length / pageSize) ||
                 1);
 
-            // Get current page data
             const start = (employeePagination.currentPage - 1) * pageSize;
             const end = Math.min(start + pageSize, filtered.length);
             const pageData = filtered.slice(start, end);
 
-            // Update employee count badge
             document.getElementById('employeeCountBadge').textContent = appState.employees.length;
 
             const canEdit = hasPermission(user?.role, 'addEmployee');
@@ -3264,7 +3322,6 @@
                 }).join('');
             }
 
-            // Update pagination UI
             updatePaginationUI();
         }
 
@@ -3280,15 +3337,12 @@
             document.getElementById('employeePaginationInfo').textContent =
                 `Showing ${total > 0 ? start : 0} to ${end} of ${total} entries`;
 
-            // Previous button
             const prevBtn = document.getElementById('employeePrevBtn');
             prevBtn.disabled = currentPage <= 1;
 
-            // Next button
             const nextBtn = document.getElementById('employeeNextBtn');
             nextBtn.disabled = currentPage >= totalPages;
 
-            // Page numbers
             const pageNumbersContainer = document.getElementById('employeePageNumbers');
             let pageHtml = '';
             const maxVisible = 5;
@@ -4198,34 +4252,66 @@
             new bootstrap.Modal(document.getElementById('cardModal')).show();
         }
 
+        // ======================================================================
+        // EMPLOYEE MODAL - FIXED
+        // ======================================================================
         function showEmployeeModal(employeeId = null) {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
-                'You don\'t have permission to add employees.'); return; }
+            if (!hasPermission(user?.role, 'addEmployee')) { 
+                showToast('warning', 'You don\'t have permission to add employees.'); 
+                return; 
+            }
+            
             populateBranchSelectors();
-            const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+            
+            // Reset form
             document.getElementById('employeeForm').reset();
             document.getElementById('editEmployeeId').value = '';
             document.getElementById('employeeModalTitle').textContent = 'Add Employee';
             document.getElementById('empPassword').required = true;
+            document.getElementById('empPassword').placeholder = 'Min 6 characters';
+            document.getElementById('empPassword').value = '';
+            
+            // If editing, populate form with employee data
             if (employeeId) {
                 const emp = appState.employees.find(e => e.id === employeeId);
-                if (emp) {
-                    document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
-                    document.getElementById('editEmployeeId').value = emp.id;
-                    document.getElementById('empEmployeeId').value = emp.employeeId || '';
-                    document.getElementById('empName').value = emp.name || '';
-                    document.getElementById('empEmail').value = emp.email || '';
-                    document.getElementById('empMobile').value = emp.mobile || '';
-                    document.getElementById('empBranch').value = emp.branch || '';
-                    document.getElementById('empDesignation').value = emp.designation || '';
-                    document.getElementById('empRole').value = emp.role || 'employee';
-                    document.getElementById('empPassword').value = '';
-                    document.getElementById('empPassword').required = false;
-                    document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+                if (!emp) {
+                    showToast('danger', 'Employee not found');
+                    return;
                 }
+                
+                document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
+                document.getElementById('editEmployeeId').value = emp.id;  // ✅ THIS IS CRITICAL
+                document.getElementById('empEmployeeId').value = emp.employeeId || '';
+                document.getElementById('empName').value = emp.name || '';
+                document.getElementById('empEmail').value = emp.email || '';
+                document.getElementById('empMobile').value = emp.mobile || '';
+                document.getElementById('empBranch').value = emp.branch || '';
+                document.getElementById('empDesignation').value = emp.designation || '';
+                document.getElementById('empRole').value = emp.role || 'employee';
+                document.getElementById('empUsername').value = emp.username || '';
+                document.getElementById('empPassword').value = '';
+                document.getElementById('empPassword').required = false;
+                document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
             }
+            
+            const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
             modal.show();
+        }
+
+        function editEmployee(id) {
+            if (!id) {
+                showToast('danger', 'No employee ID provided');
+                return;
+            }
+            
+            const emp = appState.employees.find(e => e.id === id);
+            if (!emp) {
+                showToast('danger', 'Employee not found in local data. Please refresh.');
+                return;
+            }
+            
+            showEmployeeModal(id);
         }
 
         // ======================================================================
@@ -4412,10 +4498,13 @@
             showLoading(false);
         }
 
+        // ======================================================================
+        // SAVE EMPLOYEE - FIXED
+        // ======================================================================
         async function saveEmployee() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
-                'You don\'t have permission to add employees.'); return; }
+                    'You don\'t have permission to add employees.'); return; }
             const id = document.getElementById('editEmployeeId').value;
             const empId = document.getElementById('empEmployeeId').value.trim();
             const name = document.getElementById('empName').value.trim();
@@ -4426,36 +4515,152 @@
             const role = document.getElementById('empRole').value;
             const un = document.getElementById('empUsername').value.trim();
             const pw = document.getElementById('empPassword').value;
-            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { showToast('warning',
-                    'Please fill all required fields'); return; }
+            
+            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
+                showToast('warning', 'Please fill all required fields'); 
+                return; 
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('warning', 'Please enter a valid email address');
+                return;
+            }
+            
             showLoading(true);
             try {
                 if (id) {
-                    await CloudStore.updateEmployee(id, {
+                    // Check if employee document exists before updating
+                    const docRef = CloudStore.employeesCollection.doc(id);
+                    const doc = await docRef.get();
+                    if (!doc.exists) {
+                        showToast('danger', 'Employee document not found in database. Please refresh and try again.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    const currentData = doc.data();
+                    
+                    // Update employee
+                    await docRef.update({
                         employeeId: empId,
-                        name,
-                        email,
-                        mobile,
-                        branch,
+                        name: name,
+                        email: email,
+                        mobile: mobile,
+                        branch: branch,
                         designation: desig,
-                        role,
+                        role: role,
                         updatedAt: new Date().toISOString()
                     });
-                    showToast('success', 'Employee updated. Branch synced to user account.');
+                    
+                    // Update user account if it exists
+                    try {
+                        const userSnap = await CloudStore.usersCollection.where('employeeId', '==', currentData.employeeId).get();
+                        if (!userSnap.empty) {
+                            const userDoc = userSnap.docs[0];
+                            const updateData = {
+                                fullName: name,
+                                branch: branch,
+                                role: role,
+                                updatedAt: new Date().toISOString()
+                            };
+                            
+                            // Update username if provided and different
+                            if (un) {
+                                updateData.username = un;
+                            }
+                            
+                            // Update password if provided
+                            if (pw && pw.length >= 6) {
+                                updateData.password = pw;
+                            }
+                            
+                            await userDoc.ref.update(updateData);
+                            
+                            // Update current user session if it's the same user
+                            if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
+                                CloudStore.currentUser.fullName = name;
+                                CloudStore.currentUser.branch = branch;
+                                CloudStore.currentUser.role = role;
+                                if (un) CloudStore.currentUser.username = un;
+                                localStorage.setItem('pf_user_data', JSON.stringify(CloudStore.currentUser));
+                                
+                                document.getElementById('userNameDisplay').textContent = name;
+                                document.getElementById('userDeptDisplay').textContent = branch || 'No Branch';
+                                document.getElementById('userRoleBadge').textContent = role.toUpperCase();
+                                document.getElementById('userRoleBadge').className = `role-badge ${role}`;
+                            }
+                        }
+                    } catch (userErr) {
+                        console.warn('Could not update user account:', userErr);
+                    }
+                    
+                    showToast('success', 'Employee updated successfully.');
+                    
                 } else {
-                    if (!pw || pw.length < 6) { showToast('warning', 'Password must be at least 6 characters');
-                        showLoading(false); return; }
-                    await CloudStore.addUser({ username: un, password: pw, fullName: name, role, branch,
-                        employeeId: empId, createdAt: new Date().toISOString() });
-                    await CloudStore.addEmployee({ employeeId: empId, name, email, mobile, branch,
-                        designation: desig, role, isActive: true, createdAt: new Date().toISOString() });
-                    showToast('success', 'Employee added. User account created.');
+                    // Adding new employee
+                    if (!pw || pw.length < 6) { 
+                        showToast('warning', 'Password must be at least 6 characters');
+                        showLoading(false); 
+                        return; 
+                    }
+                    
+                    // Check if username already exists
+                    const existingUser = await CloudStore.getUserByUsername(un);
+                    if (existingUser) {
+                        showToast('warning', 'Username already exists. Please choose a different username.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    // Check if employee ID already exists
+                    const empSnap = await CloudStore.employeesCollection.where('employeeId', '==', empId).get();
+                    if (!empSnap.empty) {
+                        showToast('warning', 'Employee ID already exists. Please use a unique ID.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    // Create user account
+                    await CloudStore.addUser({ 
+                        username: un, 
+                        password: pw, 
+                        fullName: name, 
+                        role: role, 
+                        branch: branch, 
+                        employeeId: empId, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    
+                    // Create employee record
+                    await CloudStore.addEmployee({ 
+                        employeeId: empId, 
+                        name: name, 
+                        email: email, 
+                        mobile: mobile, 
+                        branch: branch, 
+                        designation: desig, 
+                        role: role, 
+                        isActive: true, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    
+                    showToast('success', 'Employee added successfully. User account created.');
                 }
+                
                 bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
-                await CloudStore.addAuditLog({ action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', entityType: 'Employee',
-                    entityId: name });
+                await CloudStore.addAuditLog({ 
+                    action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
+                    entityType: 'Employee', 
+                    entityId: name,
+                    details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId})`
+                });
                 loadEmployees();
-            } catch (err) { showToast('danger', 'Failed to save: ' + err.message); }
+            } catch (err) { 
+                console.error('Save employee error:', err);
+                showToast('danger', 'Failed to save: ' + err.message); 
+            }
             showLoading(false);
         }
 
@@ -4463,12 +4668,49 @@
         // DELETE FUNCTIONS
         // ======================================================================
         async function deleteEmployee(id) {
-            if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteEmployee')) { showToast('warning',
-                    'Permission denied'); return; }
-            if (!confirm('Delete this employee?')) return;
-            try { await CloudStore.employeesCollection.doc(id).delete();
-                showToast('success', 'Deleted');
-                loadEmployees(); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteEmployee')) { 
+                showToast('warning', 'Permission denied'); 
+                return; 
+            }
+            
+            if (!confirm('Are you sure you want to delete this employee? This action cannot be undone.')) {
+                return;
+            }
+            
+            showLoading(true);
+            try { 
+                const doc = await CloudStore.employeesCollection.doc(id).get();
+                if (!doc.exists) {
+                    showToast('danger', 'Employee not found');
+                    showLoading(false);
+                    return;
+                }
+                
+                const empData = doc.data();
+                await CloudStore.employeesCollection.doc(id).delete();
+                
+                try {
+                    const userSnap = await CloudStore.usersCollection.where('employeeId', '==', empData.employeeId).get();
+                    if (!userSnap.empty) {
+                        await userSnap.docs[0].ref.delete();
+                    }
+                } catch (userErr) {
+                    console.warn('Could not delete user account:', userErr);
+                }
+                
+                await CloudStore.addAuditLog({ 
+                    action: 'DELETE_EMPLOYEE', 
+                    entityType: 'Employee', 
+                    entityId: empData.employeeId,
+                    details: `Deleted employee: ${empData.name} (${empData.employeeId})`
+                });
+                
+                showToast('success', 'Employee deleted successfully');
+                loadEmployees(); 
+            } catch (e) { 
+                showToast('danger', 'Failed to delete: ' + e.message); 
+            }
+            showLoading(false);
         }
 
         async function deleteCard(id) {
@@ -4514,8 +4756,6 @@
         // ======================================================================
         // UTILITY
         // ======================================================================
-        function editEmployee(id) { showEmployeeModal(id); }
-
         function viewEmployeeLedger(id) {
             const emp = appState.employees.find(e => e.id === id);
             if (!emp) return;
@@ -4714,6 +4954,7 @@
         console.log('✅ Employee branch changes automatically sync to user accounts');
         console.log('✅ Pagination added for employee list (25 per page)');
         console.log('✅ Search and filter for employees');
+        console.log('✅ Clickable alerts with drill-down functionality');
         console.log('🔑 First user registration becomes Super Admin');
         console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
