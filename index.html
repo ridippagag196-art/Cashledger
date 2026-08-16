@@ -128,18 +128,64 @@
 
         .card-progress { height: 6px; border-radius: 3px; margin-top: 4px; }
 
-        @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } }
+        /* ===== PAGINATION ===== */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 15px;
+        }
+        .pagination-container .pagination-info {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .pagination-container .pagination-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .pagination-container .pagination-controls .page-btn {
+            border: 1px solid var(--gray-200);
+            background: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        .pagination-container .pagination-controls .page-btn:hover:not(:disabled) {
+            background: var(--gray-100);
+            border-color: var(--primary);
+        }
+        .pagination-container .pagination-controls .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .pagination-container .pagination-controls .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .pagination-container .page-size-select {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } .pagination-container { flex-direction: column; align-items: center; } }
         @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
 
-        /* ===== SYNC INDICATOR ===== */
-        .sync-badge {
-            font-size: 0.6rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-left: 5px;
-        }
+        .sync-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
         .sync-badge.synced { background: #1cc88a; color: white; }
         .sync-badge.outdated { background: #f6c23e; color: #333; }
+        
+        .table-wrapper { overflow-x: auto; }
+        .table-responsive-stack { display: block; width: 100%; overflow-x: auto; }
     </style>
 </head>
 <body>
@@ -838,7 +884,7 @@
                             </div>
                         </div>
 
-                        <!-- ===== EMPLOYEES ===== -->
+                        <!-- ===== EMPLOYEES (WITH PAGINATION) ===== -->
                         <div id="page-employees" class="page-content" style="display:none;">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h4><i class="fas fa-users me-2 text-primary"></i>Employees</h4>
@@ -847,11 +893,79 @@
                                 </button>
                             </div>
                             <div class="table-container">
+                                <!-- Filter Section -->
+                                <div class="filter-section mb-3">
+                                    <div class="row align-items-end">
+                                        <div class="col-md-3">
+                                            <div class="filter-label">Search</div>
+                                            <input type="text" class="form-control form-control-sm" id="employeeSearch" placeholder="Search by name, ID, branch..." oninput="loadEmployees()">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="filter-label">Role</div>
+                                            <select class="form-select form-select-sm" id="employeeRoleFilter" onchange="loadEmployees()">
+                                                <option value="">All Roles</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="manager">Manager</option>
+                                                <option value="employee">Employee</option>
+                                                <option value="accounts">Accounts</option>
+                                                <option value="auditor">Auditor</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="filter-label">Status</div>
+                                            <select class="form-select form-select-sm" id="employeeStatusFilter" onchange="loadEmployees()">
+                                                <option value="">All</option>
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetEmployeeFilters()">
+                                                <i class="fas fa-undo"></i> Reset Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="table-responsive">
                                     <table class="table table-hover" id="employeesTable">
-                                        <thead><tr><th>ID</th><th>Name</th><th>Camp</th><th>Designation</th><th>Role</th><th>Advances</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Camp</th>
+                                                <th>Designation</th>
+                                                <th>Role</th>
+                                                <th>Advances</th>
+                                                <th>Outstanding</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
                                         <tbody id="employeesBody"></tbody>
                                     </table>
+                                </div>
+
+                                <!-- Pagination Controls -->
+                                <div class="pagination-container">
+                                    <div class="pagination-info" id="employeePaginationInfo">
+                                        Showing 0 to 0 of 0 entries
+                                    </div>
+                                    <div class="pagination-controls">
+                                        <select class="page-size-select" id="employeePageSize" onchange="loadEmployees()">
+                                            <option value="10">10</option>
+                                            <option value="25" selected>25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                        <button class="page-btn" id="employeePrevBtn" onclick="employeePrevPage()">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <span id="employeePageNumbers"></span>
+                                        <button class="page-btn" id="employeeNextBtn" onclick="employeeNextPage()">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1576,16 +1690,9 @@
                 if (!userId) return;
                 try {
                     await this.usersCollection.doc(userId).update({ branch: newBranch });
-                    // Update current user session
                     if (this.currentUser && this.currentUser.id === userId) {
                         this.currentUser.branch = newBranch;
                         localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
-                    }
-                    // Also update any employee record with same ID
-                    const empSnap = await this.employeesCollection.where('employeeId', '==', this.currentUser?.employeeId)
-                        .get();
-                    if (!empSnap.empty) {
-                        await empSnap.docs[0].ref.update({ branch: newBranch });
                     }
                     return true;
                 } catch (err) {
@@ -1770,12 +1877,10 @@
                 const emp = await this.employeesCollection.doc(id).get();
                 if (emp.exists) {
                     const empData = emp.data();
-                    // Find user with matching employeeId
                     const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
                     if (!userSnap.empty) {
                         const userDoc = userSnap.docs[0];
                         await userDoc.ref.update({ branch: d.branch, fullName: d.name });
-                        // Update current session if this is the logged-in user
                         if (this.currentUser && this.currentUser.id === userDoc.id) {
                             this.currentUser.branch = d.branch;
                             this.currentUser.fullName = d.name;
@@ -1848,6 +1953,16 @@
         let branchChartInstance = null,
             employeeChartInstance = null,
             monthlyChartInstance = null;
+
+        // ======================================================================
+        // PAGINATION STATE
+        // ======================================================================
+        let employeePagination = {
+            currentPage: 1,
+            pageSize: 25,
+            totalItems: 0,
+            filteredData: []
+        };
 
         // ======================================================================
         // TOAST / LOADING
@@ -2014,7 +2129,6 @@
                 document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
                 document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
 
-                // Show branch sync status
                 const branchSync = document.getElementById('branchSyncStatus');
                 if (user.branch) {
                     branchSync.textContent = `✅ Branch: ${user.branch}`;
@@ -2407,50 +2521,183 @@
         }
 
         // ======================================================================
-        // EMPLOYEES - UPDATED with branch sync status and refresh button
+        // EMPLOYEES WITH PAGINATION
         // ======================================================================
         function loadEmployees() {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'viewEmployees')) { document.getElementById('employeesBody').innerHTML =
-                    `<tr><td colspan="10" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
-                return; }
-            const e = appState.employees;
-            const tb = document.getElementById('employeesBody');
-            if (e.length === 0) { tb.innerHTML =
-                `<tr><td colspan="10" class="text-center text-muted">No employees found</td></tr>`; return; }
+            if (!hasPermission(user?.role, 'viewEmployees')) {
+                document.getElementById('employeesBody').innerHTML =
+                    `<tr><td colspan="9" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
+                return;
+            }
+
+            // Get filters
+            const search = document.getElementById('employeeSearch')?.value?.toLowerCase() || '';
+            const roleFilter = document.getElementById('employeeRoleFilter')?.value || '';
+            const statusFilter = document.getElementById('employeeStatusFilter')?.value || '';
+            const pageSize = parseInt(document.getElementById('employeePageSize')?.value || 25);
+
+            // Filter data
+            let filtered = [...appState.employees];
+
+            // Apply search filter
+            if (search) {
+                filtered = filtered.filter(e =>
+                    (e.name || '').toLowerCase().includes(search) ||
+                    (e.employeeId || '').toLowerCase().includes(search) ||
+                    (e.branch || '').toLowerCase().includes(search) ||
+                    (e.designation || '').toLowerCase().includes(search)
+                );
+            }
+
+            // Apply role filter
+            if (roleFilter) {
+                filtered = filtered.filter(e => e.role === roleFilter);
+            }
+
+            // Apply status filter
+            if (statusFilter) {
+                const isActive = statusFilter === 'active';
+                filtered = filtered.filter(e => (e.isActive !== false) === isActive);
+            }
+
+            // Sort by name
+            filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+            // Update pagination state
+            employeePagination.filteredData = filtered;
+            employeePagination.totalItems = filtered.length;
+            employeePagination.pageSize = pageSize;
+            employeePagination.currentPage = Math.min(employeePagination.currentPage, Math.ceil(filtered.length / pageSize) ||
+                1);
+
+            // Get current page data
+            const start = (employeePagination.currentPage - 1) * pageSize;
+            const end = Math.min(start + pageSize, filtered.length);
+            const pageData = filtered.slice(start, end);
+
+            // Update employee count badge
+            document.getElementById('employeeCountBadge').textContent = appState.employees.length;
+
             const canEdit = hasPermission(user?.role, 'addEmployee');
             const canDel = hasPermission(user?.role, 'deleteEmployee');
-            tb.innerHTML = e.map(emp => {
-                const advs = appState.advances.filter(a => a.employeeId === emp.id);
-                const total = advs.reduce((s, a) => s + (a.amount || 0), 0);
-                const out = advs.filter(a => a.status === 'issued').reduce((s, a) => s + (a.remainingAmount || a
-                    .amount || 0), 0);
-                // Check if branch is synced with user record
-                const isSynced = emp.branch ? '✅' : '⚠️';
-                const syncClass = emp.branch ? 'text-success' : 'text-warning';
-                return `<tr>
-                            <td><code>${emp.employeeId}</code></td>
-                            <td><strong>${emp.name}</strong></td>
-                            <td>${emp.branch||'N/A'} <span class="${syncClass}">${isSynced}</span></td>
-                            <td>${emp.designation||'N/A'}</td>
-                            <td><span class="role-badge ${emp.role||'employee'}">${(emp.role||'employee').toUpperCase()}</span></td>
-                            <td>₹${total.toLocaleString()}</td>
-                            <td><span class="${out>0?'text-danger fw-bold':'text-success'}">₹${out.toLocaleString()}</span></td>
-                            <td><span class="badge ${emp.isActive!==false?'bg-success':'bg-danger'}">${emp.isActive!==false?'Active':'Inactive'}</span></td>
-                            <td>
-                                ${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')"><i class="fas fa-edit"></i></button>`:''}
-                                ${canDel?`<button class="btn btn-sm btn-outline-danger me-1" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash"></i></button>`:''}
-                                <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${emp.id}')"><i class="fas fa-book"></i></button>
-                                <button class="btn btn-sm btn-outline-warning" onclick="syncEmployeeBranch('${emp.id}')" title="Sync branch to user account">
-                                    <i class="fas fa-sync"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-            }).join('');
+
+            const tb = document.getElementById('employeesBody');
+            if (pageData.length === 0) {
+                tb.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No employees found</td></tr>`;
+            } else {
+                tb.innerHTML = pageData.map(emp => {
+                    const advs = appState.advances.filter(a => a.employeeId === emp.id);
+                    const total = advs.reduce((s, a) => s + (a.amount || 0), 0);
+                    const out = advs.filter(a => a.status === 'issued').reduce((s, a) => s + (a.remainingAmount ||
+                        a.amount || 0), 0);
+                    const isSynced = emp.branch ? '✅' : '⚠️';
+                    const syncClass = emp.branch ? 'text-success' : 'text-warning';
+                    return `<tr>
+                                <td><code>${emp.employeeId || 'N/A'}</code></td>
+                                <td><strong>${emp.name || 'N/A'}</strong></td>
+                                <td>${emp.branch || 'N/A'} <span class="${syncClass}">${isSynced}</span></td>
+                                <td>${emp.designation || 'N/A'}</td>
+                                <td><span class="role-badge ${emp.role||'employee'}">${(emp.role||'employee').toUpperCase()}</span></td>
+                                <td>₹${total.toLocaleString()}</td>
+                                <td><span class="${out>0?'text-danger fw-bold':'text-success'}">₹${out.toLocaleString()}</span></td>
+                                <td><span class="badge ${emp.isActive!==false?'bg-success':'bg-danger'}">${emp.isActive!==false?'Active':'Inactive'}</span></td>
+                                <td>
+                                    ${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')"><i class="fas fa-edit"></i></button>`:''}
+                                    ${canDel?`<button class="btn btn-sm btn-outline-danger me-1" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash"></i></button>`:''}
+                                    <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${emp.id}')"><i class="fas fa-book"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="syncEmployeeBranch('${emp.id}')" title="Sync branch to user account">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                }).join('');
+            }
+
+            // Update pagination UI
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const total = employeePagination.totalItems;
+            const pageSize = employeePagination.pageSize;
+            const currentPage = employeePagination.currentPage;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+
+            const start = (currentPage - 1) * pageSize + 1;
+            const end = Math.min(currentPage * pageSize, total);
+
+            document.getElementById('employeePaginationInfo').textContent =
+                `Showing ${total > 0 ? start : 0} to ${end} of ${total} entries`;
+
+            // Previous button
+            const prevBtn = document.getElementById('employeePrevBtn');
+            prevBtn.disabled = currentPage <= 1;
+
+            // Next button
+            const nextBtn = document.getElementById('employeeNextBtn');
+            nextBtn.disabled = currentPage >= totalPages;
+
+            // Page numbers
+            const pageNumbersContainer = document.getElementById('employeePageNumbers');
+            let pageHtml = '';
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                pageHtml += `<button class="page-btn" onclick="goToEmployeePage(1)">1</button>`;
+                if (startPage > 2) pageHtml += `<span class="mx-1">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageHtml +=
+                    `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToEmployeePage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) pageHtml += `<span class="mx-1">...</span>`;
+                pageHtml += `<button class="page-btn" onclick="goToEmployeePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            pageNumbersContainer.innerHTML = pageHtml;
+        }
+
+        function goToEmployeePage(page) {
+            const totalPages = Math.ceil(employeePagination.totalItems / employeePagination.pageSize) || 1;
+            employeePagination.currentPage = Math.max(1, Math.min(page, totalPages));
+            loadEmployees();
+        }
+
+        function employeePrevPage() {
+            if (employeePagination.currentPage > 1) {
+                employeePagination.currentPage--;
+                loadEmployees();
+            }
+        }
+
+        function employeeNextPage() {
+            const totalPages = Math.ceil(employeePagination.totalItems / employeePagination.pageSize) || 1;
+            if (employeePagination.currentPage < totalPages) {
+                employeePagination.currentPage++;
+                loadEmployees();
+            }
+        }
+
+        function resetEmployeeFilters() {
+            document.getElementById('employeeSearch').value = '';
+            document.getElementById('employeeRoleFilter').value = '';
+            document.getElementById('employeeStatusFilter').value = '';
+            employeePagination.currentPage = 1;
+            loadEmployees();
         }
 
         // ======================================================================
-        // SYNC EMPLOYEE BRANCH TO USER (NEW FUNCTION)
+        // SYNC EMPLOYEE BRANCH TO USER
         // ======================================================================
         async function syncEmployeeBranch(employeeId) {
             const user = CloudStore.getCurrentUser();
@@ -2463,10 +2710,9 @@
                 const emp = appState.employees.find(e => e.id === employeeId);
                 if (!emp) { showToast('danger', 'Employee not found'); return; }
 
-                // Find user with matching employeeId
                 const userSnap = await CloudStore.usersCollection.where('employeeId', '==', emp.employeeId).get();
                 if (userSnap.empty) {
-                    showToast('warning', `No user account found for employee ${emp.name}. They may need to register first.`);
+                    showToast('warning', `No user account found for employee ${emp.name}.`);
                     showLoading(false);
                     return;
                 }
@@ -2478,12 +2724,10 @@
                     updatedAt: new Date().toISOString()
                 });
 
-                // Update current session if this is the logged-in user
                 if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
                     CloudStore.currentUser.branch = emp.branch;
                     CloudStore.currentUser.fullName = emp.name;
                     localStorage.setItem('pf_user_data', JSON.stringify(CloudStore.currentUser));
-                    // Update sidebar
                     document.getElementById('userDeptDisplay').textContent = emp.branch || 'No Branch';
                     document.getElementById('userNameDisplay').textContent = emp.name;
                     const branchSync = document.getElementById('branchSyncStatus');
@@ -2501,6 +2745,7 @@
                 });
 
                 showToast('success', `Branch "${emp.branch}" synced to user ${emp.name}'s account!`);
+                loadEmployees();
             } catch (err) {
                 showToast('danger', 'Failed to sync: ' + err.message);
                 console.error(err);
@@ -2509,57 +2754,7 @@
         }
 
         // ======================================================================
-        // SAVE EMPLOYEE - UPDATED to sync user branch
-        // ======================================================================
-        async function saveEmployee() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
-                'You don\'t have permission to add employees.'); return; }
-            const id = document.getElementById('editEmployeeId').value;
-            const empId = document.getElementById('empEmployeeId').value.trim();
-            const name = document.getElementById('empName').value.trim();
-            const email = document.getElementById('empEmail').value.trim();
-            const mobile = document.getElementById('empMobile').value.trim();
-            const branch = document.getElementById('empBranch').value;
-            const desig = document.getElementById('empDesignation').value.trim();
-            const role = document.getElementById('empRole').value;
-            const un = document.getElementById('empUsername').value.trim();
-            const pw = document.getElementById('empPassword').value;
-            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { showToast('warning',
-                    'Please fill all required fields'); return; }
-            showLoading(true);
-            try {
-                if (id) {
-                    // Update employee - this will also sync user branch via CloudStore.updateEmployee
-                    await CloudStore.updateEmployee(id, {
-                        employeeId: empId,
-                        name,
-                        email,
-                        mobile,
-                        branch,
-                        designation: desig,
-                        role,
-                        updatedAt: new Date().toISOString()
-                    });
-                    showToast('success', 'Employee updated. Branch synced to user account.');
-                } else {
-                    if (!pw || pw.length < 6) { showToast('warning', 'Password must be at least 6 characters');
-                        showLoading(false); return; }
-                    await CloudStore.addUser({ username: un, password: pw, fullName: name, role, branch,
-                        employeeId: empId, createdAt: new Date().toISOString() });
-                    await CloudStore.addEmployee({ employeeId: empId, name, email, mobile, branch,
-                        designation: desig, role, isActive: true, createdAt: new Date().toISOString() });
-                    showToast('success', 'Employee added. User account created.');
-                }
-                bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
-                await CloudStore.addAuditLog({ action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', entityType: 'Employee',
-                    entityId: name });
-            } catch (err) { showToast('danger', 'Failed to save: ' + err.message); }
-            showLoading(false);
-        }
-
-        // ======================================================================
-        // OTHER LOAD FUNCTIONS (removed duplicates for brevity)
+        // OTHER LOAD FUNCTIONS
         // ======================================================================
         function loadAdvances() {
             const user = CloudStore.getCurrentUser();
@@ -3384,7 +3579,7 @@
         }
 
         // ======================================================================
-        // SAVE FUNCTIONS (other save functions remain the same)
+        // SAVE FUNCTIONS
         // ======================================================================
         async function saveAdvance() {
             const user = CloudStore.getCurrentUser();
@@ -3567,6 +3762,53 @@
             showLoading(false);
         }
 
+        async function saveEmployee() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
+                'You don\'t have permission to add employees.'); return; }
+            const id = document.getElementById('editEmployeeId').value;
+            const empId = document.getElementById('empEmployeeId').value.trim();
+            const name = document.getElementById('empName').value.trim();
+            const email = document.getElementById('empEmail').value.trim();
+            const mobile = document.getElementById('empMobile').value.trim();
+            const branch = document.getElementById('empBranch').value;
+            const desig = document.getElementById('empDesignation').value.trim();
+            const role = document.getElementById('empRole').value;
+            const un = document.getElementById('empUsername').value.trim();
+            const pw = document.getElementById('empPassword').value;
+            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { showToast('warning',
+                    'Please fill all required fields'); return; }
+            showLoading(true);
+            try {
+                if (id) {
+                    await CloudStore.updateEmployee(id, {
+                        employeeId: empId,
+                        name,
+                        email,
+                        mobile,
+                        branch,
+                        designation: desig,
+                        role,
+                        updatedAt: new Date().toISOString()
+                    });
+                    showToast('success', 'Employee updated. Branch synced to user account.');
+                } else {
+                    if (!pw || pw.length < 6) { showToast('warning', 'Password must be at least 6 characters');
+                        showLoading(false); return; }
+                    await CloudStore.addUser({ username: un, password: pw, fullName: name, role, branch,
+                        employeeId: empId, createdAt: new Date().toISOString() });
+                    await CloudStore.addEmployee({ employeeId: empId, name, email, mobile, branch,
+                        designation: desig, role, isActive: true, createdAt: new Date().toISOString() });
+                    showToast('success', 'Employee added. User account created.');
+                }
+                bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+                await CloudStore.addAuditLog({ action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', entityType: 'Employee',
+                    entityId: name });
+                loadEmployees();
+            } catch (err) { showToast('danger', 'Failed to save: ' + err.message); }
+            showLoading(false);
+        }
+
         // ======================================================================
         // DELETE FUNCTIONS
         // ======================================================================
@@ -3575,7 +3817,8 @@
                     'Permission denied'); return; }
             if (!confirm('Delete this employee?')) return;
             try { await CloudStore.employeesCollection.doc(id).delete();
-                showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+                showToast('success', 'Deleted');
+                loadEmployees(); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         async function deleteCard(id) {
@@ -3816,10 +4059,11 @@
         }
 
         initializeApp();
-        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Branch Sync');
+        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Pagination');
         console.log('✅ Funds are allocated directly to SBI Visa Cards');
         console.log('✅ Employee branch changes automatically sync to user accounts');
-        console.log('✅ Monthly refill and allocation tracking with proper filtering');
+        console.log('✅ Pagination added for employee list (25 per page)');
+        console.log('✅ Search and filter for employees');
         console.log('🔑 First user registration becomes Super Admin');
         console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
