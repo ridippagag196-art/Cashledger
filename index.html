@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        /* ===== COMPLETE STYLES WITH MOBILE RESPONSIVENESS ===== */
+        /* ===== COMPLETE STYLES ===== */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -620,6 +620,20 @@
         .financial-breakdown .detail-item .value { font-weight: 600; }
         .financial-breakdown .detail-item .value.positive { color: var(--success); }
         .financial-breakdown .detail-item .value.negative { color: var(--danger); }
+        .financial-breakdown .total-row {
+            border-top: 2px solid #e2e8f0;
+            margin-top: 4px;
+            padding-top: 6px;
+            font-weight: 700;
+        }
+        .financial-breakdown .total-row .value { font-size: 1.1rem; }
+        .initial-balance-badge {
+            background: #e8f0fe;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            color: #4e73df;
+        }
     </style>
 </head>
 <body>
@@ -913,21 +927,29 @@
                                             <div class="stat-value text-primary" id="mainBranchFund">₹0</div>
                                             <div class="financial-breakdown" style="margin-top:6px;">
                                                 <div class="detail-item">
-                                                    <span class="label">Total Refills (All Time)</span>
+                                                    <span class="label">Initial Balance</span>
+                                                    <span class="value positive" id="initialBalanceDisplay">₹0</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="label">Total Refills Added</span>
                                                     <span class="value positive" id="totalRefillsAllTime">₹0</span>
                                                 </div>
                                                 <div class="detail-item">
-                                                    <span class="label">Total Allocations (All Time)</span>
+                                                    <span class="label">Total Allocations</span>
                                                     <span class="value negative" id="totalAllocationsAllTime">₹0</span>
                                                 </div>
                                                 <div class="detail-item">
-                                                    <span class="label">Total Expenses (All Time)</span>
+                                                    <span class="label">Total Expenses</span>
                                                     <span class="value negative" id="totalExpensesAllTime">₹0</span>
                                                 </div>
                                                 <hr style="margin:4px 0;">
-                                                <div class="detail-item" style="font-weight:700;">
-                                                    <span class="label">Net Balance</span>
+                                                <div class="detail-item total-row">
+                                                    <span class="label">Net Available Balance</span>
                                                     <span class="value" id="netBalanceDisplay">₹0</span>
+                                                </div>
+                                                <div style="font-size:0.7rem;color:#999;margin-top:4px;">
+                                                    <i class="fas fa-calculator me-1"></i> 
+                                                    <span id="balanceFormula">₹0 = ₹0 + ₹0 - ₹0 - ₹0</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -984,7 +1006,7 @@
                                         <div class="financial-breakdown mt-2">
                                             <div class="detail-item">
                                                 <span class="label"><i class="fas fa-info-circle me-1 text-muted"></i> Accounting Formula:</span>
-                                                <span class="value" style="font-size:0.8rem;color:#666;">Main Fund = Total Refills (All Time) - Total Allocations (All Time) - Total Expenses (All Time)</span>
+                                                <span class="value" style="font-size:0.8rem;color:#666;">Main Fund = Initial Balance + Total Refills - Total Allocations - Total Expenses</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1573,7 +1595,7 @@
     </div><!-- end app -->
 
 
-    <!-- ===== MODALS (Condensed for length - all original modals remain) ===== -->
+    <!-- ===== MODALS (Condensed for length) ===== -->
     <!-- Branch Modal -->
     <div class="modal fade" id="branchModal" tabindex="-1">
         <div class="modal-dialog">
@@ -2190,7 +2212,7 @@
         }
 
         // ======================================================================
-        // CLOUD STORE - Enhanced with real-time sync
+        // CLOUD STORE
         // ======================================================================
         const CloudStore = {
             usersCollection: db.collection('users'),
@@ -3154,7 +3176,7 @@
         }
 
         // ======================================================================
-        // UPDATE DASHBOARD - FIXED FINANCIAL LOGIC
+        // UPDATE DASHBOARD - CORRECT FINANCIAL LOGIC WITH INITIAL BALANCE
         // ======================================================================
         function updateDashboard() {
             const user = CloudStore.getCurrentUser();
@@ -3170,33 +3192,44 @@
             document.getElementById('totalOutstanding').textContent = '₹' + outstanding.toLocaleString();
 
             // ===== MAIN BRANCH FUND =====
+            // Get the current balance from funds collection (this already includes initial balance + all transactions)
             const main = funds.find(f => f.camp === '__main__');
             const mainBal = main ? main.balance : 0;
             document.getElementById('mainBranchFund').textContent = '₹' + mainBal.toLocaleString();
+            document.getElementById('fundMainBalance').textContent = '₹' + mainBal.toLocaleString();
 
-            // ===== FINANCIAL BREAKDOWN - CORRECT ACCOUNTING =====
-            // Total Refills (All Time) = Sum of all REFILL transactions
+            // ===== FINANCIAL BREAKDOWN - CORRECT ACCOUNTING WITH INITIAL BALANCE =====
+            // Get the initial balance from the main fund document
+            const initialBalance = main ? main.initialBalance || 0 : 0;
+
+            // Total Refills (cumulative sum of all refill transactions)
             const totalRefillsAllTime = transactions
                 .filter(t => t.type === 'REFILL')
                 .reduce((s, t) => s + (t.amount || 0), 0);
 
-            // Total Allocations (All Time) = Sum of all ALLOCATION transactions
+            // Total Allocations (cumulative sum of all allocation transactions)
             const totalAllocationsAllTime = transactions
                 .filter(t => t.type === 'ALLOCATION')
                 .reduce((s, t) => s + (t.amount || 0), 0);
 
-            // Total Expenses (All Time) = Sum of all EXPENSE transactions
+            // Total Expenses (cumulative sum of all expense transactions)
             const totalExpensesAllTime = transactions
                 .filter(t => t.type === 'EXPENSE')
                 .reduce((s, t) => s + (t.amount || 0), 0);
 
-            // Net Balance = Total Refills - Total Allocations - Total Expenses
-            const netBalance = totalRefillsAllTime - totalAllocationsAllTime - totalExpensesAllTime;
+            // Net Balance = Initial Balance + Total Refills - Total Allocations - Total Expenses
+            const netBalance = initialBalance + totalRefillsAllTime - totalAllocationsAllTime - totalExpensesAllTime;
 
+            // Update all financial displays
+            document.getElementById('initialBalanceDisplay').textContent = '₹' + initialBalance.toLocaleString();
             document.getElementById('totalRefillsAllTime').textContent = '₹' + totalRefillsAllTime.toLocaleString();
             document.getElementById('totalAllocationsAllTime').textContent = '₹' + totalAllocationsAllTime.toLocaleString();
             document.getElementById('totalExpensesAllTime').textContent = '₹' + totalExpensesAllTime.toLocaleString();
             document.getElementById('netBalanceDisplay').textContent = '₹' + netBalance.toLocaleString();
+
+            // Show the formula
+            document.getElementById('balanceFormula').textContent = 
+                `₹${netBalance.toLocaleString()} = ₹${initialBalance.toLocaleString()} + ₹${totalRefillsAllTime.toLocaleString()} - ₹${totalAllocationsAllTime.toLocaleString()} - ₹${totalExpensesAllTime.toLocaleString()}`;
 
             // ===== CAMP FUNDS =====
             const campFunds = funds.filter(f => f.camp !== '__main__');
@@ -3389,41 +3422,14 @@
 
         function handleAlertClick(action) {
             switch(action) {
-                case 'viewMissingBills': viewMissingBills(); break;
-                case 'viewEmployeesWithOutstanding': viewEmployeesWithOutstanding(); break;
-                case 'viewOverdueAdvances': viewOverdueAdvances(); break;
-                case 'viewHighUtilizationCards': viewHighUtilizationCards(); break;
-                case 'viewLowFunds': viewLowFunds(); break;
-                case 'viewPendingApprovals': viewPendingApprovals(); break;
+                case 'viewMissingBills': showToast('info', 'View Missing Bills - Feature coming soon'); break;
+                case 'viewEmployeesWithOutstanding': showToast('info', 'View Employees with Outstanding - Feature coming soon'); break;
+                case 'viewOverdueAdvances': showToast('info', 'View Overdue Advances - Feature coming soon'); break;
+                case 'viewHighUtilizationCards': showToast('info', 'View High Utilization Cards - Feature coming soon'); break;
+                case 'viewLowFunds': showToast('info', 'View Low Funds - Feature coming soon'); break;
+                case 'viewPendingApprovals': showToast('info', 'View Pending Approvals - Feature coming soon'); break;
                 default: showToast('info', 'Feature coming soon...');
             }
-        }
-
-        // ======================================================================
-        // VIEW FUNCTIONS FOR ALERTS (Placeholders - full implementations exist)
-        // ======================================================================
-        function viewMissingBills() {
-            showToast('info', 'View Missing Bills - Feature coming soon');
-        }
-
-        function viewEmployeesWithOutstanding() {
-            showToast('info', 'View Employees with Outstanding - Feature coming soon');
-        }
-
-        function viewOverdueAdvances() {
-            showToast('info', 'View Overdue Advances - Feature coming soon');
-        }
-
-        function viewHighUtilizationCards() {
-            showToast('info', 'View High Utilization Cards - Feature coming soon');
-        }
-
-        function viewLowFunds() {
-            showToast('info', 'View Low Funds - Feature coming soon');
-        }
-
-        function viewPendingApprovals() {
-            showToast('info', 'View Pending Approvals - Feature coming soon');
         }
 
         // ======================================================================
@@ -5642,15 +5648,15 @@
 
         initializeApp();
         console.log('🏗️ Project Fund Management System - COMPLETE VERSION');
-        console.log('✅ Fixed financial logic: Total Refills = Cumulative sum of all refills');
-        console.log('✅ Accounting formula: Main Fund = Total Refills - Total Allocations - Total Expenses');
+        console.log('✅ CORRECT FINANCIAL LOGIC: Main Fund = Initial Balance + Total Refills - Total Allocations - Total Expenses');
+        console.log('✅ Initial Balance is stored and tracked separately');
+        console.log('✅ Total Refills shows cumulative sum of all refills added');
+        console.log('✅ Main Branch Fund shows current balance after all transactions');
+        console.log('✅ Formula displayed for transparency: ₹X = ₹Initial + ₹Refills - ₹Allocations - ₹Expenses');
         console.log('✅ Employee changes sync to user accounts in real-time');
-        console.log('✅ Role changes automatically update permissions');
         console.log('✅ File upload to Firebase Storage working');
         console.log('✅ Notifications system fully functional');
-        console.log('✅ Mobile responsive sidebar');
         console.log('🔑 First user registration becomes Super Admin');
-        console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
 </body>
 </html>
