@@ -4252,8 +4252,8 @@
             new bootstrap.Modal(document.getElementById('cardModal')).show();
         }
 
-        // ======================================================================
-        // EMPLOYEE MODAL - FIXED
+                // ======================================================================
+        // EMPLOYEE MODAL - COMPLETELY FIXED
         // ======================================================================
         function showEmployeeModal(employeeId = null) {
             const user = CloudStore.getCurrentUser();
@@ -4271,240 +4271,124 @@
             document.getElementById('empPassword').required = true;
             document.getElementById('empPassword').placeholder = 'Min 6 characters';
             document.getElementById('empPassword').value = '';
+            document.getElementById('empUsername').disabled = false;
+            document.getElementById('empEmployeeId').disabled = false;
             
             // If editing, populate form with employee data
             if (employeeId) {
+                // Find the employee in appState.employees
                 const emp = appState.employees.find(e => e.id === employeeId);
-                if (!emp) {
-                    showToast('danger', 'Employee not found');
+                if (emp) {
+                    populateEmployeeForm(emp);
+                    const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+                    modal.show();
                     return;
                 }
                 
-                document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
-                document.getElementById('editEmployeeId').value = emp.id;  // ✅ THIS IS CRITICAL
-                document.getElementById('empEmployeeId').value = emp.employeeId || '';
-                document.getElementById('empName').value = emp.name || '';
-                document.getElementById('empEmail').value = emp.email || '';
-                document.getElementById('empMobile').value = emp.mobile || '';
-                document.getElementById('empBranch').value = emp.branch || '';
-                document.getElementById('empDesignation').value = emp.designation || '';
-                document.getElementById('empRole').value = emp.role || 'employee';
-                document.getElementById('empUsername').value = emp.username || '';
-                document.getElementById('empPassword').value = '';
-                document.getElementById('empPassword').required = false;
-                document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+                // If not found in local cache, fetch from Firestore
+                showToast('info', 'Loading employee data...');
+                CloudStore.employeesCollection.doc(employeeId).get().then((doc) => {
+                    if (doc.exists) {
+                        const empData = { id: doc.id, ...doc.data() };
+                        // Add to local state if not exists
+                        const existing = appState.employees.find(e => e.id === employeeId);
+                        if (!existing) {
+                            appState.employees.push(empData);
+                        }
+                        populateEmployeeForm(empData);
+                        const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+                        modal.show();
+                    } else {
+                        showToast('danger', 'Employee not found in database.');
+                    }
+                }).catch((err) => {
+                    showToast('danger', 'Error fetching employee: ' + err.message);
+                    console.error('Error:', err);
+                });
+                return;
             }
             
             const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
             modal.show();
         }
 
+        // ======================================================================
+        // POPULATE EMPLOYEE FORM - HELPER FUNCTION
+        // ======================================================================
+        function populateEmployeeForm(emp) {
+            console.log('Populating form with employee:', emp); // Debug log
+            
+            document.getElementById('employeeModalTitle').textContent = `Edit Employee: ${emp.name || 'N/A'}`;
+            document.getElementById('editEmployeeId').value = emp.id || '';  // ✅ CRITICAL - Sets the Firestore ID
+            document.getElementById('empEmployeeId').value = emp.employeeId || '';
+            document.getElementById('empName').value = emp.name || '';
+            document.getElementById('empEmail').value = emp.email || '';
+            document.getElementById('empMobile').value = emp.mobile || '';
+            document.getElementById('empBranch').value = emp.branch || '';
+            document.getElementById('empDesignation').value = emp.designation || '';
+            document.getElementById('empRole').value = emp.role || 'employee';
+            document.getElementById('empUsername').value = emp.username || '';
+            document.getElementById('empPassword').value = '';
+            document.getElementById('empPassword').required = false;
+            document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+            document.getElementById('empUsername').disabled = true;
+            document.getElementById('empEmployeeId').disabled = true;
+            
+            // Verify the ID was set
+            console.log('editEmployeeId set to:', document.getElementById('editEmployeeId').value);
+        }
+
+        // ======================================================================
+        // EDIT EMPLOYEE - FIXED
+        // ======================================================================
         function editEmployee(id) {
+            console.log('Edit employee called with ID:', id); // Debug log
+            
             if (!id) {
                 showToast('danger', 'No employee ID provided');
                 return;
             }
             
+            // First try to find in local data
             const emp = appState.employees.find(e => e.id === id);
-            if (!emp) {
-                showToast('danger', 'Employee not found in local data. Please refresh.');
+            
+            if (emp) {
+                // Found in local data, open modal
+                showEmployeeModal(id);
                 return;
             }
             
-            showEmployeeModal(id);
-        }
-
-        // ======================================================================
-        // SAVE FUNCTIONS
-        // ======================================================================
-        async function saveAdvance() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addAdvance')) { showToast('warning',
-                'You don\'t have permission to request advances.'); return; }
-            const branch = document.getElementById('advBranch').value;
-            const project = document.getElementById('advProject').value;
-            const amount = parseFloat(document.getElementById('advAmount').value);
-            const purpose = document.getElementById('advPurpose').value.trim();
-            const desc = document.getElementById('advDescription').value.trim();
-            if (!branch || !project || !amount || !purpose) { showToast('warning',
-                'Please fill all required fields'); return; }
-            showLoading(true);
-            try {
-                const data = { employeeId: user.id, employeeName: user.fullName, branch, projectName: project,
-                    amount, remainingAmount: amount, purpose, description: desc, status: 'pending', createdBy: user
-                        .username, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-                await CloudStore.addAdvance(data);
-                await CloudStore.addAuditLog({ action: 'CREATE_ADVANCE', entityType: 'Advance', entityId: data.id,
-                    details: amount });
-                const approvers = appState.employees.filter(e => hasPermission(e.role, 'approveRequests'));
-                approvers.forEach(m => {
-                    CloudStore.addNotification({ userId: m.id, type: 'NEW_ADVANCE', title: `New Advance Request from ${user.fullName}`,
-                        message: `₹${amount.toLocaleString()} requested for ${purpose}`, entityId: data.id,
-                        severity: 'info', read: false, createdAt: new Date().toISOString() });
-                });
-                bootstrap.Modal.getInstance(document.getElementById('advanceModal')).hide();
-                showToast('success', 'Advance request submitted successfully');
-            } catch (err) { showToast('danger', 'Failed to submit: ' + err.message); }
-            showLoading(false);
-        }
-
-        async function saveExpense() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addExpense')) { showToast('warning',
-                'You don\'t have permission to add expenses.'); return; }
-            const branch = document.getElementById('expBranch').value;
-            const project = document.getElementById('expProject').value;
-            const category = document.getElementById('expCategory').value;
-            const paymentMethod = document.getElementById('expPaymentMethod').value;
-            const amount = parseFloat(document.getElementById('expAmount').value);
-            const date = document.getElementById('expDate').value;
-            const desc = document.getElementById('expDescription').value.trim();
-            const vendor = document.getElementById('expVendor').value.trim();
-            const billNo = document.getElementById('expBillNo').value.trim();
-            const remarks = document.getElementById('expRemarks').value.trim();
-            if (!branch || !project || !category || !paymentMethod || !amount) { showToast('warning',
-                    'Please fill all required fields'); return; }
-
-            if (paymentMethod === 'SBI Visa Card') {
-                const card = appState.cards.find(c => c.branch === branch && c.projectName === project && c.status ===
-                    'active');
-                if (!card) {
-                    showToast('warning', 'No active SBI Visa Card found for this camp/project. Please add a card first.');
-                    return;
-                }
-                const available = (card.limit || 0) - (card.utilized || 0);
-                if (available < amount) {
-                    showToast('warning', 'Insufficient card balance. Available: ₹' + available.toLocaleString());
-                    return;
-                }
-            }
-
-            showLoading(true);
-            try {
-                const fileUrls = [];
-                for (const fd of uploadedFiles) {
-                    const ref = storage.ref(`expenses/${Date.now()}_${fd.name}`);
-                    await ref.put(fd.file);
-                    const url = await ref.getDownloadURL();
-                    fileUrls.push({ name: fd.name, url, type: fd.type, size: fd.size, uploadDate: new Date()
-                            .toISOString() });
-                }
-                const data = { employeeId: user.id, employeeName: user.fullName, branch, projectName: project,
-                    category, paymentMethod, amount, date: date || new Date().toISOString().split('T')[0],
-                    description: desc, vendor, billNo, remarks, files: fileUrls, status: 'pending', createdBy: user
-                        .username, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-                await CloudStore.addExpense(data);
-                await CloudStore.addAuditLog({ action: 'CREATE_EXPENSE', entityType: 'Expense', entityId: data.id,
-                    details: amount });
-
-                if (paymentMethod === 'SBI Visa Card') {
-                    const card = appState.cards.find(c => c.branch === branch && c.projectName === project && c.status ===
-                        'active');
-                    if (card) {
-                        const newUtilized = (card.utilized || 0) + amount;
-                        await CloudStore.updateCard(card.id, { utilized: newUtilized, updatedAt: new Date()
-                                .toISOString() });
+            // If not found, try to fetch from Firestore
+            showToast('info', 'Loading employee data...');
+            CloudStore.employeesCollection.doc(id).get().then((doc) => {
+                if (doc.exists) {
+                    const empData = { id: doc.id, ...doc.data() };
+                    // Add to local state
+                    if (!appState.employees.find(e => e.id === id)) {
+                        appState.employees.push(empData);
                     }
+                    // Open modal with the fetched data
+                    showEmployeeModal(id);
+                } else {
+                    showToast('danger', 'Employee not found in database. Please refresh the page.');
                 }
-
-                const advance = appState.advances.find(a => a.employeeId === user.id && a.status === 'issued' && a
-                    .projectName === project);
-                if (advance) {
-                    const newRem = (advance.remainingAmount || advance.amount) - amount;
-                    await CloudStore.updateAdvance(advance.id, { remainingAmount: newRem > 0 ? newRem : 0,
-                        status: newRem <= 0 ? 'completed' : 'issued', updatedAt: new Date().toISOString() });
-                }
-                const approvers = appState.employees.filter(e => hasPermission(e.role, 'approveRequests'));
-                approvers.forEach(m => {
-                    CloudStore.addNotification({ userId: m.id, type: 'NEW_EXPENSE', title: `New Expense from ${user.fullName}`,
-                        message: `₹${amount.toLocaleString()} - ${category}`, entityId: data.id, severity: 'info',
-                        read: false, createdAt: new Date().toISOString() });
-                });
-                bootstrap.Modal.getInstance(document.getElementById('expenseModal')).hide();
-                showToast('success', `Expense submitted with ${fileUrls.length} attachments`);
-            } catch (err) { showToast('danger', 'Failed to submit: ' + err.message);
-                console.error(err); }
-            showLoading(false);
-        }
-
-        async function saveBranch() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addBranch')) { showToast('warning',
-                'You don\'t have permission to add branches/camps.'); return; }
-            const name = document.getElementById('branchName').value.trim();
-            const type = document.getElementById('branchType').value;
-            const location = document.getElementById('branchLocation').value.trim();
-            const managerId = document.getElementById('branchManager').value;
-            const cardLimit = parseFloat(document.getElementById('branchCardLimit').value) || 0;
-            if (!name || !location) { showToast('warning', 'Please fill all required fields'); return; }
-            const manager = appState.employees.find(e => e.id === managerId);
-            showLoading(true);
-            try {
-                await CloudStore.addBranch({ name, type: type || 'camp', location, managerId: managerId || null,
-                    managerName: manager ? manager.name : null, cardLimit, createdAt: new Date().toISOString() });
-                await CloudStore.addAuditLog({ action: 'CREATE_BRANCH', entityType: 'Branch', entityId: name });
-                bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
-                showToast('success', `Camp ${name} added successfully`);
-            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
-            showLoading(false);
-        }
-
-        async function saveProject() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addProject')) { showToast('warning',
-                'You don\'t have permission to add projects.'); return; }
-            const name = document.getElementById('projectName').value.trim();
-            const sel = document.getElementById('projectCamps');
-            const camps = Array.from(sel.selectedOptions).map(o => o.value);
-            const desc = document.getElementById('projectDescription').value.trim();
-            if (!name || camps.length === 0) { showToast('warning',
-                'Please fill all required fields and select at least one camp'); return; }
-            showLoading(true);
-            try {
-                await CloudStore.addProject({ name, camps, description: desc, status: 'active', createdAt: new Date()
-                        .toISOString() });
-                await CloudStore.addAuditLog({ action: 'CREATE_PROJECT', entityType: 'Project', entityId: name });
-                bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
-                showToast('success', `Project ${name} added with ${camps.length} camps`);
-            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
-            showLoading(false);
-        }
-
-        async function saveCard() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addCard')) { showToast('warning',
-                'You don\'t have permission to add cards.'); return; }
-            const cardNumber = document.getElementById('cardNumber').value.trim();
-            const branch = document.getElementById('cardBranch').value;
-            const project = document.getElementById('cardProject').value;
-            const holderId = document.getElementById('cardHolder').value;
-            const limit = parseFloat(document.getElementById('cardLimit').value);
-            if (!cardNumber || !branch || !project || !holderId || !limit) { showToast('warning',
-                    'Please fill all required fields'); return; }
-            const holder = appState.employees.find(e => e.id === holderId);
-            showLoading(true);
-            try {
-                await CloudStore.addCard({ cardNumber: cardNumber.padStart(4, '0'), branch, projectName: project,
-                    holderId, holderName: holder ? holder.name : 'N/A', limit, utilized: 0, status: 'active',
-                    createdAt: new Date().toISOString() });
-                const existing = appState.funds.find(f => f.camp === branch);
-                if (!existing) {
-                    await CloudStore.updateFund(branch, 0, 'add', 'Initial fund tracking');
-                }
-                await CloudStore.addAuditLog({ action: 'CREATE_CARD', entityType: 'Card', entityId: cardNumber });
-                bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
-                showToast('success', `Card added for ${branch} with limit ₹${limit.toLocaleString()}`);
-            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
-            showLoading(false);
+            }).catch((err) => {
+                showToast('danger', 'Error loading employee: ' + err.message);
+                console.error('Error fetching employee:', err);
+            });
         }
 
         // ======================================================================
-        // SAVE EMPLOYEE - FIXED
+        // SAVE EMPLOYEE - COMPLETELY FIXED
         // ======================================================================
         async function saveEmployee() {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
-                    'You don\'t have permission to add employees.'); return; }
+            if (!hasPermission(user?.role, 'addEmployee')) { 
+                showToast('warning', 'You don\'t have permission to add employees.'); 
+                return; 
+            }
+            
+            // Get form values
             const id = document.getElementById('editEmployeeId').value;
             const empId = document.getElementById('empEmployeeId').value.trim();
             const name = document.getElementById('empName').value.trim();
@@ -4516,6 +4400,9 @@
             const un = document.getElementById('empUsername').value.trim();
             const pw = document.getElementById('empPassword').value;
             
+            console.log('Saving employee with ID:', id); // Debug log
+            
+            // Validate required fields
             if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
                 showToast('warning', 'Please fill all required fields'); 
                 return; 
@@ -4529,11 +4416,15 @@
             }
             
             showLoading(true);
+            
             try {
                 if (id) {
-                    // Check if employee document exists before updating
+                    // ✅ EDITING EXISTING EMPLOYEE
+                    console.log('Updating employee with ID:', id);
+                    
                     const docRef = CloudStore.employeesCollection.doc(id);
                     const doc = await docRef.get();
+                    
                     if (!doc.exists) {
                         showToast('danger', 'Employee document not found in database. Please refresh and try again.');
                         showLoading(false);
@@ -4541,6 +4432,7 @@
                     }
                     
                     const currentData = doc.data();
+                    console.log('Current employee data:', currentData);
                     
                     // Update employee
                     await docRef.update({
@@ -4566,15 +4458,8 @@
                                 updatedAt: new Date().toISOString()
                             };
                             
-                            // Update username if provided and different
-                            if (un) {
-                                updateData.username = un;
-                            }
-                            
-                            // Update password if provided
-                            if (pw && pw.length >= 6) {
-                                updateData.password = pw;
-                            }
+                            if (un) updateData.username = un;
+                            if (pw && pw.length >= 6) updateData.password = pw;
                             
                             await userDoc.ref.update(updateData);
                             
@@ -4596,10 +4481,25 @@
                         console.warn('Could not update user account:', userErr);
                     }
                     
+                    // Update local state
+                    const localEmp = appState.employees.find(e => e.id === id);
+                    if (localEmp) {
+                        localEmp.employeeId = empId;
+                        localEmp.name = name;
+                        localEmp.email = email;
+                        localEmp.mobile = mobile;
+                        localEmp.branch = branch;
+                        localEmp.designation = desig;
+                        localEmp.role = role;
+                        localEmp.updatedAt = new Date().toISOString();
+                    }
+                    
                     showToast('success', 'Employee updated successfully.');
                     
                 } else {
-                    // Adding new employee
+                    // ✅ ADDING NEW EMPLOYEE
+                    console.log('Adding new employee');
+                    
                     if (!pw || pw.length < 6) { 
                         showToast('warning', 'Password must be at least 6 characters');
                         showLoading(false); 
@@ -4649,18 +4549,27 @@
                     showToast('success', 'Employee added successfully. User account created.');
                 }
                 
-                bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+                // Close modal
+                const modalEl = document.getElementById('employeeModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                
+                // Add audit log
                 await CloudStore.addAuditLog({ 
                     action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
                     entityType: 'Employee', 
                     entityId: name,
                     details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId})`
                 });
+                
+                // Refresh employee list
                 loadEmployees();
+                
             } catch (err) { 
                 console.error('Save employee error:', err);
                 showToast('danger', 'Failed to save: ' + err.message); 
             }
+            
             showLoading(false);
         }
 
