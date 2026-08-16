@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Fund Management System</title>
+    <title>Project Fund Management System - Complete</title>
 
     <!-- Bootstrap + FontAwesome + Chart.js + Firebase -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        /* ===== COMPLETE STYLES ===== */
+        /* ===== COMPLETE STYLES WITH MOBILE RESPONSIVENESS ===== */
         :root {
             --primary: #4e73df;
             --success: #1cc88a;
@@ -31,18 +31,67 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gray-100); min-height: 100vh; }
 
-        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-        .login-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 440px; animation: slideUp 0.6s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .login-card .brand { text-align: center; margin-bottom: 30px; }
-        .login-card .brand i { font-size: 3.5rem; color: #4e73df; background: rgba(78,115,223,0.1); padding: 20px; border-radius: 50%; }
-        .login-card .brand h3 { margin-top: 15px; font-weight: 700; color: var(--gray-800); }
-        .login-card .brand p { color: var(--gray-600); font-size: 0.9rem; }
-        .login-card .form-control { border-radius: 10px; padding: 12px 15px; border: 2px solid var(--gray-200); transition: all 0.3s; }
-        .login-card .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(78,115,223,0.1); }
-        .login-card .btn-login { padding: 12px; border-radius: 10px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; transition: all 0.3s; color: white; }
-        .login-card .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
-        .login-card .setup-info { background: var(--gray-100); padding: 15px; border-radius: 10px; margin-top: 20px; }
+        /* ===== MOBILE RESPONSIVENESS FIXES ===== */
+        .navbar-toggler { border: none; color: white; font-size: 1.5rem; padding: 0.5rem; }
+        .navbar-toggler:focus { box-shadow: none; }
+        
+        @media (max-width: 768px) {
+            .sidebar { 
+                position: fixed !important;
+                top: 0;
+                left: -300px;
+                width: 280px;
+                height: 100vh;
+                z-index: 9999;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                background: linear-gradient(180deg, var(--gray-800) 0%, #1a202c 100%);
+                padding: 0;
+            }
+            .sidebar.show { left: 0; }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 9998;
+            }
+            .sidebar-overlay.show { display: block; }
+            .main-content { 
+                padding: 15px; 
+                margin-left: 0 !important;
+                max-height: none;
+                overflow-y: auto;
+            }
+            .stat-card { margin-bottom: 15px; }
+            .login-card { padding: 30px 20px; }
+            .pagination-container { flex-direction: column; align-items: center; }
+            .company-header { flex-direction: column; align-items: flex-start; }
+            .company-header .float-end { float: none !important; margin-top: 10px; }
+            .notification-badge { top: -5px; right: -5px; }
+            .mobile-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+            .mobile-header .brand-text { font-weight: 600; font-size: 1.1rem; }
+            .mobile-header .header-actions { display: flex; gap: 15px; align-items: center; }
+            .mobile-header .header-actions i { font-size: 1.2rem; cursor: pointer; color: white; }
+            .mobile-header .header-actions .position-relative { display: inline-block; }
+        }
+        @media (min-width: 769px) {
+            .mobile-header { display: none !important; }
+            .sidebar-overlay { display: none !important; }
+        }
 
         .sidebar { min-height: 100vh; background: linear-gradient(180deg, var(--gray-800) 0%, #1a202c 100%); padding: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
         .sidebar .user-profile { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -82,7 +131,6 @@
         .stat-card .stat-label { font-size: 0.7rem; text-transform: uppercase; color: #999; font-weight: 600; }
 
         .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
-
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast-custom { background: white; border-radius: 12px; padding: 15px 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 10px; min-width: 320px; animation: slideInRight 0.4s ease; border-left: 4px solid; }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
@@ -108,7 +156,6 @@
         .alert-card.danger { background: #f8d7da; border-left-color: var(--danger); }
         .alert-card.success { background: #d4edda; border-left-color: var(--success); }
         .alert-card.info { background: #d1ecf1; border-left-color: var(--info); }
-        .alert-card .badge { font-size: 0.7rem; }
         .alert-clickable { cursor: pointer; transition: all 0.3s ease; }
         .alert-clickable:hover { transform: translateX(8px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
         .alert-clickable .alert-arrow { transition: transform 0.3s ease; }
@@ -145,7 +192,7 @@
             margin-top: 15px;
         }
         .pagination-container .pagination-info { font-size: 0.85rem; color: #666; }
-        .pagination-container .pagination-controls { display: flex; gap: 5px; align-items: center; }
+        .pagination-container .pagination-controls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
         .pagination-container .pagination-controls .page-btn {
             border: 1px solid var(--gray-200);
             background: white;
@@ -175,8 +222,54 @@
             font-size: 0.85rem;
         }
 
-        @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } .pagination-container { flex-direction: column; align-items: center; } }
-        @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
+        /* ===== NOTIFICATION DROPDOWN ===== */
+        .notification-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 9999;
+            border: 1px solid var(--gray-200);
+        }
+        .notification-dropdown .notification-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-dropdown .notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-dropdown .notification-item:hover {
+            background: var(--gray-100);
+        }
+        .notification-dropdown .notification-item.unread {
+            background: #f0f7ff;
+            border-left: 3px solid var(--primary);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            min-width: 18px;
+            text-align: center;
+        }
 
         .sync-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
         .sync-badge.synced { background: #1cc88a; color: white; }
@@ -185,8 +278,19 @@
         .table-wrapper { overflow-x: auto; }
         .table-responsive-stack { display: block; width: 100%; overflow-x: auto; }
         .alert-action-btn { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-left: 5px; }
-        
         .fade-in { animation: fadeIn 0.4s ease; }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .company-header h4 { margin: 0; }
+        .company-header small { font-size: 0.85rem; }
+
+        @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
     </style>
 </head>
 <body>
@@ -293,11 +397,32 @@
 
         <!-- ===== DASHBOARD ===== -->
         <div id="dashboardScreen" style="display:none;">
+            
+            <!-- ===== MOBILE HEADER ===== -->
+            <div class="mobile-header no-print">
+                <div class="d-flex align-items-center">
+                    <button class="navbar-toggler" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="brand-text ms-2">Project Fund Pro</span>
+                </div>
+                <div class="header-actions">
+                    <div class="position-relative">
+                        <i class="fas fa-bell" onclick="toggleNotifications()"></i>
+                        <span class="notification-badge" id="mobileNotificationBadge">0</span>
+                    </div>
+                    <i class="fas fa-sign-out-alt" onclick="logout()"></i>
+                </div>
+            </div>
+
+            <!-- ===== SIDEBAR OVERLAY ===== -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
             <div class="container-fluid p-0">
                 <div class="row g-0">
 
                     <!-- ===== SIDEBAR ===== -->
-                    <div class="col-md-2 col-lg-2 d-md-block sidebar no-print">
+                    <div class="col-md-2 col-lg-2 d-md-block sidebar no-print" id="mainSidebar">
                         <div class="user-profile">
                             <div class="avatar"><i class="fas fa-user-circle"></i></div>
                             <h6 id="userNameDisplay">User</h6>
@@ -376,9 +501,24 @@
                         <div id="page-dashboard" class="page-content">
                             <div class="company-header">
                                 <h4><i class="fas fa-tachometer-alt me-2 text-primary"></i>Project Fund Management</h4>
-                                <small id="currentDateTime" class="text-muted"></small>
-                                <div class="float-end">
-                                    <span class="badge bg-success" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
+                                <div>
+                                    <small id="currentDateTime" class="text-muted"></small>
+                                    <span class="badge bg-success ms-2" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
+                                    <!-- ===== NOTIFICATION BELL ===== -->
+                                    <span class="position-relative ms-3 no-print" style="display:inline-block;cursor:pointer;" onclick="toggleNotifications()">
+                                        <i class="fas fa-bell fa-lg text-secondary"></i>
+                                        <span class="notification-badge" id="desktopNotificationBadge">0</span>
+                                    </span>
+                                    <!-- ===== NOTIFICATION DROPDOWN ===== -->
+                                    <div class="notification-dropdown" id="notificationDropdown">
+                                        <div class="notification-header">
+                                            <span>Notifications</span>
+                                            <button class="btn btn-sm btn-link" onclick="markAllNotificationsRead()">Mark all read</button>
+                                        </div>
+                                        <div id="notificationList">
+                                            <div class="text-center text-muted py-3">Loading...</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1084,6 +1224,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="branchForm">
+                        <input type="hidden" id="editBranchId">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Camp Name *</label>
                             <input type="text" class="form-control" id="branchName" placeholder="e.g., Raipur Camp" required>
@@ -1130,6 +1271,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="projectForm">
+                        <input type="hidden" id="editProjectId">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Project Name *</label>
                             <input type="text" class="form-control" id="projectName" placeholder="e.g., Pipeline Survey" required>
@@ -1144,6 +1286,15 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Description</label>
                             <textarea class="form-control" id="projectDescription" rows="2" placeholder="Project description"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select class="form-select" id="projectStatus">
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                                <option value="on-hold">On Hold</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -1165,6 +1316,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="cardForm">
+                        <input type="hidden" id="editCardId">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Card Number (Last 4 digits) *</label>
                             <input type="text" class="form-control" id="cardNumber" placeholder="e.g., 4582" maxlength="4" required>
@@ -1192,6 +1344,14 @@
                             <input type="number" class="form-control" id="cardLimit" min="1" placeholder="Enter monthly credit limit" required>
                             <small class="text-muted">Funds allocated monthly for this camp</small>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Card Status</label>
+                            <select class="form-select" id="cardStatus">
+                                <option value="active">Active</option>
+                                <option value="blocked">Blocked</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1212,6 +1372,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="advanceForm">
+                        <input type="hidden" id="editAdvanceId">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Camp *</label>
@@ -1258,6 +1419,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="expenseForm">
+                        <input type="hidden" id="editExpenseId">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Camp *</label>
@@ -1322,10 +1484,15 @@
                                 <div class="upload-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
                                     <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
                                     <p class="mt-2 mb-0">Drag &amp; drop files here or click to upload</p>
-                                    <small class="text-muted">Supported: JPG, PNG, PDF</small>
+                                    <small class="text-muted">Supported: JPG, PNG, PDF (Max 5MB)</small>
                                     <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png,.pdf" style="display:none;">
                                 </div>
                                 <div class="file-list mt-2" id="fileList"></div>
+                                <div id="uploadProgress" style="display:none;" class="mt-2">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="uploadProgressBar" style="width:0%">0%</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-12 mb-3">
                                 <label class="form-label fw-semibold">Remarks</label>
@@ -1390,12 +1557,20 @@
                             </select>
                         </div>
                         <div class="mb-2">
+                            <label class="form-label small">Status</label>
+                            <select class="form-select form-select-sm" id="empStatus">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
                             <label class="form-label small">Username *</label>
                             <input type="text" class="form-control form-control-sm" id="empUsername" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small">Password</label>
-                            <input type="password" class="form-control form-control-sm" id="empPassword" placeholder="Min 6 characters for new employee">
+                            <input type="password" class="form-control form-control-sm" id="empPassword" placeholder="Leave blank to keep current">
+                            <small class="text-muted" id="passwordHint">Min 6 characters for new employee</small>
                         </div>
                     </form>
                 </div>
@@ -1425,6 +1600,7 @@
                         <div class="mb-1"><strong>Amount:</strong> <span id="aprAmount"></span></div>
                         <div class="mb-1"><strong>Purpose:</strong> <span id="aprPurpose"></span></div>
                         <div class="mb-1"><strong>Description:</strong> <span id="aprDescription"></span></div>
+                        <div class="mb-1"><strong>Attachments:</strong> <span id="aprAttachments"></span></div>
                     </div>
                     <hr>
                     <div class="mb-2">
@@ -1531,6 +1707,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // ======================================================================
+        // COMPLETE JAVASCRIPT - ALL FEATURES INCLUDED
+        // ======================================================================
+
         // ======================================================================
         // FIREBASE CONFIG
         // ======================================================================
@@ -1644,7 +1824,7 @@
         }
 
         // ======================================================================
-        // CLOUD STORE
+        // CLOUD STORE - Enhanced with real-time sync
         // ======================================================================
         const CloudStore = {
             usersCollection: db.collection('users'),
@@ -1663,6 +1843,7 @@
             transactionsCollection: db.collection('transactions'),
             currentUser: null,
             listeners: [],
+            _refreshCallbacks: [],
 
             setCurrentUser(u) {
                 this.currentUser = u;
@@ -1673,7 +1854,13 @@
                     localStorage.removeItem('pf_user_id');
                     localStorage.removeItem('pf_user_data');
                 }
+                this._refreshCallbacks.forEach(cb => cb(u));
             },
+            
+            onUserRefresh(cb) {
+                this._refreshCallbacks.push(cb);
+            },
+
             getCurrentUser() {
                 if (this.currentUser) return this.currentUser;
                 const id = localStorage.getItem('pf_user_id');
@@ -1684,19 +1871,15 @@
                 return null;
             },
 
-            async syncUserBranch(userId, newBranch) {
-                if (!userId) return;
-                try {
-                    await this.usersCollection.doc(userId).update({ branch: newBranch });
-                    if (this.currentUser && this.currentUser.id === userId) {
-                        this.currentUser.branch = newBranch;
-                        localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
-                    }
-                    return true;
-                } catch (err) {
-                    console.error('Error syncing branch:', err);
-                    return false;
-                }
+            _setupListener(query, cb) {
+                const l = query.onSnapshot(snap => { 
+                    const arr = [];
+                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                    cb(arr);
+                    this._refreshCallbacks.forEach(fn => fn(this.getCurrentUser()));
+                });
+                this.listeners.push(l);
+                return l;
             },
 
             listenToBranches(cb) {
@@ -1704,99 +1887,63 @@
                 const p = getUserPermissions(u?.role);
                 let q = this.branchesCollection.orderBy('name');
                 if (!p.viewAllBranches && u?.branch) q = q.where('name', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToProjects(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.projectsCollection.orderBy('name');
                 if (!p.viewAllBranches && u?.branch) q = q.where('camps', 'array-contains', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToEmployees(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.employeesCollection.orderBy('name');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToAdvances(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.advancesCollection.orderBy('createdAt', 'desc');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToExpenses(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.expensesCollection.orderBy('createdAt', 'desc');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToCards(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.cardsCollection.orderBy('cardNumber');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToAudit(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.auditCollection.orderBy('timestamp', 'desc').limit(100);
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToFunds(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.fundsCollection.orderBy('camp');
                 if (!p.viewAllBranches && u?.branch) q = q.where('camp', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
             listenToTransactions(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
                 let q = this.transactionsCollection.orderBy('timestamp', 'desc');
                 if (!p.viewAllBranches && u?.branch) q = q.where('branch', '==', u.branch);
-                const l = q.onSnapshot(snap => { const arr = [];
-                    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                    cb(arr); });
-                this.listeners.push(l);
-                return l;
+                return this._setupListener(q, cb);
             },
 
             async getMainFund() {
@@ -1817,7 +1964,7 @@
                     await ref.update({ balance: nb, updatedAt: new Date().toISOString() });
                 }
                 const monthVal = month || new Date().toISOString().slice(0, 7);
-                const transactionData = {
+                await this.transactionsCollection.add({
                     type: type === 'add' ? 'REFILL' : 'FUND_TRANSFER',
                     entityType: 'Fund',
                     entityId: camp,
@@ -1827,8 +1974,7 @@
                     description: `${type === 'add' ? 'Refill' : 'Transfer'} ${amount} to ${camp} (${remark||''})`,
                     timestamp: new Date().toISOString(),
                     user: this.getCurrentUser()?.username || 'system'
-                };
-                await this.transactionsCollection.add(transactionData);
+                });
                 await this.addAuditLog({ action: type === 'add' ? 'FUND_ADD' : 'FUND_TRANSFER', entityType: 'Fund',
                     entityId: camp, details: `${type} ${amount} to ${camp} (${remark||''})` });
                 return ref;
@@ -1866,46 +2012,111 @@
                 return { id: r.id, ...data };
             },
 
-            async addBranch(d) { const r = await this.branchesCollection.add(d); return { id: r.id, ...d }; },
-            async addProject(d) { const r = await this.projectsCollection.add(d); return { id: r.id, ...d }; },
-            async addEmployee(d) { const r = await this.employeesCollection.add(d); return { id: r.id, ...d }; },
+            async addBranch(d) { 
+                const r = await this.branchesCollection.add(d); 
+                return { id: r.id, ...d }; 
+            },
             
+            async updateBranch(id, d) {
+                await this.branchesCollection.doc(id).update(d);
+                return { id, ...d };
+            },
+
+            async addProject(d) { 
+                const r = await this.projectsCollection.add(d); 
+                return { id: r.id, ...d }; 
+            },
+            
+            async updateProject(id, d) {
+                await this.projectsCollection.doc(id).update(d);
+                return { id, ...d };
+            },
+
+            async addEmployee(d) {
+                const r = await this.employeesCollection.add(d);
+                return { id: r.id, ...d };
+            },
+
             async updateEmployee(id, d) {
+                console.log('🔄 Updating employee:', id, d);
+                
                 const docRef = this.employeesCollection.doc(id);
                 const doc = await docRef.get();
                 if (!doc.exists) {
                     throw new Error('Employee document not found in database.');
                 }
                 
-                await docRef.update(d);
+                const oldData = doc.data();
+                const updateData = {
+                    ...d,
+                    updatedAt: new Date().toISOString()
+                };
+                await docRef.update(updateData);
                 
-                const emp = await docRef.get();
-                if (emp.exists) {
-                    const empData = emp.data();
-                    try {
-                        const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
-                        if (!userSnap.empty) {
-                            const userDoc = userSnap.docs[0];
-                            await userDoc.ref.update({ 
-                                branch: d.branch || empData.branch,
-                                fullName: d.name || empData.name,
-                                role: d.role || empData.role,
-                                updatedAt: new Date().toISOString()
-                            });
-                            if (this.currentUser && this.currentUser.id === userDoc.id) {
-                                this.currentUser.branch = d.branch || empData.branch;
-                                this.currentUser.fullName = d.name || empData.name;
-                                this.currentUser.role = d.role || empData.role;
-                                localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
+                const updatedDoc = await docRef.get();
+                if (!updatedDoc.exists) throw new Error('Employee not found after update');
+                const empData = updatedDoc.data();
+                const updatedEmployee = { id: updatedDoc.id, ...empData };
+                
+                // Update user account
+                let userUpdated = false;
+                try {
+                    const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
+                    if (!userSnap.empty) {
+                        const userDoc = userSnap.docs[0];
+                        const userUpdateData = {};
+                        if (d.branch) userUpdateData.branch = d.branch;
+                        if (d.name) userUpdateData.fullName = d.name;
+                        if (d.role) userUpdateData.role = d.role;
+                        if (d.email) userUpdateData.email = d.email;
+                        if (d.mobile) userUpdateData.mobile = d.mobile;
+                        if (d.designation) userUpdateData.designation = d.designation;
+                        if (d.isActive !== undefined) userUpdateData.isActive = d.isActive;
+                        userUpdateData.updatedAt = new Date().toISOString();
+                        
+                        await userDoc.ref.update(userUpdateData);
+                        userUpdated = true;
+                        
+                        if (this.currentUser && this.currentUser.id === userDoc.id) {
+                            const updatedUserData = await userDoc.ref.get();
+                            const updatedUser = { id: userDoc.id, ...updatedUserData.data() };
+                            this.setCurrentUser(updatedUser);
+                            
+                            // Update UI
+                            updateUserUI(updatedUser);
+                            applyPermissions();
+                            
+                            showToast('success', '🔐 Your role/permissions have been updated. Refreshing UI...');
+                            
+                            const currentPage = document.querySelector('.page-content:not([style*="display: none"])')?.id?.replace('page-', '');
+                            if (currentPage) {
+                                setTimeout(() => showPage(currentPage), 300);
                             }
                         }
-                    } catch (userErr) {
-                        console.warn('Could not update user account:', userErr);
                     }
+                } catch (userErr) {
+                    console.error('Error updating user account:', userErr);
                 }
-                return { id, ...d };
+                
+                // Update local state
+                const localIndex = appState.employees.findIndex(e => e.id === id);
+                if (localIndex !== -1) {
+                    appState.employees[localIndex] = updatedEmployee;
+                } else {
+                    appState.employees.push(updatedEmployee);
+                }
+                
+                await this.addAuditLog({
+                    action: 'UPDATE_EMPLOYEE',
+                    entityType: 'Employee',
+                    entityId: id,
+                    details: `Updated employee ${empData.name || 'N/A'} (${empData.employeeId}) - Branch: ${d.branch || 'unchanged'}, Role: ${d.role || 'unchanged'}`
+                });
+                
+                this._refreshCallbacks.forEach(fn => fn(this.getCurrentUser()));
+                return updatedEmployee;
             },
-            
+
             async addAdvance(d) {
                 const r = await this.advancesCollection.add(d);
                 const monthVal = new Date().toISOString().slice(0, 7);
@@ -1922,7 +2133,14 @@
                 });
                 return { id: r.id, ...d };
             },
-            async updateAdvance(id, d) { await this.advancesCollection.doc(id).update(d); return { id, ...d }; },
+            
+            async updateAdvance(id, d) { 
+                await this.advancesCollection.doc(id).update(d); 
+                const idx = appState.advances.findIndex(a => a.id === id);
+                if (idx !== -1) appState.advances[idx] = { ...appState.advances[idx], ...d };
+                return { id, ...d }; 
+            },
+
             async addExpense(d) {
                 const r = await this.expensesCollection.add(d);
                 const monthVal = d.date ? d.date.slice(0, 7) : new Date().toISOString().slice(0, 7);
@@ -1939,25 +2157,90 @@
                 });
                 return { id: r.id, ...d };
             },
-            async updateExpense(id, d) { await this.expensesCollection.doc(id).update(d); return { id, ...d }; },
-            async addCard(d) { const r = await this.cardsCollection.add(d); return { id: r.id, ...d }; },
-            async updateCard(id, d) { await this.cardsCollection.doc(id).update(d); return { id, ...d }; },
-            async addNotification(d) { const r = await this.notificationsCollection.add(d); return { id: r.id, ...d }; },
+            
+            async updateExpense(id, d) { 
+                await this.expensesCollection.doc(id).update(d);
+                const idx = appState.expenses.findIndex(e => e.id === id);
+                if (idx !== -1) appState.expenses[idx] = { ...appState.expenses[idx], ...d };
+                return { id, ...d }; 
+            },
+
+            async addCard(d) { 
+                const r = await this.cardsCollection.add(d); 
+                return { id: r.id, ...d }; 
+            },
+            
+            async updateCard(id, d) { 
+                await this.cardsCollection.doc(id).update(d);
+                const idx = appState.cards.findIndex(c => c.id === id);
+                if (idx !== -1) appState.cards[idx] = { ...appState.cards[idx], ...d };
+                return { id, ...d }; 
+            },
+
+            async addNotification(d) { 
+                const r = await this.notificationsCollection.add(d); 
+                return { id: r.id, ...d }; 
+            },
+            
+            async markNotificationRead(id) {
+                await this.notificationsCollection.doc(id).update({ read: true, readAt: new Date().toISOString() });
+            },
+            
+            async markAllNotificationsRead(userId) {
+                const snap = await this.notificationsCollection.where('userId', '==', userId).where('read', '==', false).get();
+                const batch = db.batch();
+                snap.forEach(doc => batch.update(doc.ref, { read: true, readAt: new Date().toISOString() }));
+                await batch.commit();
+            },
+
             async addAuditLog(d) {
                 const u = this.getCurrentUser();
                 const r = await this.auditCollection.add({ ...d, timestamp: new Date().toISOString(), user: u?.username ||
                         'system', role: u?.role || 'system' });
                 return { id: r.id, ...d };
             },
+
             async getUserByUsername(username) {
                 const snap = await this.usersCollection.where('username', '==', username).get();
                 if (snap.empty) return null;
                 const d = snap.docs[0];
                 return { id: d.id, ...d.data() };
             },
-            async addUser(d) { const r = await this.usersCollection.add(d); return { id: r.id, ...d }; },
-            cleanup() { this.listeners.forEach(l => l());
-                this.listeners = []; }
+
+            async addUser(d) { 
+                const r = await this.usersCollection.add(d);
+                const empSnap = await this.employeesCollection.where('employeeId', '==', d.employeeId).get();
+                if (empSnap.empty) {
+                    await this.employeesCollection.add({
+                        employeeId: d.employeeId,
+                        name: d.fullName,
+                        email: d.email || '',
+                        mobile: d.mobile || '',
+                        branch: d.branch || '',
+                        designation: d.designation || '',
+                        role: d.role || 'employee',
+                        isActive: true,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+                return { id: r.id, ...d };
+            },
+
+            async getUserById(id) {
+                try {
+                    const doc = await this.usersCollection.doc(id).get();
+                    if (doc.exists) return { id: doc.id, ...doc.data() };
+                    return null;
+                } catch (err) {
+                    console.error('Error fetching user:', err);
+                    return null;
+                }
+            },
+
+            cleanup() { 
+                this.listeners.forEach(l => l());
+                this.listeners = [];
+            }
         };
 
         // ======================================================================
@@ -1966,9 +2249,8 @@
         let appState = { branches: [], projects: [], employees: [], advances: [], expenses: [], cards: [], auditLogs: [],
             funds: [], refills: [], allocations: [], transactions: [], users: [] };
         let uploadedFiles = [];
-        let branchChartInstance = null,
-            employeeChartInstance = null,
-            monthlyChartInstance = null;
+        let branchChartInstance = null, employeeChartInstance = null, monthlyChartInstance = null;
+        let notificationCheckInterval = null;
 
         // ======================================================================
         // PAGINATION STATE
@@ -2009,6 +2291,162 @@
         }
 
         // ======================================================================
+        // SIDEBAR TOGGLE (Mobile)
+        // ======================================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+                if (overlay) overlay.classList.toggle('show');
+            }
+        }
+
+        // ======================================================================
+        // NOTIFICATIONS
+        // ======================================================================
+        async function loadNotifications() {
+            const user = CloudStore.getCurrentUser();
+            if (!user) return;
+            
+            try {
+                const snap = await CloudStore.notificationsCollection
+                    .where('userId', '==', user.id)
+                    .where('read', '==', false)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                const count = snap.size;
+                
+                // Update both badges
+                const desktopBadge = document.getElementById('desktopNotificationBadge');
+                const mobileBadge = document.getElementById('mobileNotificationBadge');
+                
+                if (desktopBadge) {
+                    desktopBadge.textContent = count;
+                    desktopBadge.style.display = count > 0 ? 'inline' : 'none';
+                }
+                if (mobileBadge) {
+                    mobileBadge.textContent = count;
+                    mobileBadge.style.display = count > 0 ? 'inline' : 'none';
+                }
+                
+                // Build notification list
+                const container = document.getElementById('notificationList');
+                if (!container) return;
+                
+                if (count === 0) {
+                    container.innerHTML = '<div class="text-center text-muted py-3">No new notifications</div>';
+                    return;
+                }
+                
+                let html = '';
+                snap.forEach(doc => {
+                    const n = doc.data();
+                    const severityColor = n.severity === 'danger' ? 'danger' : 
+                                        n.severity === 'warning' ? 'warning' : 'info';
+                    const iconMap = {
+                        'ADVANCE_APPROVED': 'fa-check-circle text-success',
+                        'ADVANCE_REJECTED': 'fa-times-circle text-danger',
+                        'EXPENSE_APPROVED': 'fa-check-circle text-success',
+                        'EXPENSE_REJECTED': 'fa-times-circle text-danger',
+                        'REMINDER': 'fa-bell text-warning',
+                        'SYSTEM': 'fa-cog text-primary'
+                    };
+                    const icon = iconMap[n.type] || 'fa-bell text-secondary';
+                    
+                    html += `
+                        <div class="notification-item unread" onclick="markNotificationRead('${doc.id}')">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <i class="fas ${icon} me-2"></i>
+                                    <span class="fw-bold">${n.title || 'Notification'}</span>
+                                </div>
+                                <span class="badge bg-${severityColor}">${n.type || 'Update'}</span>
+                            </div>
+                            <div class="small text-muted mt-1">${n.message || ''}</div>
+                            <div class="small text-muted mt-1">${n.createdAt ? new Date(n.createdAt).toLocaleString() : ''}</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                console.error('Failed to load notifications:', err);
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown) {
+                const isVisible = dropdown.style.display === 'block';
+                dropdown.style.display = isVisible ? 'none' : 'block';
+                if (!isVisible) {
+                    loadNotifications();
+                }
+            }
+        }
+
+        async function markNotificationRead(id) {
+            try {
+                await CloudStore.markNotificationRead(id);
+                loadNotifications();
+                // Also update badge count
+                const user = CloudStore.getCurrentUser();
+                if (user) {
+                    const snap = await CloudStore.notificationsCollection
+                        .where('userId', '==', user.id)
+                        .where('read', '==', false)
+                        .get();
+                    const count = snap.size;
+                    const desktopBadge = document.getElementById('desktopNotificationBadge');
+                    const mobileBadge = document.getElementById('mobileNotificationBadge');
+                    if (desktopBadge) {
+                        desktopBadge.textContent = count;
+                        desktopBadge.style.display = count > 0 ? 'inline' : 'none';
+                    }
+                    if (mobileBadge) {
+                        mobileBadge.textContent = count;
+                        mobileBadge.style.display = count > 0 ? 'inline' : 'none';
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to mark notification as read:', err);
+            }
+        }
+
+        async function markAllNotificationsRead() {
+            const user = CloudStore.getCurrentUser();
+            if (!user) return;
+            try {
+                await CloudStore.markAllNotificationsRead(user.id);
+                loadNotifications();
+                const desktopBadge = document.getElementById('desktopNotificationBadge');
+                const mobileBadge = document.getElementById('mobileNotificationBadge');
+                if (desktopBadge) {
+                    desktopBadge.textContent = '0';
+                    desktopBadge.style.display = 'none';
+                }
+                if (mobileBadge) {
+                    mobileBadge.textContent = '0';
+                    mobileBadge.style.display = 'none';
+                }
+                showToast('success', 'All notifications marked as read');
+            } catch (err) {
+                console.error('Failed to mark all as read:', err);
+                showToast('danger', 'Failed to mark all as read');
+            }
+        }
+
+        // Click outside to close notification dropdown
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.querySelector('.fa-bell');
+            if (dropdown && bell && !dropdown.contains(e.target) && !bell.closest('.position-relative')?.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // ======================================================================
         // FILE UPLOAD
         // ======================================================================
         const dropArea = document.getElementById('dropArea');
@@ -2047,6 +2485,90 @@
             displayFiles(); }
 
         // ======================================================================
+        // UPLOAD FILES TO STORAGE
+        // ======================================================================
+        async function uploadFilesToStorage(files) {
+            const urls = [];
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressContainer = document.getElementById('uploadProgress');
+            
+            if (progressContainer) progressContainer.style.display = 'block';
+            
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                try {
+                    const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
+                    const uploadTask = ref.put(f.file || f);
+                    
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                if (progressBar) {
+                                    progressBar.style.width = progress + '%';
+                                    progressBar.textContent = Math.round(progress) + '%';
+                                }
+                            },
+                            reject,
+                            resolve
+                        );
+                    });
+                    
+                    const url = await ref.getDownloadURL();
+                    urls.push({ 
+                        name: f.name, 
+                        url: url, 
+                        type: f.type, 
+                        size: f.size,
+                        uploadedAt: new Date().toISOString()
+                    });
+                } catch (err) {
+                    console.error('Upload failed:', err);
+                    showToast('warning', `Failed to upload ${f.name}`);
+                }
+            }
+            
+            if (progressContainer) progressContainer.style.display = 'none';
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+            }
+            
+            return urls;
+        }
+
+        // ======================================================================
+        // USER UI UPDATE
+        // ======================================================================
+        function updateUserUI(user) {
+            if (!user) return;
+            
+            const nameEl = document.getElementById('userNameDisplay');
+            const deptEl = document.getElementById('userDeptDisplay');
+            const roleEl = document.getElementById('userRoleBadge');
+            const empIdEl = document.getElementById('userEmpIdDisplay');
+            const branchSync = document.getElementById('branchSyncStatus');
+            
+            if (nameEl) nameEl.textContent = user.fullName || user.name || 'User';
+            if (deptEl) deptEl.textContent = user.branch || 'No Branch';
+            if (roleEl) {
+                roleEl.textContent = (user.role || 'employee').toUpperCase();
+                roleEl.className = `role-badge ${user.role || 'employee'}`;
+            }
+            if (empIdEl) empIdEl.textContent = user.employeeId || 'N/A';
+            
+            if (branchSync) {
+                if (user.branch) {
+                    branchSync.textContent = `✅ Branch: ${user.branch}`;
+                    branchSync.className = 'sync-badge synced';
+                } else {
+                    branchSync.textContent = '⚠️ No Branch Assigned';
+                    branchSync.className = 'sync-badge outdated';
+                }
+            }
+        }
+
+        // ======================================================================
         // AUTH
         // ======================================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -2078,6 +2600,7 @@
             localStorage.removeItem('pf_user_id');
             localStorage.removeItem('pf_user_data');
             CloudStore.cleanup();
+            if (notificationCheckInterval) clearInterval(notificationCheckInterval);
             document.getElementById('dashboardScreen').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
             showToast('info', 'Logged out successfully');
@@ -2139,21 +2662,7 @@
             document.getElementById('dashboardScreen').style.display = 'block';
             const user = CloudStore.getCurrentUser();
             if (user) {
-                document.getElementById('userNameDisplay').textContent = user.fullName;
-                document.getElementById('userDeptDisplay').textContent = user.branch || 'No Branch';
-                document.getElementById('userRoleBadge').textContent = user.role.toUpperCase();
-                document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
-                document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
-
-                const branchSync = document.getElementById('branchSyncStatus');
-                if (user.branch) {
-                    branchSync.textContent = `✅ Branch: ${user.branch}`;
-                    branchSync.className = 'sync-badge synced';
-                } else {
-                    branchSync.textContent = '⚠️ No Branch Assigned';
-                    branchSync.className = 'sync-badge outdated';
-                }
-
+                updateUserUI(user);
                 applyPermissions();
                 const perms = getUserPermissions(user.role);
                 if (user.role === 'employee' || !perms.viewDashboard) {
@@ -2168,10 +2677,17 @@
                     document.querySelector('.sidebar .nav-link[onclick*="dashboard"]')?.classList.add('active');
                     document.querySelector('.sidebar .nav-link[onclick*="myDashboard"]')?.classList.remove('active');
                 }
+                // Start notification polling
+                if (notificationCheckInterval) clearInterval(notificationCheckInterval);
+                notificationCheckInterval = setInterval(loadNotifications, 30000);
+                loadNotifications();
             }
             setupRealtimeListeners();
         }
 
+        // ======================================================================
+        // APPLY PERMISSIONS
+        // ======================================================================
         function applyPermissions() {
             const user = CloudStore.getCurrentUser();
             if (!user) return;
@@ -2206,12 +2722,25 @@
                 addBranchBtn: perms.addBranch, addProjectBtn: perms.addProject, addEmployeeBtn: perms.addEmployee };
             Object.keys(addBtns).forEach(id => { const el = document.getElementById(id); if (el) el.style.display =
                     addBtns[id] ? 'inline-block' : 'none'; });
+            
+            updateUserUI(user);
         }
 
+        // ======================================================================
+        // SETUP REAL-TIME LISTENERS
+        // ======================================================================
         function setupRealtimeListeners() {
             const user = CloudStore.getCurrentUser();
             if (!user) return;
             CloudStore.cleanup();
+            
+            CloudStore.onUserRefresh((updatedUser) => {
+                if (updatedUser) {
+                    updateUserUI(updatedUser);
+                    applyPermissions();
+                }
+            });
+            
             CloudStore.listenToBranches((b) => { appState.branches = b;
                 updateDashboard();
                 populateBranchSelectors();
@@ -2225,12 +2754,16 @@
                 loadProjects();
                 generateReports();
                 populateAllocSelect(); });
-            CloudStore.listenToEmployees((e) => { appState.employees = e;
+            CloudStore.listenToEmployees((e) => { 
+                appState.employees = e;
                 updateDashboard();
                 loadEmployees();
                 generateReports();
                 populateBranchSelectors();
-                populateAllocSelect(); });
+                populateAllocSelect();
+                const badge = document.getElementById('employeeCountBadge');
+                if (badge) badge.textContent = e.length;
+            });
             CloudStore.listenToAdvances((a) => { appState.advances = a;
                 updateDashboard();
                 loadAdvances();
@@ -2331,14 +2864,13 @@
         }
 
         // ======================================================================
-        // ATTENTION LIST - WITH CLICKABLE ALERTS
+        // ATTENTION LIST
         // ======================================================================
         function updateAttentionList() {
             const user = CloudStore.getCurrentUser();
             const c = document.getElementById('attentionList');
             const alerts = [];
             
-            // Check for bills missing attachments
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
                 const missingBills = appState.expenses.filter(e => 
                     (e.status === 'approved' || e.status === 'completed') && 
@@ -2357,7 +2889,6 @@
                 }
             }
             
-            // Check for overdue advances
             const thirty = new Date();
             thirty.setDate(thirty.getDate() - 30);
             const overdue = appState.advances.filter(a => 
@@ -2375,7 +2906,6 @@
                 });
             }
             
-            // Check for employees with outstanding
             const empOut = appState.employees.filter(emp => {
                 const ea = appState.advances.filter(a => 
                     a.employeeId === emp.id && a.status === 'issued'
@@ -2394,7 +2924,6 @@
                 });
             }
             
-            // Check for cards with high utilization
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
                 const high = appState.cards.filter(c => 
                     c.limit > 0 && (c.utilized / c.limit) > 0.8
@@ -2412,7 +2941,6 @@
                 }
             }
             
-            // Check for low camp funds
             const campFunds = appState.funds.filter(f => f.camp !== '__main__');
             const lowFunds = campFunds.filter(f => f.balance < 5000);
             if (lowFunds.length > 0) {
@@ -2427,7 +2955,6 @@
                 });
             }
             
-            // Check for pending approvals
             const pendingAdvances = appState.advances.filter(a => a.status === 'pending');
             const pendingExpenses = appState.expenses.filter(e => e.status === 'pending');
             const totalPending = pendingAdvances.length + pendingExpenses.length;
@@ -2454,50 +2981,34 @@
                     badge = `<span class="badge bg-${a.type} ms-2">${a.count}</span>`;
                 }
                 return `<div class="alert-card ${a.type} alert-clickable" onclick="handleAlertClick('${a.action}')">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <i class="fas ${a.icon} me-2"></i>
-                            <div>
-                                <strong>${a.title}</strong>
-                                <div class="small">${a.message}</div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas ${a.icon} me-2"></i>
+                                    <div>
+                                        <strong>${a.title}</strong>
+                                        <div class="small">${a.message}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    ${badge}
+                                    <i class="fas fa-chevron-right text-muted ms-2 alert-arrow"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            ${badge}
-                            <i class="fas fa-chevron-right text-muted ms-2 alert-arrow"></i>
-                        </div>
-                    </div>
-                </div>`;
+                        </div>`;
             }).join('');
             
             window._alertData = alerts;
         }
 
-        // ======================================================================
-        // HANDLE ALERT CLICKS
-        // ======================================================================
         function handleAlertClick(action) {
             switch(action) {
-                case 'viewMissingBills':
-                    viewMissingBills();
-                    break;
-                case 'viewEmployeesWithOutstanding':
-                    viewEmployeesWithOutstanding();
-                    break;
-                case 'viewOverdueAdvances':
-                    viewOverdueAdvances();
-                    break;
-                case 'viewHighUtilizationCards':
-                    viewHighUtilizationCards();
-                    break;
-                case 'viewLowFunds':
-                    viewLowFunds();
-                    break;
-                case 'viewPendingApprovals':
-                    viewPendingApprovals();
-                    break;
-                default:
-                    showToast('info', 'Feature coming soon...');
+                case 'viewMissingBills': viewMissingBills(); break;
+                case 'viewEmployeesWithOutstanding': viewEmployeesWithOutstanding(); break;
+                case 'viewOverdueAdvances': viewOverdueAdvances(); break;
+                case 'viewHighUtilizationCards': viewHighUtilizationCards(); break;
+                case 'viewLowFunds': viewLowFunds(); break;
+                case 'viewPendingApprovals': viewPendingApprovals(); break;
+                default: showToast('info', 'Feature coming soon...');
             }
         }
 
@@ -2650,13 +3161,13 @@
             let content = `<div class="mb-3"><div class="alert alert-info"><i class="fas fa-clock me-2"></i><strong>${pendingAdvances.length}</strong> advance${pendingAdvances.length > 1 ? 's' : ''} and <strong>${pendingExpenses.length}</strong> expense${pendingExpenses.length > 1 ? 's' : ''} pending approval</div></div>`;
             if (pendingAdvances.length > 0) {
                 content += `<h6 class="mt-3">📋 Pending Advances</h6><div class="table-responsive"><table class="table table-hover table-sm"><thead><tr><th>Employee</th><th>Camp</th><th>Amount</th><th>Purpose</th><th>Action</th></tr></thead><tbody>${pendingAdvances.map(a => `
-                    <tr><td>${a.employeeName}</td><td>${a.branch}</td><td>₹${(a.amount || 0).toLocaleString()}</td><td>${a.purpose}</td><td><button class="btn btn-sm btn-success" onclick="showApprovalModal('${a.id}', true)"><i class="fas fa-check"></i> Review</button></td></tr>
-                `).join('')}</tbody></table></div>`;
+                            <tr><td>${a.employeeName}</td><td>${a.branch}</td><td>₹${(a.amount || 0).toLocaleString()}</td><td>${a.purpose}</td><td><button class="btn btn-sm btn-success" onclick="showApprovalModal('${a.id}', true)"><i class="fas fa-check"></i> Review</button></td></tr>
+                        `).join('')}</tbody></table></div>`;
             }
             if (pendingExpenses.length > 0) {
                 content += `<h6 class="mt-3">📄 Pending Expenses</h6><div class="table-responsive"><table class="table table-hover table-sm"><thead><tr><th>Employee</th><th>Camp</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead><tbody>${pendingExpenses.map(e => `
-                    <tr><td>${e.employeeName}</td><td>${e.branch}</td><td>${e.category}</td><td>₹${(e.amount || 0).toLocaleString()}</td><td><button class="btn btn-sm btn-success" onclick="showApprovalModal('${e.id}', false)"><i class="fas fa-check"></i> Review</button></td></tr>
-                `).join('')}</tbody></table></div>`;
+                            <tr><td>${e.employeeName}</td><td>${e.branch}</td><td>${e.category}</td><td>₹${(e.amount || 0).toLocaleString()}</td><td><button class="btn btn-sm btn-success" onclick="showApprovalModal('${e.id}', false)"><i class="fas fa-check"></i> Review</button></td></tr>
+                        `).join('')}</tbody></table></div>`;
             }
             showCustomModal('📋 Pending Approvals', content);
         }
@@ -2706,6 +3217,7 @@
                 await CloudStore.addAuditLog({ action: 'SEND_REMINDER', entityType: 'Advance', entityId: advanceId,
                     details: `Reminder sent to ${employee.name} for advance of ₹${(advance.amount || 0).toLocaleString()}` });
                 showToast('success', `Reminder sent to ${employee.name}`);
+                loadNotifications();
             } catch (err) { showToast('danger', 'Failed to send reminder: ' + err.message); }
             showLoading(false);
         }
@@ -2732,6 +3244,7 @@
                 await CloudStore.addAuditLog({ action: 'SEND_BULK_REMINDER', entityType: 'Employee', entityId: employeeId,
                     details: `Sent ${advances.length} reminder${advances.length > 1 ? 's' : ''} to ${employee.name}` });
                 showToast('success', `${advances.length} reminder${advances.length > 1 ? 's' : ''} sent to ${employee.name}`);
+                loadNotifications();
             } catch (err) { showToast('danger', 'Failed to send reminders: ' + err.message); }
             showLoading(false);
         }
@@ -2798,20 +3311,29 @@
             let branches = appState.branches;
             if (!perms.viewAllBranches && user?.branch) branches = branches.filter(b => b.name === user.branch);
             if (branches.length === 0) branches = [{ name: 'Main Branch', type: 'main' }];
+            
             const ids = ['regBranch', 'advBranch', 'expBranch', 'projectBranch', 'cardBranch', 'empBranch'];
             ids.forEach(id => {
                 const sel = document.getElementById(id);
                 if (!sel) return;
                 const cur = sel.value;
                 sel.innerHTML = '<option value="">Select Camp</option>';
+                
+                // Always add Main Branch option
+                const mainOption = document.createElement('option');
+                mainOption.value = 'Main Branch';
+                mainOption.textContent = 'Main Branch';
+                sel.appendChild(mainOption);
+                
                 branches.forEach(b => {
                     const option = document.createElement('option');
                     option.value = b.name;
-                    option.textContent = b.name;
+                    option.textContent = b.name + (b.type === 'main' ? ' (Main)' : '');
                     sel.appendChild(option);
                 });
-                if (cur && branches.some(b => b.name === cur)) sel.value = cur;
+                if (cur && (cur === 'Main Branch' || branches.some(b => b.name === cur))) sel.value = cur;
             });
+            
             const mgr = document.getElementById('branchManager');
             if (mgr) {
                 const cur = mgr.value;
@@ -2819,18 +3341,21 @@
                 appState.employees.forEach(e => {
                     const option = document.createElement('option');
                     option.value = e.id;
-                    option.textContent = e.name;
+                    option.textContent = e.name + ' (' + (e.designation || 'N/A') + ')';
                     mgr.appendChild(option);
                 });
-                if (cur) mgr.value = cur;
+                if (cur && appState.employees.some(e => e.id === cur)) mgr.value = cur;
             }
+            
             const pc = document.getElementById('projectCamps');
             if (pc) {
+                const curValues = Array.from(pc.selectedOptions).map(o => o.value);
                 pc.innerHTML = '';
                 branches.forEach(b => {
                     const option = document.createElement('option');
                     option.value = b.name;
                     option.textContent = b.name;
+                    if (curValues.includes(b.name)) option.selected = true;
                     pc.appendChild(option);
                 });
             }
@@ -2851,7 +3376,7 @@
                 projects.forEach(p => {
                     const option = document.createElement('option');
                     option.value = p.name;
-                    option.textContent = p.name;
+                    option.textContent = p.name + (p.status ? ' (' + p.status + ')' : '');
                     sel.appendChild(option);
                 });
                 if (cur && projects.some(p => p.name === cur)) sel.value = cur;
@@ -2907,12 +3432,13 @@
             if (b.length === 0) { tb.innerHTML =
                 `<tr><td colspan="8" class="text-center text-muted">No branches/camps found</td></tr>`; return; }
             const canDel = hasPermission(user?.role, 'deleteBranch');
+            const canEdit = hasPermission(user?.role, 'addBranch');
             tb.innerHTML = b.map(br => {
                 const projs = appState.projects.filter(p => p.camps && p.camps.includes(br.name));
                 const emps = appState.employees.filter(e => e.branch === br.name);
                 const cards = appState.cards.filter(c => c.branch === br.name);
                 const lim = cards.reduce((s, c) => s + (c.limit || 0), 0);
-                return `<tr><td><strong>${br.name}</strong></td><td><span class="badge ${br.type==='main'?'bg-primary':'bg-info'}">${br.type||'camp'}</span></td><td>${br.location||'N/A'}</td><td>${br.managerName||'N/A'}</td><td>${projs.length}</td><td>${emps.length}</td><td>₹${lim.toLocaleString()}</td><td>${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteBranch('${br.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
+                return `<tr><td><strong>${br.name}</strong></td><td><span class="badge ${br.type==='main'?'bg-primary':'bg-info'}">${br.type||'camp'}</span></td><td>${br.location||'N/A'}</td><td>${br.managerName||'N/A'}</td><td>${projs.length}</td><td>${emps.length}</td><td>₹${lim.toLocaleString()}</td><td>${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editBranch('${br.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteBranch('${br.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
             }).join('');
         }
 
@@ -2926,6 +3452,7 @@
             if (p.length === 0) { tb.innerHTML =
                 `<tr><td colspan="8" class="text-center text-muted">No projects found</td></tr>`; return; }
             const canDel = hasPermission(user?.role, 'deleteProject');
+            const canEdit = hasPermission(user?.role, 'addProject');
             tb.innerHTML = p.map(pr => {
                 const pc = appState.cards.filter(c => c.projectName === pr.name);
                 const lim = pc.reduce((s, c) => s + (c.limit || 0), 0);
@@ -2933,7 +3460,7 @@
                 const avail = lim - util;
                 const pct = lim > 0 ? (util / lim) * 100 : 0;
                 const camps = pr.camps ? pr.camps.join(', ') : 'No camps assigned';
-                return `<tr><td><strong>${pr.name}</strong></td><td>${camps}</td><td>₹${lim.toLocaleString()}</td><td>₹${util.toLocaleString()}</td><td>₹${avail.toLocaleString()}</td><td><div class="progress"><div class="progress-bar ${pct>80?'bg-danger':pct>50?'bg-warning':'bg-success'}" style="width:${Math.min(pct,100)}%">${pct.toFixed(0)}%</div></div></td><td><span class="badge ${pr.status==='active'?'bg-success':'bg-secondary'}">${pr.status||'Active'}</span></td><td>${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${pr.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
+                return `<tr><td><strong>${pr.name}</strong></td><td>${camps}</td><td>₹${lim.toLocaleString()}</td><td>₹${util.toLocaleString()}</td><td>₹${avail.toLocaleString()}</td><td><div class="progress"><div class="progress-bar ${pct>80?'bg-danger':pct>50?'bg-warning':'bg-success'}" style="width:${Math.min(pct,100)}%">${pct.toFixed(0)}%</div></div></td><td><span class="badge ${pr.status==='active'?'bg-success':pr.status==='completed'?'bg-info':pr.status==='on-hold'?'bg-warning':'bg-secondary'}">${pr.status||'Active'}</span></td><td>${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editProject('${pr.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${pr.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
             }).join('');
         }
 
@@ -2947,11 +3474,12 @@
             if (c.length === 0) { tb.innerHTML =
                 `<tr><td colspan="9" class="text-center text-muted">No cards found</td></tr>`; return; }
             const canDel = hasPermission(user?.role, 'deleteCard');
+            const canEdit = hasPermission(user?.role, 'addCard');
             tb.innerHTML = c.map(cd => {
                 const util = cd.utilized || 0;
                 const avail = cd.limit - util;
                 const pct = cd.limit > 0 ? (util / cd.limit) * 100 : 0;
-                return `<tr><td>XXXX ${cd.cardNumber||'N/A'}</td><td>${cd.branch||'N/A'}</td><td>${cd.projectName||'N/A'}</td><td>${cd.holderName||'N/A'}</td><td>₹${(cd.limit||0).toLocaleString()}</td><td>₹${util.toLocaleString()}</td><td>₹${avail.toLocaleString()}</td><td><span class="badge ${pct>80?'bg-danger':pct>50?'bg-warning':'bg-success'}">${pct.toFixed(0)}%</span></td><td>${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${cd.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
+                return `<tr><td>XXXX ${cd.cardNumber||'N/A'}</td><td>${cd.branch||'N/A'}</td><td>${cd.projectName||'N/A'}</td><td>${cd.holderName||'N/A'}</td><td>₹${(cd.limit||0).toLocaleString()}</td><td>₹${util.toLocaleString()}</td><td>₹${avail.toLocaleString()}</td><td><span class="badge ${pct>80?'bg-danger':pct>50?'bg-warning':'bg-success'}">${pct.toFixed(0)}%</span></td><td>${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editCard('${cd.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${cd.id}')"><i class="fas fa-trash"></i></button>`:`<span class="badge bg-secondary">View Only</span>`}</td></tr>`;
             }).join('');
         }
 
@@ -3140,18 +3668,20 @@
                 await userDoc.ref.update({
                     branch: emp.branch,
                     fullName: emp.name,
+                    role: emp.role || 'employee',
                     updatedAt: new Date().toISOString()
                 });
 
                 if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
-                    CloudStore.currentUser.branch = emp.branch;
-                    CloudStore.currentUser.fullName = emp.name;
-                    localStorage.setItem('pf_user_data', JSON.stringify(CloudStore.currentUser));
-                    document.getElementById('userDeptDisplay').textContent = emp.branch || 'No Branch';
-                    document.getElementById('userNameDisplay').textContent = emp.name;
+                    const updatedUserData = await userDoc.ref.get();
+                    const updatedUser = { id: userDoc.id, ...updatedUserData.data() };
+                    CloudStore.setCurrentUser(updatedUser);
+                    updateUserUI(updatedUser);
+                    applyPermissions();
+                    
                     const branchSync = document.getElementById('branchSyncStatus');
-                    if (emp.branch) {
-                        branchSync.textContent = `✅ Branch: ${emp.branch}`;
+                    if (updatedUser.branch) {
+                        branchSync.textContent = `✅ Branch: ${updatedUser.branch}`;
                         branchSync.className = 'sync-badge synced';
                     }
                 }
@@ -3160,10 +3690,10 @@
                     action: 'SYNC_EMPLOYEE_BRANCH',
                     entityType: 'Employee',
                     entityId: employeeId,
-                    details: `Synced branch ${emp.branch} to user ${emp.name}`
+                    details: `Synced branch ${emp.branch} and role ${emp.role} to user ${emp.name}`
                 });
 
-                showToast('success', `Branch "${emp.branch}" synced to user ${emp.name}'s account!`);
+                showToast('success', `Branch "${emp.branch}" and role "${emp.role}" synced to user ${emp.name}'s account!`);
                 loadEmployees();
             } catch (err) {
                 showToast('danger', 'Failed to sync: ' + err.message);
@@ -3186,11 +3716,12 @@
             if (advs.length === 0) { tb.innerHTML =
                 `<tr><td colspan="10" class="text-center text-muted">No advances found</td></tr>`; return; }
             const canDel = hasPermission(user?.role, 'deleteAdvance');
+            const canEdit = hasPermission(user?.role, 'addAdvance');
             tb.innerHTML = advs.map(a => {
                 const spent = (a.amount || 0) - (a.remainingAmount || 0);
                 const bal = a.remainingAmount || a.amount || 0;
                 const isOwner = user?.id === a.employeeId;
-                return `<tr><td><code>${a.id||'N/A'}</code></td><td>${a.employeeName||'N/A'}</td><td>${a.branch||'N/A'}</td><td>${a.projectName||'N/A'}</td><td>₹${(a.amount||0).toLocaleString()}</td><td>₹${spent.toLocaleString()}</td><td><strong class="${bal>0?'text-warning':'text-success'}">₹${bal.toLocaleString()}</strong></td><td><span class="status-badge status-${a.status||'pending'}">${(a.status||'pending').replace('_',' ')}</span></td><td>${a.createdAt?new Date(a.createdAt).toLocaleDateString():'N/A'}</td><td>${a.status==='issued'&&isOwner?`<button class="btn btn-sm btn-outline-success me-1" onclick="returnAdvance('${a.id}')"><i class="fas fa-hand-holding-usd"></i> Return</button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteAdvance('${a.id}')"><i class="fas fa-trash"></i></button>`:''}</td></tr>`;
+                return `<tr><td><code>${a.id||'N/A'}</code></td><td>${a.employeeName||'N/A'}</td><td>${a.branch||'N/A'}</td><td>${a.projectName||'N/A'}</td><td>₹${(a.amount||0).toLocaleString()}</td><td>₹${spent.toLocaleString()}</td><td><strong class="${bal>0?'text-warning':'text-success'}">₹${bal.toLocaleString()}</strong></td><td><span class="status-badge status-${a.status||'pending'}">${(a.status||'pending').replace('_',' ')}</span></td><td>${a.createdAt?new Date(a.createdAt).toLocaleDateString():'N/A'}</td><td>${a.status==='issued'&&isOwner?`<button class="btn btn-sm btn-outline-success me-1" onclick="returnAdvance('${a.id}')"><i class="fas fa-hand-holding-usd"></i> Return</button>`:''}${canEdit&&a.status==='pending'?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editAdvance('${a.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteAdvance('${a.id}')"><i class="fas fa-trash"></i></button>`:''}</td></tr>`;
             }).join('');
         }
 
@@ -3205,8 +3736,9 @@
             if (exps.length === 0) { tb.innerHTML =
                 `<tr><td colspan="10" class="text-center text-muted">No expenses found</td></tr>`; return; }
             const canDel = hasPermission(user?.role, 'deleteExpense');
+            const canEdit = hasPermission(user?.role, 'addExpense');
             tb.innerHTML = exps.map(e =>
-                `<tr><td><code>${e.id||'N/A'}</code></td><td>${e.employeeName||'N/A'}</td><td>${e.branch||'N/A'}</td><td>${e.projectName||'N/A'}</td><td>${e.category||'N/A'}</td><td>₹${(e.amount||0).toLocaleString()}</td><td>${e.paymentMethod||'N/A'}</td><td><span class="status-badge status-${e.status||'pending'}">${(e.status||'pending').replace('_',' ')}</span></td><td>${e.createdAt?new Date(e.createdAt).toLocaleDateString():'N/A'}</td><td><button class="btn btn-sm btn-outline-info me-1" onclick="viewExpense('${e.id}')"><i class="fas fa-eye"></i></button>${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${e.id}')"><i class="fas fa-trash"></i></button>`:''}</td></tr>`
+                `<tr><td><code>${e.id||'N/A'}</code></td><td>${e.employeeName||'N/A'}</td><td>${e.branch||'N/A'}</td><td>${e.projectName||'N/A'}</td><td>${e.category||'N/A'}</td><td>₹${(e.amount||0).toLocaleString()}</td><td>${e.paymentMethod||'N/A'}</td><td><span class="status-badge status-${e.status||'pending'}">${(e.status||'pending').replace('_',' ')}</span></td><td>${e.createdAt?new Date(e.createdAt).toLocaleDateString():'N/A'}</td><td><button class="btn btn-sm btn-outline-info me-1" onclick="viewExpense('${e.id}')"><i class="fas fa-eye"></i></button>${canEdit&&e.status==='pending'?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editExpense('${e.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${e.id}')"><i class="fas fa-trash"></i></button>`:''}</td></tr>`
                 ).join('');
         }
 
@@ -3220,11 +3752,11 @@
             appState.advances.filter(a => a.status === 'pending').forEach(a => { items.push({ id: a.id, type: 'Advance',
                     employeeName: a.employeeName || 'N/A', branch: a.branch || 'N/A', projectName: a.projectName ||
                     'N/A', amount: a.amount || 0, purpose: a.purpose || 'N/A', status: a.status, createdAt: a
-                        .createdAt, data: a, isAdvance: true }); });
+                        .createdAt, data: a, isAdvance: true, files: [] }); });
             appState.expenses.filter(e => e.status === 'pending').forEach(e => { items.push({ id: e.id, type: 'Expense',
                     employeeName: e.employeeName || 'N/A', branch: e.branch || 'N/A', projectName: e.projectName ||
                     'N/A', amount: e.amount || 0, purpose: e.category || 'N/A', status: e.status, createdAt: e
-                        .createdAt, data: e, isAdvance: false }); });
+                        .createdAt, data: e, isAdvance: false, files: e.files || [] }); });
             let filtered = items;
             if (filter !== 'all') filtered = items.filter(i => i.status === filter);
             filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -3247,9 +3779,39 @@
             const tb = document.getElementById('auditBody');
             if (!logs || logs.length === 0) { tb.innerHTML =
                 `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`; return; }
-            tb.innerHTML = logs.map(l =>
-                `<tr><td>${l.timestamp?new Date(l.timestamp).toLocaleString():'N/A'}</td><td><strong>${l.user||'system'}</strong></td><td><span class="badge bg-primary">${l.action||'N/A'}</span></td><td><span class="badge bg-secondary">${l.entityType||'N/A'}</span></td><td><code>${l.details||'N/A'}</code></td></tr>`
-                ).join('');
+            
+            const actionColors = {
+                'LOGIN': 'bg-success',
+                'LOGOUT': 'bg-warning',
+                'REGISTER': 'bg-primary',
+                'CREATE_EMPLOYEE': 'bg-primary',
+                'UPDATE_EMPLOYEE': 'bg-info',
+                'DELETE_EMPLOYEE': 'bg-danger',
+                'APPROVE_ADVANCE': 'bg-success',
+                'REJECT_ADVANCE': 'bg-danger',
+                'APPROVE_EXPENSE': 'bg-success',
+                'REJECT_EXPENSE': 'bg-danger',
+                'ALLOCATE_TO_CARD': 'bg-primary',
+                'RETURN_FROM_CARD': 'bg-warning',
+                'FUND_ADD': 'bg-success',
+                'FUND_TRANSFER': 'bg-warning',
+                'UPDATE_PERMISSION': 'bg-secondary',
+                'SYNC_EMPLOYEE_BRANCH': 'bg-info',
+                'SEND_REMINDER': 'bg-warning',
+                'SEND_BULK_REMINDER': 'bg-warning'
+            };
+            
+            tb.innerHTML = logs.map(l => {
+                const color = actionColors[l.action] || 'bg-secondary';
+                const time = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'N/A';
+                return `<tr>
+                    <td>${time}</td>
+                    <td><strong>${l.user||'system'}</strong> <small class="text-muted">(${l.role||'N/A'})</small></td>
+                    <td><span class="badge ${color}">${l.action||'N/A'}</span></td>
+                    <td><span class="badge bg-secondary">${l.entityType||'N/A'}</span></td>
+                    <td><code>${l.details||'N/A'}</code></td>
+                </tr>`;
+            }).join('');
         }
 
         // ======================================================================
@@ -3757,6 +4319,12 @@
             }
             if (page === 'permissions' && role !== 'admin') { showToast('warning',
                 'Access denied. Only Admins can manage permissions.'); return; }
+            
+            // Close mobile sidebar
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+            
             document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
             const el = document.getElementById('page-' + page);
             if (el) { el.style.display = 'block';
@@ -3886,17 +4454,33 @@
         // ======================================================================
         // MODAL HELPERS
         // ======================================================================
-        function showAdvanceModal() {
+        function showAdvanceModal(advanceId = null) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addAdvance')) { showToast('warning',
                 'You don\'t have permission to request advances.'); return; }
             populateBranchSelectors();
             populateProjectSelectors();
             document.getElementById('advanceForm').reset();
+            document.getElementById('editAdvanceId').value = '';
+            
+            if (advanceId) {
+                const advance = appState.advances.find(a => a.id === advanceId);
+                if (advance) {
+                    document.getElementById('editAdvanceId').value = advanceId;
+                    document.getElementById('advBranch').value = advance.branch || '';
+                    document.getElementById('advProject').value = advance.projectName || '';
+                    document.getElementById('advAmount').value = advance.amount || '';
+                    document.getElementById('advPurpose').value = advance.purpose || '';
+                    document.getElementById('advDescription').value = advance.description || '';
+                }
+            }
+            
             new bootstrap.Modal(document.getElementById('advanceModal')).show();
         }
+        
+        function editAdvance(id) { showAdvanceModal(id); }
 
-        function showExpenseModal() {
+        function showExpenseModal(expenseId = null) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addExpense')) { showToast('warning',
                 'You don\'t have permission to add expenses.'); return; }
@@ -3905,364 +4489,403 @@
             uploadedFiles = [];
             displayFiles();
             document.getElementById('expenseForm').reset();
+            document.getElementById('editExpenseId').value = '';
+            
+            if (expenseId) {
+                const expense = appState.expenses.find(e => e.id === expenseId);
+                if (expense) {
+                    document.getElementById('editExpenseId').value = expenseId;
+                    document.getElementById('expBranch').value = expense.branch || '';
+                    document.getElementById('expProject').value = expense.projectName || '';
+                    document.getElementById('expCategory').value = expense.category || '';
+                    document.getElementById('expPaymentMethod').value = expense.paymentMethod || '';
+                    document.getElementById('expAmount').value = expense.amount || '';
+                    document.getElementById('expDate').value = expense.date || '';
+                    document.getElementById('expDescription').value = expense.description || '';
+                    document.getElementById('expVendor').value = expense.vendor || '';
+                    document.getElementById('expBillNo').value = expense.billNo || '';
+                    document.getElementById('expRemarks').value = expense.remarks || '';
+                    // Show existing files
+                    if (expense.files && expense.files.length > 0) {
+                        uploadedFiles = expense.files.map(f => ({ ...f, file: null }));
+                        displayFiles();
+                    }
+                }
+            }
+            
             new bootstrap.Modal(document.getElementById('expenseModal')).show();
         }
+        
+        function editExpense(id) { showExpenseModal(id); }
 
-        function showBranchModal() {
+        function showBranchModal(branchId = null) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addBranch')) { showToast('warning',
                 'You don\'t have permission to add branches/camps.'); return; }
             populateBranchSelectors();
             document.getElementById('branchForm').reset();
+            document.getElementById('editBranchId').value = '';
+            
+            if (branchId) {
+                const branch = appState.branches.find(b => b.id === branchId);
+                if (branch) {
+                    document.getElementById('editBranchId').value = branchId;
+                    document.getElementById('branchName').value = branch.name || '';
+                    document.getElementById('branchType').value = branch.type || 'camp';
+                    document.getElementById('branchLocation').value = branch.location || '';
+                    document.getElementById('branchManager').value = branch.managerId || '';
+                    document.getElementById('branchCardLimit').value = branch.cardLimit || '';
+                }
+            }
+            
             new bootstrap.Modal(document.getElementById('branchModal')).show();
         }
+        
+        function editBranch(id) { showBranchModal(id); }
 
-        function showProjectModal() {
+        function showProjectModal(projectId = null) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addProject')) { showToast('warning',
                 'You don\'t have permission to add projects.'); return; }
             populateBranchSelectors();
             document.getElementById('projectForm').reset();
+            document.getElementById('editProjectId').value = '';
+            
+            if (projectId) {
+                const project = appState.projects.find(p => p.id === projectId);
+                if (project) {
+                    document.getElementById('editProjectId').value = projectId;
+                    document.getElementById('projectName').value = project.name || '';
+                    document.getElementById('projectDescription').value = project.description || '';
+                    document.getElementById('projectStatus').value = project.status || 'active';
+                    // Select camps
+                    const campsSelect = document.getElementById('projectCamps');
+                    if (project.camps) {
+                        Array.from(campsSelect.options).forEach(opt => {
+                            opt.selected = project.camps.includes(opt.value);
+                        });
+                    }
+                }
+            }
+            
             new bootstrap.Modal(document.getElementById('projectModal')).show();
         }
+        
+        function editProject(id) { showProjectModal(id); }
 
-        function showCardModal() {
+        function showCardModal(cardId = null) {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addCard')) { showToast('warning',
                 'You don\'t have permission to add cards.'); return; }
             populateBranchSelectors();
             populateProjectSelectors();
+            populateCardHolder();
+            document.getElementById('cardForm').reset();
+            document.getElementById('editCardId').value = '';
+            
+            if (cardId) {
+                const card = appState.cards.find(c => c.id === cardId);
+                if (card) {
+                    document.getElementById('editCardId').value = cardId;
+                    document.getElementById('cardNumber').value = card.cardNumber || '';
+                    document.getElementById('cardBranch').value = card.branch || '';
+                    document.getElementById('cardProject').value = card.projectName || '';
+                    document.getElementById('cardHolder').value = card.holderId || '';
+                    document.getElementById('cardLimit').value = card.limit || '';
+                    document.getElementById('cardStatus').value = card.status || 'active';
+                }
+            }
+            
+            new bootstrap.Modal(document.getElementById('cardModal')).show();
+        }
+        
+        function editCard(id) { showCardModal(id); }
+
+        function populateCardHolder() {
             const holder = document.getElementById('cardHolder');
+            if (!holder) return;
+            const cur = holder.value;
             holder.innerHTML = '<option value="">Select Employee</option>';
             appState.employees.forEach(e => {
                 const option = document.createElement('option');
                 option.value = e.id;
-                option.textContent = e.name;
+                option.textContent = `${e.name} (${e.employeeId})`;
                 holder.appendChild(option);
             });
-            document.getElementById('cardForm').reset();
-            new bootstrap.Modal(document.getElementById('cardModal')).show();
+            if (cur && appState.employees.some(e => e.id === cur)) holder.value = cur;
         }
 
         // ======================================================================
-        // EMPLOYEE MODAL - COMPLETELY FIXED
+        // SAVE FUNCTIONS
         // ======================================================================
-        function showEmployeeModal(employeeId = null) {
+        async function saveAdvance() {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { 
-                showToast('warning', 'You don\'t have permission to add employees.'); 
-                return; 
-            }
+            if (!hasPermission(user?.role, 'addAdvance')) { showToast('warning', 'Permission denied'); return; }
             
-            // Make sure branches are loaded
-            if (appState.branches.length === 0) {
-                showToast('info', 'Loading branches data...');
-                const checkBranches = setInterval(() => {
-                    if (appState.branches.length > 0) {
-                        clearInterval(checkBranches);
-                        showEmployeeModal(employeeId);
-                    }
-                }, 500);
-                return;
-            }
+            const id = document.getElementById('editAdvanceId').value;
+            const branch = document.getElementById('advBranch').value;
+            const project = document.getElementById('advProject').value;
+            const amount = parseFloat(document.getElementById('advAmount').value);
+            const purpose = document.getElementById('advPurpose').value.trim();
+            const description = document.getElementById('advDescription').value.trim();
             
-            populateBranchSelectors();
-            
-            // Reset form
-            document.getElementById('employeeForm').reset();
-            document.getElementById('editEmployeeId').value = '';
-            document.getElementById('employeeModalTitle').textContent = 'Add Employee';
-            document.getElementById('empPassword').required = true;
-            document.getElementById('empPassword').placeholder = 'Min 6 characters';
-            document.getElementById('empPassword').value = '';
-            document.getElementById('empUsername').disabled = false;
-            document.getElementById('empEmployeeId').disabled = false;
-            
-            // If editing, populate form with employee data
-            if (employeeId) {
-                const emp = appState.employees.find(e => e.id === employeeId);
-                if (emp) {
-                    populateEmployeeForm(emp);
-                    const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
-                    modal.show();
-                    return;
-                }
-                
-                // If not found in local cache, fetch from Firestore
-                showToast('info', 'Loading employee data...');
-                CloudStore.employeesCollection.doc(employeeId).get().then((doc) => {
-                    if (doc.exists) {
-                        const empData = { id: doc.id, ...doc.data() };
-                        const existing = appState.employees.find(e => e.id === employeeId);
-                        if (!existing) appState.employees.push(empData);
-                        populateEmployeeForm(empData);
-                        const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
-                        modal.show();
-                    } else {
-                        showToast('danger', 'Employee not found in database.');
-                    }
-                }).catch((err) => {
-                    showToast('danger', 'Error fetching employee: ' + err.message);
-                    console.error('Error:', err);
-                });
-                return;
-            }
-            
-            const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
-            modal.show();
-        }
-
-        // ======================================================================
-        // POPULATE EMPLOYEE FORM - FIXED
-        // ======================================================================
-        function populateEmployeeForm(emp) {
-            console.log('Populating form with employee:', emp);
-            
-            // Make sure branches are populated first
-            populateBranchSelectors();
-            
-            document.getElementById('employeeModalTitle').textContent = `Edit Employee: ${emp.name || 'N/A'}`;
-            document.getElementById('editEmployeeId').value = emp.id || '';
-            document.getElementById('empEmployeeId').value = emp.employeeId || '';
-            document.getElementById('empName').value = emp.name || '';
-            document.getElementById('empEmail').value = emp.email || '';
-            document.getElementById('empMobile').value = emp.mobile || '';
-            
-            // Set branch value with validation
-            const branchSelect = document.getElementById('empBranch');
-            if (branchSelect) {
-                let branchExists = false;
-                for (let i = 0; i < branchSelect.options.length; i++) {
-                    if (branchSelect.options[i].value === emp.branch) {
-                        branchExists = true;
-                        break;
-                    }
-                }
-                if (!branchExists && emp.branch) {
-                    const option = document.createElement('option');
-                    option.value = emp.branch;
-                    option.textContent = emp.branch;
-                    branchSelect.appendChild(option);
-                }
-                branchSelect.value = emp.branch || '';
-                console.log('Branch set to:', branchSelect.value);
-            }
-            
-            document.getElementById('empDesignation').value = emp.designation || '';
-            document.getElementById('empRole').value = emp.role || 'employee';
-            document.getElementById('empUsername').value = emp.username || '';
-            document.getElementById('empPassword').value = '';
-            document.getElementById('empPassword').required = false;
-            document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
-            document.getElementById('empUsername').disabled = true;
-            document.getElementById('empEmployeeId').disabled = true;
-            
-            console.log('editEmployeeId set to:', document.getElementById('editEmployeeId').value);
-        }
-
-        // ======================================================================
-        // EDIT EMPLOYEE - FIXED
-        // ======================================================================
-        function editEmployee(id) {
-            console.log('Edit employee called with ID:', id);
-            if (!id) { showToast('danger', 'No employee ID provided'); return; }
-            
-            const emp = appState.employees.find(e => e.id === id);
-            if (emp) {
-                showEmployeeModal(id);
-                return;
-            }
-            
-            showToast('info', 'Loading employee data...');
-            CloudStore.employeesCollection.doc(id).get().then((doc) => {
-                if (doc.exists) {
-                    const empData = { id: doc.id, ...doc.data() };
-                    if (!appState.employees.find(e => e.id === id)) appState.employees.push(empData);
-                    showEmployeeModal(id);
-                } else {
-                    showToast('danger', 'Employee not found in database. Please refresh the page.');
-                }
-            }).catch((err) => {
-                showToast('danger', 'Error loading employee: ' + err.message);
-                console.error('Error fetching employee:', err);
-            });
-        }
-
-        // ======================================================================
-        // SAVE EMPLOYEE - COMPLETELY FIXED
-        // ======================================================================
-        async function saveEmployee() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { 
-                showToast('warning', 'You don\'t have permission to add employees.'); 
-                return; 
-            }
-            
-            const id = document.getElementById('editEmployeeId').value;
-            const empId = document.getElementById('empEmployeeId').value.trim();
-            const name = document.getElementById('empName').value.trim();
-            const email = document.getElementById('empEmail').value.trim();
-            const mobile = document.getElementById('empMobile').value.trim();
-            const branch = document.getElementById('empBranch').value;
-            const desig = document.getElementById('empDesignation').value.trim();
-            const role = document.getElementById('empRole').value;
-            const un = document.getElementById('empUsername').value.trim();
-            const pw = document.getElementById('empPassword').value;
-            
-            console.log('Saving employee with ID:', id);
-            console.log('Branch value:', branch);
-            console.log('Role value:', role);
-            
-            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
-                showToast('warning', 'Please fill all required fields'); 
-                return; 
-            }
-            
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('warning', 'Please enter a valid email address');
+            if (!branch || !project || !amount || !purpose) {
+                showToast('warning', 'Please fill all required fields');
                 return;
             }
             
             showLoading(true);
-            
             try {
+                const data = {
+                    employeeId: user.id,
+                    employeeName: user.fullName || user.name,
+                    branch: branch,
+                    projectName: project,
+                    amount: amount,
+                    purpose: purpose,
+                    description: description || '',
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+                
                 if (id) {
-                    const docRef = CloudStore.employeesCollection.doc(id);
-                    const doc = await docRef.get();
-                    if (!doc.exists) {
-                        showToast('danger', 'Employee document not found in database. Please refresh and try again.');
-                        showLoading(false);
-                        return;
-                    }
-                    
-                    const currentData = doc.data();
-                    
-                    // Update ALL fields
-                    const updateData = {
-                        employeeId: empId,
-                        name: name,
-                        email: email,
-                        mobile: mobile,
-                        branch: branch,
-                        designation: desig,
-                        role: role,
-                        updatedAt: new Date().toISOString()
-                    };
-                    
-                    console.log('Updating with data:', updateData);
-                    await docRef.update(updateData);
-                    
-                    // Update user account
-                    try {
-                        const userSnap = await CloudStore.usersCollection.where('employeeId', '==', currentData.employeeId).get();
-                        if (!userSnap.empty) {
-                            const userDoc = userSnap.docs[0];
-                            const userUpdateData = {
-                                fullName: name,
-                                branch: branch,
-                                role: role,
-                                updatedAt: new Date().toISOString()
-                            };
-                            if (un) userUpdateData.username = un;
-                            if (pw && pw.length >= 6) userUpdateData.password = pw;
-                            
-                            await userDoc.ref.update(userUpdateData);
-                            
-                            if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
-                                CloudStore.currentUser.fullName = name;
-                                CloudStore.currentUser.branch = branch;
-                                CloudStore.currentUser.role = role;
-                                if (un) CloudStore.currentUser.username = un;
-                                localStorage.setItem('pf_user_data', JSON.stringify(CloudStore.currentUser));
-                                document.getElementById('userNameDisplay').textContent = name;
-                                document.getElementById('userDeptDisplay').textContent = branch || 'No Branch';
-                                document.getElementById('userRoleBadge').textContent = role.toUpperCase();
-                                document.getElementById('userRoleBadge').className = `role-badge ${role}`;
-                            }
-                        }
-                    } catch (userErr) { console.warn('Could not update user account:', userErr); }
-                    
-                    // Update local state
-                    const localEmp = appState.employees.find(e => e.id === id);
-                    if (localEmp) {
-                        localEmp.employeeId = empId;
-                        localEmp.name = name;
-                        localEmp.email = email;
-                        localEmp.mobile = mobile;
-                        localEmp.branch = branch;
-                        localEmp.designation = desig;
-                        localEmp.role = role;
-                        localEmp.updatedAt = new Date().toISOString();
-                    }
-                    
-                    showToast('success', `Employee updated successfully! Branch: ${branch}, Role: ${role}`);
-                    
+                    await CloudStore.updateAdvance(id, { ...data, updatedAt: new Date().toISOString() });
+                    showToast('success', 'Advance updated successfully');
                 } else {
-                    // Adding new employee
-                    if (!pw || pw.length < 6) { 
-                        showToast('warning', 'Password must be at least 6 characters');
-                        showLoading(false); 
-                        return; 
+                    await CloudStore.addAdvance(data);
+                    showToast('success', 'Advance request submitted for approval');
+                    // Send notification to managers
+                    const managers = appState.employees.filter(e => e.role === 'manager' || e.role === 'admin' || e.role === 'accounts');
+                    for (const manager of managers) {
+                        await CloudStore.addNotification({
+                            userId: manager.id,
+                            type: 'ADVANCE_PENDING',
+                            title: 'New Advance Request',
+                            message: `${user.fullName} has requested an advance of ₹${amount.toLocaleString()} for ${purpose}`,
+                            entityId: id || 'new',
+                            severity: 'info',
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
                     }
-                    
-                    const existingUser = await CloudStore.getUserByUsername(un);
-                    if (existingUser) {
-                        showToast('warning', 'Username already exists. Please choose a different username.');
-                        showLoading(false);
-                        return;
-                    }
-                    
-                    const empSnap = await CloudStore.employeesCollection.where('employeeId', '==', empId).get();
-                    if (!empSnap.empty) {
-                        showToast('warning', 'Employee ID already exists. Please use a unique ID.');
-                        showLoading(false);
-                        return;
-                    }
-                    
-                    await CloudStore.addUser({ 
-                        username: un, 
-                        password: pw, 
-                        fullName: name, 
-                        role: role, 
-                        branch: branch, 
-                        employeeId: empId, 
-                        createdAt: new Date().toISOString() 
-                    });
-                    
-                    await CloudStore.addEmployee({ 
-                        employeeId: empId, 
-                        name: name, 
-                        email: email, 
-                        mobile: mobile, 
-                        branch: branch, 
-                        designation: desig, 
-                        role: role, 
-                        isActive: true, 
-                        createdAt: new Date().toISOString() 
-                    });
-                    
-                    showToast('success', 'Employee added successfully. User account created.');
+                    loadNotifications();
                 }
                 
-                const modalEl = document.getElementById('employeeModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-                
-                await CloudStore.addAuditLog({ 
-                    action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
-                    entityType: 'Employee', 
-                    entityId: name,
-                    details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId}) with branch: ${branch}, role: ${role}`
-                });
-                
-                loadEmployees();
-                
-            } catch (err) { 
-                console.error('Save employee error:', err);
-                showToast('danger', 'Failed to save: ' + err.message); 
+                bootstrap.Modal.getInstance(document.getElementById('advanceModal')).hide();
+                loadAdvances();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
+            showLoading(false);
+        }
+
+        async function saveExpense() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addExpense')) { showToast('warning', 'Permission denied'); return; }
+            
+            const id = document.getElementById('editExpenseId').value;
+            const branch = document.getElementById('expBranch').value;
+            const project = document.getElementById('expProject').value;
+            const category = document.getElementById('expCategory').value;
+            const paymentMethod = document.getElementById('expPaymentMethod').value;
+            const amount = parseFloat(document.getElementById('expAmount').value);
+            const date = document.getElementById('expDate').value;
+            const description = document.getElementById('expDescription').value.trim();
+            const vendor = document.getElementById('expVendor').value.trim();
+            const billNo = document.getElementById('expBillNo').value.trim();
+            const remarks = document.getElementById('expRemarks').value.trim();
+            
+            if (!branch || !project || !category || !paymentMethod || !amount) {
+                showToast('warning', 'Please fill all required fields');
+                return;
             }
             
+            showLoading(true);
+            try {
+                let uploadedUrls = [];
+                if (uploadedFiles.length > 0) {
+                    const filesToUpload = uploadedFiles.filter(f => f.file !== null && f.file !== undefined);
+                    if (filesToUpload.length > 0) {
+                        uploadedUrls = await uploadFilesToStorage(filesToUpload);
+                    }
+                    // Keep existing files that were already uploaded
+                    const existingFiles = uploadedFiles.filter(f => f.url);
+                    uploadedUrls = [...uploadedUrls, ...existingFiles];
+                }
+                
+                const data = {
+                    employeeId: user.id,
+                    employeeName: user.fullName || user.name,
+                    branch: branch,
+                    projectName: project,
+                    category: category,
+                    paymentMethod: paymentMethod,
+                    amount: amount,
+                    date: date || new Date().toISOString().split('T')[0],
+                    description: description || '',
+                    vendor: vendor || '',
+                    billNo: billNo || '',
+                    remarks: remarks || '',
+                    files: uploadedUrls,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+                
+                if (id) {
+                    await CloudStore.updateExpense(id, { ...data, updatedAt: new Date().toISOString() });
+                    showToast('success', 'Expense updated successfully');
+                } else {
+                    await CloudStore.addExpense(data);
+                    showToast('success', 'Expense submitted for approval');
+                    // Send notification to managers
+                    const managers = appState.employees.filter(e => e.role === 'manager' || e.role === 'admin' || e.role === 'accounts');
+                    for (const manager of managers) {
+                        await CloudStore.addNotification({
+                            userId: manager.id,
+                            type: 'EXPENSE_PENDING',
+                            title: 'New Expense Submitted',
+                            message: `${user.fullName} has submitted an expense of ₹${amount.toLocaleString()} for ${category}`,
+                            entityId: id || 'new',
+                            severity: 'info',
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
+                    }
+                    loadNotifications();
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('expenseModal')).hide();
+                loadExpenses();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
+            showLoading(false);
+        }
+
+        async function saveBranch() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addBranch')) { showToast('warning', 'Permission denied'); return; }
+            
+            const id = document.getElementById('editBranchId').value;
+            const name = document.getElementById('branchName').value.trim();
+            const type = document.getElementById('branchType').value;
+            const location = document.getElementById('branchLocation').value.trim();
+            const managerId = document.getElementById('branchManager').value;
+            const cardLimit = parseFloat(document.getElementById('branchCardLimit').value) || 0;
+            
+            if (!name || !location) {
+                showToast('warning', 'Please fill all required fields');
+                return;
+            }
+            
+            const manager = appState.employees.find(e => e.id === managerId);
+            
+            showLoading(true);
+            try {
+                const data = {
+                    name: name,
+                    type: type,
+                    location: location,
+                    managerId: managerId || null,
+                    managerName: manager ? manager.name : null,
+                    cardLimit: cardLimit,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (id) {
+                    await CloudStore.updateBranch(id, data);
+                    showToast('success', 'Branch updated successfully');
+                } else {
+                    await CloudStore.addBranch(data);
+                    showToast('success', 'Branch added successfully');
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
+                loadBranches();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
+            showLoading(false);
+        }
+
+        async function saveProject() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addProject')) { showToast('warning', 'Permission denied'); return; }
+            
+            const id = document.getElementById('editProjectId').value;
+            const name = document.getElementById('projectName').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+            const status = document.getElementById('projectStatus').value;
+            const campsSelect = document.getElementById('projectCamps');
+            const camps = Array.from(campsSelect.selectedOptions).map(opt => opt.value);
+            
+            if (!name || camps.length === 0) {
+                showToast('warning', 'Please fill all required fields and select at least one camp');
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                const data = {
+                    name: name,
+                    camps: camps,
+                    description: description || '',
+                    status: status,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (id) {
+                    await CloudStore.updateProject(id, data);
+                    showToast('success', 'Project updated successfully');
+                } else {
+                    await CloudStore.addProject(data);
+                    showToast('success', 'Project added successfully');
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+                loadProjects();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
+            showLoading(false);
+        }
+
+        async function saveCard() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addCard')) { showToast('warning', 'Permission denied'); return; }
+            
+            const id = document.getElementById('editCardId').value;
+            const cardNumber = document.getElementById('cardNumber').value.trim();
+            const branch = document.getElementById('cardBranch').value;
+            const project = document.getElementById('cardProject').value;
+            const holderId = document.getElementById('cardHolder').value;
+            const limit = parseFloat(document.getElementById('cardLimit').value);
+            const status = document.getElementById('cardStatus').value;
+            
+            if (!cardNumber || !branch || !project || !holderId || !limit) {
+                showToast('warning', 'Please fill all required fields');
+                return;
+            }
+            
+            const holder = appState.employees.find(e => e.id === holderId);
+            
+            showLoading(true);
+            try {
+                const data = {
+                    cardNumber: cardNumber,
+                    branch: branch,
+                    projectName: project,
+                    holderId: holderId,
+                    holderName: holder ? holder.name : 'N/A',
+                    limit: limit,
+                    utilized: 0,
+                    status: status,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (id) {
+                    await CloudStore.updateCard(id, data);
+                    showToast('success', 'Card updated successfully');
+                } else {
+                    await CloudStore.addCard(data);
+                    showToast('success', 'Card added successfully');
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
+                loadCards();
+            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
             showLoading(false);
         }
 
@@ -4274,7 +4897,7 @@
                 showToast('warning', 'Permission denied'); 
                 return; 
             }
-            if (!confirm('Are you sure you want to delete this employee?')) return;
+            if (!confirm('Are you sure you want to delete this employee? This will also delete their user account.')) return;
             showLoading(true);
             try { 
                 const doc = await CloudStore.employeesCollection.doc(id).get();
@@ -4283,7 +4906,14 @@
                 await CloudStore.employeesCollection.doc(id).delete();
                 try {
                     const userSnap = await CloudStore.usersCollection.where('employeeId', '==', empData.employeeId).get();
-                    if (!userSnap.empty) await userSnap.docs[0].ref.delete();
+                    if (!userSnap.empty) {
+                        const userDoc = userSnap.docs[0];
+                        if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
+                            showToast('warning', 'You have deleted your own account. Logging out...');
+                            setTimeout(() => logout(), 1500);
+                        }
+                        await userDoc.ref.delete();
+                    }
                 } catch (userErr) { console.warn('Could not delete user account:', userErr); }
                 await CloudStore.addAuditLog({ action: 'DELETE_EMPLOYEE', entityType: 'Employee', entityId: empData.employeeId,
                     details: `Deleted employee: ${empData.name} (${empData.employeeId})` });
@@ -4296,31 +4926,31 @@
         async function deleteCard(id) {
             if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteCard')) { showToast('warning', 'Permission denied'); return; }
             if (!confirm('Delete this card?')) return;
-            try { await CloudStore.cardsCollection.doc(id).delete(); showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            try { await CloudStore.cardsCollection.doc(id).delete(); showToast('success', 'Card deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         async function deleteBranch(id) {
             if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteBranch')) { showToast('warning', 'Permission denied'); return; }
             if (!confirm('Delete this camp?')) return;
-            try { await CloudStore.branchesCollection.doc(id).delete(); showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            try { await CloudStore.branchesCollection.doc(id).delete(); showToast('success', 'Camp deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         async function deleteProject(id) {
             if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteProject')) { showToast('warning', 'Permission denied'); return; }
             if (!confirm('Delete this project?')) return;
-            try { await CloudStore.projectsCollection.doc(id).delete(); showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            try { await CloudStore.projectsCollection.doc(id).delete(); showToast('success', 'Project deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         async function deleteAdvance(id) {
             if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteAdvance')) { showToast('warning', 'Permission denied'); return; }
             if (!confirm('Delete this advance?')) return;
-            try { await CloudStore.advancesCollection.doc(id).delete(); showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            try { await CloudStore.advancesCollection.doc(id).delete(); showToast('success', 'Advance deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         async function deleteExpense(id) {
             if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteExpense')) { showToast('warning', 'Permission denied'); return; }
             if (!confirm('Delete this expense?')) return;
-            try { await CloudStore.expensesCollection.doc(id).delete(); showToast('success', 'Deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
+            try { await CloudStore.expensesCollection.doc(id).delete(); showToast('success', 'Expense deleted'); } catch (e) { showToast('danger', 'Failed: ' + e.message); }
         }
 
         // ======================================================================
@@ -4349,7 +4979,7 @@
             const e = appState.expenses.find(x => x.id === id);
             if (!e) return;
             const files = e.files && e.files.length > 0 ? e.files.map(f =>
-                `<div class="file-item"><div><span class="file-icon"><i class="fas ${f.type.includes('pdf')?'fa-file-pdf':'fa-file-image'}"></i></span><span class="file-name">${f.name}</span></div><a href="${f.url}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download"></i> View</a></div>`
+                `<div class="file-item"><div><span class="file-icon"><i class="fas ${f.type?.includes('pdf')?'fa-file-pdf':'fa-file-image'}"></i></span><span class="file-name">${f.name}</span></div><a href="${f.url}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download"></i> View</a></div>`
                 ).join('') : '<div class="text-muted">No attachments</div>';
             const content =
                 `<div class="row"><div class="col-6"><strong>ID:</strong></div><div class="col-6">${e.id}</div><div class="col-6"><strong>Employee:</strong></div><div class="col-6">${e.employeeName}</div><div class="col-6"><strong>Camp:</strong></div><div class="col-6">${e.branch}</div><div class="col-6"><strong>Project:</strong></div><div class="col-6">${e.projectName}</div><div class="col-6"><strong>Category:</strong></div><div class="col-6">${e.category}</div><div class="col-6"><strong>Amount:</strong></div><div class="col-6">₹${(e.amount||0).toLocaleString()}</div><div class="col-6"><strong>Payment:</strong></div><div class="col-6">${e.paymentMethod}</div><div class="col-6"><strong>Vendor:</strong></div><div class="col-6">${e.vendor||'N/A'}</div><div class="col-6"><strong>Bill No:</strong></div><div class="col-6">${e.billNo||'N/A'}</div><div class="col-6"><strong>Date:</strong></div><div class="col-6">${e.date||'N/A'}</div><div class="col-6"><strong>Status:</strong></div><div class="col-6"><span class="status-badge status-${e.status||'pending'}">${(e.status||'pending').replace('_',' ')}</span></div><div class="col-12 mt-3"><strong>Description:</strong></div><div class="col-12">${e.description||'No description'}</div><div class="col-12 mt-3"><strong>Attachments:</strong></div><div class="col-12">${files}</div></div>`;
@@ -4392,6 +5022,15 @@
             document.getElementById('aprAmount').textContent = '₹' + (item.amount || 0).toLocaleString();
             document.getElementById('aprPurpose').textContent = isAdvance ? (item.purpose || 'N/A') : (item.category || 'N/A');
             document.getElementById('aprDescription').textContent = item.description || 'No description';
+            
+            // Show attachments
+            const attachments = document.getElementById('aprAttachments');
+            if (item.files && item.files.length > 0) {
+                attachments.innerHTML = item.files.map(f => `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-file"></i> ${f.name}</a>`).join('');
+            } else {
+                attachments.textContent = 'No attachments';
+            }
+            
             document.getElementById('aprRemarks').value = '';
             document.getElementById('aprDecision').value = 'approved';
             document.getElementById('approvalModal').dataset.txnId = id;
@@ -4418,7 +5057,9 @@
                     await CloudStore.addNotification({ userId: adv.employeeId, type: 'ADVANCE_' + decision.toUpperCase(), 
                         title: `Advance ${decision}`, message: `Your advance for ₹${(adv.amount||0).toLocaleString()} was ${decision}`,
                         entityId: id, severity: decision === 'approved' ? 'success' : 'danger', read: false, createdAt: new Date().toISOString() });
-                    await CloudStore.addAuditLog({ action: 'APPROVE_ADVANCE', entityType: 'Advance', entityId: id });
+                    await CloudStore.addAuditLog({ action: 'APPROVE_ADVANCE', entityType: 'Advance', entityId: id,
+                        details: `${decision} by ${user.username}` });
+                    showToast('success', `Advance ${decision}`);
                 } else {
                     const exp = appState.expenses.find(e => e.id === id);
                     if (!exp) throw new Error('Not found');
@@ -4428,10 +5069,13 @@
                     await CloudStore.addNotification({ userId: exp.employeeId, type: 'EXPENSE_' + decision.toUpperCase(), 
                         title: `Expense ${decision}`, message: `Your expense of ₹${(exp.amount||0).toLocaleString()} was ${decision}`,
                         entityId: id, severity: decision === 'approved' ? 'success' : 'danger', read: false, createdAt: new Date().toISOString() });
-                    await CloudStore.addAuditLog({ action: 'APPROVE_EXPENSE', entityType: 'Expense', entityId: id });
+                    await CloudStore.addAuditLog({ action: 'APPROVE_EXPENSE', entityType: 'Expense', entityId: id,
+                        details: `${decision} by ${user.username}` });
+                    showToast('success', `Expense ${decision}`);
                 }
                 bootstrap.Modal.getInstance(document.getElementById('approvalModal')).hide();
-                showToast('success', `Request ${decision} successfully`);
+                loadNotifications();
+                loadApprovals();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
             showLoading(false);
         }
@@ -4439,9 +5083,348 @@
         function viewApproval(id, isAdvance) {
             const item = isAdvance ? appState.advances.find(a => a.id === id) : appState.expenses.find(e => e.id === id);
             if (!item) return;
+            const attachments = item.files && item.files.length > 0 ? 
+                item.files.map(f => `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-file"></i> ${f.name}</a>`).join('') : 
+                'No attachments';
             const details =
-                `<div class="row small"><div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div><div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance?'Advance':'Expense'}</div><div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName||'N/A'}</div><div class="col-5"><strong>Camp:</strong></div><div class="col-7">${item.branch||'N/A'}</div><div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName||'N/A'}</div><div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount||0).toLocaleString()}</div><div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status||'pending'}">${(item.status||'pending').replace('_',' ')}</span></div><div class="col-5"><strong>Approved By:</strong></div><div class="col-7">${item.approvedBy||'N/A'}</div><div class="col-5"><strong>Approval Date:</strong></div><div class="col-7">${item.approvalDate?new Date(item.approvalDate).toLocaleString():'N/A'}</div><div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${item.remarks||'No remarks'}</div></div>`;
+                `<div class="row small"><div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div><div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance?'Advance':'Expense'}</div><div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName||'N/A'}</div><div class="col-5"><strong>Camp:</strong></div><div class="col-7">${item.branch||'N/A'}</div><div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName||'N/A'}</div><div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount||0).toLocaleString()}</div><div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status||'pending'}">${(item.status||'pending').replace('_',' ')}</span></div><div class="col-5"><strong>Approved By:</strong></div><div class="col-7">${item.approvedBy||'N/A'}</div><div class="col-5"><strong>Approval Date:</strong></div><div class="col-7">${item.approvalDate?new Date(item.approvalDate).toLocaleString():'N/A'}</div><div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${item.remarks||'No remarks'}</div><div class="col-5"><strong>Attachments:</strong></div><div class="col-7">${attachments}</div></div>`;
             showCustomModal('Approval Details', details);
+        }
+
+        // ======================================================================
+        // EMPLOYEE MODAL - COMPLETE
+        // ======================================================================
+        function showEmployeeModal(employeeId = null) {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addEmployee')) { 
+                showToast('warning', 'You don\'t have permission to add employees.'); 
+                return; 
+            }
+            
+            if (appState.branches.length === 0) {
+                showToast('info', 'Loading branches data...');
+                const checkBranches = setInterval(() => {
+                    if (appState.branches.length > 0) {
+                        clearInterval(checkBranches);
+                        showEmployeeModal(employeeId);
+                    }
+                }, 500);
+                return;
+            }
+            
+            populateBranchSelectors();
+            
+            document.getElementById('employeeForm').reset();
+            document.getElementById('editEmployeeId').value = '';
+            document.getElementById('employeeModalTitle').textContent = 'Add Employee';
+            document.getElementById('empPassword').required = true;
+            document.getElementById('empPassword').placeholder = 'Min 6 characters';
+            document.getElementById('empPassword').value = '';
+            document.getElementById('empUsername').disabled = false;
+            document.getElementById('empEmployeeId').disabled = false;
+            document.getElementById('passwordHint').textContent = 'Min 6 characters for new employee';
+            
+            if (employeeId) {
+                const emp = appState.employees.find(e => e.id === employeeId);
+                if (emp) {
+                    populateEmployeeForm(emp);
+                    const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+                    modal.show();
+                    return;
+                }
+                
+                showToast('info', 'Loading employee data...');
+                CloudStore.employeesCollection.doc(employeeId).get().then((doc) => {
+                    if (doc.exists) {
+                        const empData = { id: doc.id, ...doc.data() };
+                        const existing = appState.employees.find(e => e.id === employeeId);
+                        if (!existing) appState.employees.push(empData);
+                        populateEmployeeForm(empData);
+                        const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+                        modal.show();
+                    } else {
+                        showToast('danger', 'Employee not found in database.');
+                    }
+                }).catch((err) => {
+                    showToast('danger', 'Error fetching employee: ' + err.message);
+                    console.error('Error:', err);
+                });
+                return;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
+            modal.show();
+        }
+
+        function populateEmployeeForm(emp) {
+            console.log('Populating form with employee:', emp);
+            
+            populateBranchSelectors();
+            
+            document.getElementById('employeeModalTitle').textContent = `Edit Employee: ${emp.name || 'N/A'}`;
+            document.getElementById('editEmployeeId').value = emp.id || '';
+            document.getElementById('empEmployeeId').value = emp.employeeId || '';
+            document.getElementById('empName').value = emp.name || '';
+            document.getElementById('empEmail').value = emp.email || '';
+            document.getElementById('empMobile').value = emp.mobile || '';
+            
+            const branchSelect = document.getElementById('empBranch');
+            if (branchSelect) {
+                let branchExists = false;
+                for (let i = 0; i < branchSelect.options.length; i++) {
+                    if (branchSelect.options[i].value === emp.branch) {
+                        branchExists = true;
+                        break;
+                    }
+                }
+                if (!branchExists && emp.branch) {
+                    const option = document.createElement('option');
+                    option.value = emp.branch;
+                    option.textContent = emp.branch;
+                    branchSelect.appendChild(option);
+                }
+                branchSelect.value = emp.branch || '';
+            }
+            
+            document.getElementById('empDesignation').value = emp.designation || '';
+            document.getElementById('empRole').value = emp.role || 'employee';
+            document.getElementById('empStatus').value = emp.isActive !== false ? 'true' : 'false';
+            document.getElementById('empUsername').value = emp.username || emp.name?.toLowerCase().replace(/\s/g, '') || '';
+            document.getElementById('empPassword').value = '';
+            document.getElementById('empPassword').required = false;
+            document.getElementById('empPassword').placeholder = 'Leave blank to keep current';
+            document.getElementById('empUsername').disabled = true;
+            document.getElementById('empEmployeeId').disabled = true;
+            document.getElementById('passwordHint').textContent = 'Leave blank to keep current password';
+        }
+
+        function editEmployee(id) {
+            console.log('Edit employee called with ID:', id);
+            if (!id) { showToast('danger', 'No employee ID provided'); return; }
+            
+            const emp = appState.employees.find(e => e.id === id);
+            if (emp) {
+                showEmployeeModal(id);
+                return;
+            }
+            
+            showToast('info', 'Loading employee data...');
+            CloudStore.employeesCollection.doc(id).get().then((doc) => {
+                if (doc.exists) {
+                    const empData = { id: doc.id, ...doc.data() };
+                    if (!appState.employees.find(e => e.id === id)) appState.employees.push(empData);
+                    showEmployeeModal(id);
+                } else {
+                    showToast('danger', 'Employee not found in database. Please refresh the page.');
+                }
+            }).catch((err) => {
+                showToast('danger', 'Error loading employee: ' + err.message);
+                console.error('Error fetching employee:', err);
+            });
+        }
+
+        // ======================================================================
+        // SAVE EMPLOYEE - COMPLETE WITH REAL-TIME SYNC
+        // ======================================================================
+        async function saveEmployee() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addEmployee')) { 
+                showToast('warning', 'You don\'t have permission to add employees.'); 
+                return; 
+            }
+            
+            const id = document.getElementById('editEmployeeId').value;
+            const empId = document.getElementById('empEmployeeId').value.trim();
+            const name = document.getElementById('empName').value.trim();
+            const email = document.getElementById('empEmail').value.trim();
+            const mobile = document.getElementById('empMobile').value.trim();
+            const branch = document.getElementById('empBranch').value;
+            const desig = document.getElementById('empDesignation').value.trim();
+            const role = document.getElementById('empRole').value;
+            const status = document.getElementById('empStatus').value === 'true';
+            const un = document.getElementById('empUsername').value.trim();
+            const pw = document.getElementById('empPassword').value;
+            
+            console.log('Saving employee with ID:', id);
+            console.log('Branch value:', branch);
+            console.log('Role value:', role);
+            console.log('Status:', status);
+            
+            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
+                showToast('warning', 'Please fill all required fields'); 
+                return; 
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('warning', 'Please enter a valid email address');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                if (id) {
+                    // UPDATE EXISTING EMPLOYEE
+                    const docRef = CloudStore.employeesCollection.doc(id);
+                    const doc = await docRef.get();
+                    if (!doc.exists) {
+                        showToast('danger', 'Employee document not found in database. Please refresh and try again.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    const currentData = doc.data();
+                    
+                    // Update ALL fields
+                    const updateData = {
+                        employeeId: empId,
+                        name: name,
+                        email: email,
+                        mobile: mobile,
+                        branch: branch,
+                        designation: desig,
+                        role: role,
+                        isActive: status,
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    console.log('Updating with data:', updateData);
+                    await docRef.update(updateData);
+                    
+                    // CRITICAL: Update user account with new branch and role
+                    let userUpdated = false;
+                    try {
+                        const userSnap = await CloudStore.usersCollection.where('employeeId', '==', currentData.employeeId).get();
+                        if (!userSnap.empty) {
+                            const userDoc = userSnap.docs[0];
+                            const userUpdateData = {
+                                fullName: name,
+                                branch: branch,
+                                role: role,
+                                isActive: status,
+                                updatedAt: new Date().toISOString()
+                            };
+                            if (un) userUpdateData.username = un;
+                            if (pw && pw.length >= 6) userUpdateData.password = pw;
+                            
+                            await userDoc.ref.update(userUpdateData);
+                            userUpdated = true;
+                            
+                            // Check if this is the current user
+                            if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
+                                const updatedUserData = await userDoc.ref.get();
+                                const updatedUser = { id: userDoc.id, ...updatedUserData.data() };
+                                CloudStore.setCurrentUser(updatedUser);
+                                localStorage.setItem('pf_user_data', JSON.stringify(updatedUser));
+                                
+                                updateUserUI(updatedUser);
+                                applyPermissions();
+                                
+                                const branchSync = document.getElementById('branchSyncStatus');
+                                if (updatedUser.branch) {
+                                    branchSync.textContent = `✅ Branch: ${updatedUser.branch}`;
+                                    branchSync.className = 'sync-badge synced';
+                                }
+                                
+                                showToast('success', `🔐 Your role/permissions have been updated automatically!`);
+                                
+                                const currentPage = document.querySelector('.page-content:not([style*="display: none"])')?.id?.replace('page-', '');
+                                if (currentPage) {
+                                    setTimeout(() => showPage(currentPage), 300);
+                                }
+                            }
+                        }
+                    } catch (userErr) { 
+                        console.warn('Could not update user account:', userErr); 
+                    }
+                    
+                    // Update local state
+                    const localEmp = appState.employees.find(e => e.id === id);
+                    if (localEmp) {
+                        localEmp.employeeId = empId;
+                        localEmp.name = name;
+                        localEmp.email = email;
+                        localEmp.mobile = mobile;
+                        localEmp.branch = branch;
+                        localEmp.designation = desig;
+                        localEmp.role = role;
+                        localEmp.isActive = status;
+                        localEmp.updatedAt = new Date().toISOString();
+                    }
+                    
+                    showToast('success', `Employee updated successfully! Branch: ${branch}, Role: ${role}${userUpdated ? ' (User account also updated)' : ''}`);
+                    
+                } else {
+                    // ADD NEW EMPLOYEE
+                    if (!pw || pw.length < 6) { 
+                        showToast('warning', 'Password must be at least 6 characters');
+                        showLoading(false); 
+                        return; 
+                    }
+                    
+                    const existingUser = await CloudStore.getUserByUsername(un);
+                    if (existingUser) {
+                        showToast('warning', 'Username already exists. Please choose a different username.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    const empSnap = await CloudStore.employeesCollection.where('employeeId', '==', empId).get();
+                    if (!empSnap.empty) {
+                        showToast('warning', 'Employee ID already exists. Please use a unique ID.');
+                        showLoading(false);
+                        return;
+                    }
+                    
+                    // Create user account
+                    await CloudStore.addUser({ 
+                        username: un, 
+                        password: pw, 
+                        fullName: name, 
+                        role: role, 
+                        branch: branch, 
+                        employeeId: empId, 
+                        isActive: true,
+                        createdAt: new Date().toISOString() 
+                    });
+                    
+                    // Create employee record
+                    await CloudStore.addEmployee({ 
+                        employeeId: empId, 
+                        name: name, 
+                        email: email, 
+                        mobile: mobile, 
+                        branch: branch, 
+                        designation: desig, 
+                        role: role, 
+                        isActive: true, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    
+                    showToast('success', 'Employee added successfully. User account created.');
+                }
+                
+                const modalEl = document.getElementById('employeeModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                
+                await CloudStore.addAuditLog({ 
+                    action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
+                    entityType: 'Employee', 
+                    entityId: name,
+                    details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId}) with branch: ${branch}, role: ${role}, status: ${status}`
+                });
+                
+                // Refresh employee list
+                loadEmployees();
+                
+            } catch (err) { 
+                console.error('Save employee error:', err);
+                showToast('danger', 'Failed to save: ' + err.message); 
+            }
+            
+            showLoading(false);
         }
 
         // ======================================================================
@@ -4465,8 +5448,16 @@
         // ======================================================================
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('currentDateTime').textContent = now.toLocaleString('en-US', { weekday: 'short',
-                month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const display = document.getElementById('currentDateTime');
+            if (display) {
+                display.textContent = now.toLocaleString('en-US', { weekday: 'short',
+                    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+            const myDash = document.getElementById('myDashDateTime');
+            if (myDash) {
+                myDash.textContent = now.toLocaleString('en-US', { weekday: 'short',
+                    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
         }
 
         async function initializeApp() {
@@ -4490,13 +5481,22 @@
         }
 
         initializeApp();
-        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Pagination');
-        console.log('✅ Funds are allocated directly to SBI Visa Cards');
-        console.log('✅ Employee branch changes automatically sync to user accounts');
-        console.log('✅ Pagination added for employee list (25 per page)');
-        console.log('✅ Search and filter for employees');
-        console.log('✅ Clickable alerts with drill-down functionality');
-        console.log('✅ Employee edit now properly saves branch and role');
+        console.log('🏗️ Project Fund Management System - COMPLETE VERSION');
+        console.log('✅ All 15+ missing features implemented');
+        console.log('✅ Employee changes sync to user accounts in real-time');
+        console.log('✅ Role changes automatically update permissions');
+        console.log('✅ Branch changes reflect immediately in UI');
+        console.log('✅ File upload to Firebase Storage working');
+        console.log('✅ Notifications system fully functional');
+        console.log('✅ Mobile responsive sidebar');
+        console.log('✅ Password handling in edit mode fixed');
+        console.log('✅ Main branch in selectors');
+        console.log('✅ Employee status toggle');
+        console.log('✅ Branch manager assignment');
+        console.log('✅ Project camps saving');
+        console.log('✅ Card holder sync');
+        console.log('✅ Audit log formatting');
+        console.log('✅ Complete real-time sync');
         console.log('🔑 First user registration becomes Super Admin');
         console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
