@@ -130,6 +130,16 @@
 
         @media (max-width: 768px) { .sidebar { min-height: auto; height: auto; position: relative; } .main-content { max-height: none; padding: 15px; } .login-card { padding: 30px 20px; } .stat-card { margin-bottom: 15px; } }
         @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
+
+        /* ===== SYNC INDICATOR ===== */
+        .sync-badge {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+        .sync-badge.synced { background: #1cc88a; color: white; }
+        .sync-badge.outdated { background: #f6c23e; color: #333; }
     </style>
 </head>
 <body>
@@ -185,7 +195,6 @@
                     </div>
                 </form>
 
-                <!-- ===== REGISTRATION ===== -->
                 <div id="registrationForm" style="display:none; margin-top:20px;">
                     <hr>
                     <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Employee Registration</h6>
@@ -252,6 +261,7 @@
                             </div>
                             <div class="mt-2">
                                 <span class="badge bg-success" id="syncStatus"><i class="fas fa-cloud-upload-alt"></i> Synced</span>
+                                <span class="sync-badge synced" id="branchSyncStatus">✅ Branch Synced</span>
                             </div>
                         </div>
                         <nav class="nav flex-column">
@@ -277,7 +287,6 @@
                                 <i class="fas fa-credit-card"></i> Cards
                             </a>
 
-                            <!-- ===== ADMIN MENU ===== -->
                             <div id="adminMenu" style="display:none;">
                                 <div class="px-3 py-2 mt-2">
                                     <small class="text-uppercase" style="color:rgba(255,255,255,0.4);font-size:0.7rem;">Administration</small>
@@ -408,7 +417,6 @@
                                 </div>
                             </div>
 
-                            <!-- Monthly Quick Summary -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <div class="monthly-summary">
@@ -435,7 +443,6 @@
                                 </div>
                             </div>
 
-                            <!-- Attention Required -->
                             <div class="row mb-4">
                                 <div class="col-md-12">
                                     <div class="table-container">
@@ -447,7 +454,6 @@
                                 </div>
                             </div>
 
-                            <!-- Recent Activity -->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="table-container">
@@ -566,7 +572,6 @@
                                 </div>
                             </div>
 
-                            <!-- Filter Section -->
                             <div class="filter-section">
                                 <div class="row align-items-end">
                                     <div class="col-md-3">
@@ -596,7 +601,6 @@
                                 </div>
                             </div>
 
-                            <!-- Card Allocations Table -->
                             <div class="table-container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5><i class="fas fa-credit-card me-2"></i>Card Allocations</h5>
@@ -625,7 +629,6 @@
                                 </div>
                             </div>
 
-                            <!-- Camp Fund Tracking -->
                             <div class="table-container mt-4">
                                 <h6><i class="fas fa-building me-2"></i>Camp Fund Tracking (for reference)</h6>
                                 <div class="table-responsive">
@@ -1568,6 +1571,29 @@
                 return null;
             },
 
+            // NEW: Sync user branch with employee record
+            async syncUserBranch(userId, newBranch) {
+                if (!userId) return;
+                try {
+                    await this.usersCollection.doc(userId).update({ branch: newBranch });
+                    // Update current user session
+                    if (this.currentUser && this.currentUser.id === userId) {
+                        this.currentUser.branch = newBranch;
+                        localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
+                    }
+                    // Also update any employee record with same ID
+                    const empSnap = await this.employeesCollection.where('employeeId', '==', this.currentUser?.employeeId)
+                        .get();
+                    if (!empSnap.empty) {
+                        await empSnap.docs[0].ref.update({ branch: newBranch });
+                    }
+                    return true;
+                } catch (err) {
+                    console.error('Error syncing branch:', err);
+                    return false;
+                }
+            },
+
             listenToBranches(cb) {
                 const u = this.getCurrentUser();
                 const p = getUserPermissions(u?.role);
@@ -1738,7 +1764,27 @@
             async addBranch(d) { const r = await this.branchesCollection.add(d); return { id: r.id, ...d }; },
             async addProject(d) { const r = await this.projectsCollection.add(d); return { id: r.id, ...d }; },
             async addEmployee(d) { const r = await this.employeesCollection.add(d); return { id: r.id, ...d }; },
-            async updateEmployee(id, d) { await this.employeesCollection.doc(id).update(d); return { id, ...d }; },
+            async updateEmployee(id, d) {
+                await this.employeesCollection.doc(id).update(d);
+                // ALSO UPDATE USER RECORD IF EMPLOYEE ID MATCHES
+                const emp = await this.employeesCollection.doc(id).get();
+                if (emp.exists) {
+                    const empData = emp.data();
+                    // Find user with matching employeeId
+                    const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
+                    if (!userSnap.empty) {
+                        const userDoc = userSnap.docs[0];
+                        await userDoc.ref.update({ branch: d.branch, fullName: d.name });
+                        // Update current session if this is the logged-in user
+                        if (this.currentUser && this.currentUser.id === userDoc.id) {
+                            this.currentUser.branch = d.branch;
+                            this.currentUser.fullName = d.name;
+                            localStorage.setItem('pf_user_data', JSON.stringify(this.currentUser));
+                        }
+                    }
+                }
+                return { id, ...d };
+            },
             async addAdvance(d) {
                 const r = await this.advancesCollection.add(d);
                 const monthVal = new Date().toISOString().slice(0, 7);
@@ -1967,6 +2013,17 @@
                 document.getElementById('userRoleBadge').textContent = user.role.toUpperCase();
                 document.getElementById('userRoleBadge').className = `role-badge ${user.role}`;
                 document.getElementById('userEmpIdDisplay').textContent = user.employeeId || 'N/A';
+
+                // Show branch sync status
+                const branchSync = document.getElementById('branchSyncStatus');
+                if (user.branch) {
+                    branchSync.textContent = `✅ Branch: ${user.branch}`;
+                    branchSync.className = 'sync-badge synced';
+                } else {
+                    branchSync.textContent = '⚠️ No Branch Assigned';
+                    branchSync.className = 'sync-badge outdated';
+                }
+
                 applyPermissions();
                 const perms = getUserPermissions(user.role);
                 if (user.role === 'employee' || !perms.viewDashboard) {
@@ -2100,12 +2157,10 @@
             const low = campFunds.filter(f => f.balance < 10000);
             document.getElementById('pendingRefill').textContent = '₹' + (low.length * 5000).toLocaleString();
 
-            // Monthly summary - FIXED
             const currentMonth = new Date().toISOString().slice(0, 7);
             document.getElementById('currentMonthDisplay').textContent = new Date().toLocaleString('default', { month: 'long',
                 year: 'numeric' });
 
-            // Get transactions for current month from all sources
             const monthTransactions = transactions.filter(t => t.month === currentMonth);
             const monthRefillsFromTrans = monthTransactions.filter(t => t.type === 'REFILL').reduce((s, t) => s + (t.amount ||
                 0), 0);
@@ -2114,7 +2169,6 @@
             const monthExpenses = monthTransactions.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + (t.amount || 0),
             0);
 
-            // Also check refills and allocations collections directly (fallback)
             const refillsForMonth = refills.filter(r => r.month === currentMonth);
             const allocsForMonth = allocations.filter(a => a.month === currentMonth);
             const monthRefillsFromRefills = refillsForMonth.reduce((s, r) => s + (r.amount || 0), 0);
@@ -2352,15 +2406,18 @@
             }).join('');
         }
 
+        // ======================================================================
+        // EMPLOYEES - UPDATED with branch sync status and refresh button
+        // ======================================================================
         function loadEmployees() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'viewEmployees')) { document.getElementById('employeesBody').innerHTML =
-                    `<tr><td colspan="9" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
+                    `<tr><td colspan="10" class="text-center text-muted"><i class="fas fa-lock me-2"></i>Access restricted.</td></tr>`;
                 return; }
             const e = appState.employees;
             const tb = document.getElementById('employeesBody');
             if (e.length === 0) { tb.innerHTML =
-                `<tr><td colspan="9" class="text-center text-muted">No employees found</td></tr>`; return; }
+                `<tr><td colspan="10" class="text-center text-muted">No employees found</td></tr>`; return; }
             const canEdit = hasPermission(user?.role, 'addEmployee');
             const canDel = hasPermission(user?.role, 'deleteEmployee');
             tb.innerHTML = e.map(emp => {
@@ -2368,10 +2425,142 @@
                 const total = advs.reduce((s, a) => s + (a.amount || 0), 0);
                 const out = advs.filter(a => a.status === 'issued').reduce((s, a) => s + (a.remainingAmount || a
                     .amount || 0), 0);
-                return `<tr><td><code>${emp.employeeId}</code></td><td><strong>${emp.name}</strong></td><td>${emp.branch||'N/A'}</td><td>${emp.designation||'N/A'}</td><td><span class="role-badge ${emp.role||'employee'}">${(emp.role||'employee').toUpperCase()}</span></td><td>₹${total.toLocaleString()}</td><td><span class="${out>0?'text-danger fw-bold':'text-success'}">₹${out.toLocaleString()}</span></td><td><span class="badge ${emp.isActive!==false?'bg-success':'bg-danger'}">${emp.isActive!==false?'Active':'Inactive'}</span></td><td>${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')"><i class="fas fa-edit"></i></button>`:''}${canDel?`<button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash"></i></button>`:''}<button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${emp.id}')"><i class="fas fa-book"></i></button></td></tr>`;
+                // Check if branch is synced with user record
+                const isSynced = emp.branch ? '✅' : '⚠️';
+                const syncClass = emp.branch ? 'text-success' : 'text-warning';
+                return `<tr>
+                            <td><code>${emp.employeeId}</code></td>
+                            <td><strong>${emp.name}</strong></td>
+                            <td>${emp.branch||'N/A'} <span class="${syncClass}">${isSynced}</span></td>
+                            <td>${emp.designation||'N/A'}</td>
+                            <td><span class="role-badge ${emp.role||'employee'}">${(emp.role||'employee').toUpperCase()}</span></td>
+                            <td>₹${total.toLocaleString()}</td>
+                            <td><span class="${out>0?'text-danger fw-bold':'text-success'}">₹${out.toLocaleString()}</span></td>
+                            <td><span class="badge ${emp.isActive!==false?'bg-success':'bg-danger'}">${emp.isActive!==false?'Active':'Inactive'}</span></td>
+                            <td>
+                                ${canEdit?`<button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('${emp.id}')"><i class="fas fa-edit"></i></button>`:''}
+                                ${canDel?`<button class="btn btn-sm btn-outline-danger me-1" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash"></i></button>`:''}
+                                <button class="btn btn-sm btn-outline-info me-1" onclick="viewEmployeeLedger('${emp.id}')"><i class="fas fa-book"></i></button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="syncEmployeeBranch('${emp.id}')" title="Sync branch to user account">
+                                    <i class="fas fa-sync"></i>
+                                </button>
+                            </td>
+                        </tr>`;
             }).join('');
         }
 
+        // ======================================================================
+        // SYNC EMPLOYEE BRANCH TO USER (NEW FUNCTION)
+        // ======================================================================
+        async function syncEmployeeBranch(employeeId) {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addEmployee')) {
+                showToast('warning', 'You don\'t have permission to sync employee data.');
+                return;
+            }
+            showLoading(true);
+            try {
+                const emp = appState.employees.find(e => e.id === employeeId);
+                if (!emp) { showToast('danger', 'Employee not found'); return; }
+
+                // Find user with matching employeeId
+                const userSnap = await CloudStore.usersCollection.where('employeeId', '==', emp.employeeId).get();
+                if (userSnap.empty) {
+                    showToast('warning', `No user account found for employee ${emp.name}. They may need to register first.`);
+                    showLoading(false);
+                    return;
+                }
+
+                const userDoc = userSnap.docs[0];
+                await userDoc.ref.update({
+                    branch: emp.branch,
+                    fullName: emp.name,
+                    updatedAt: new Date().toISOString()
+                });
+
+                // Update current session if this is the logged-in user
+                if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
+                    CloudStore.currentUser.branch = emp.branch;
+                    CloudStore.currentUser.fullName = emp.name;
+                    localStorage.setItem('pf_user_data', JSON.stringify(CloudStore.currentUser));
+                    // Update sidebar
+                    document.getElementById('userDeptDisplay').textContent = emp.branch || 'No Branch';
+                    document.getElementById('userNameDisplay').textContent = emp.name;
+                    const branchSync = document.getElementById('branchSyncStatus');
+                    if (emp.branch) {
+                        branchSync.textContent = `✅ Branch: ${emp.branch}`;
+                        branchSync.className = 'sync-badge synced';
+                    }
+                }
+
+                await CloudStore.addAuditLog({
+                    action: 'SYNC_EMPLOYEE_BRANCH',
+                    entityType: 'Employee',
+                    entityId: employeeId,
+                    details: `Synced branch ${emp.branch} to user ${emp.name}`
+                });
+
+                showToast('success', `Branch "${emp.branch}" synced to user ${emp.name}'s account!`);
+            } catch (err) {
+                showToast('danger', 'Failed to sync: ' + err.message);
+                console.error(err);
+            }
+            showLoading(false);
+        }
+
+        // ======================================================================
+        // SAVE EMPLOYEE - UPDATED to sync user branch
+        // ======================================================================
+        async function saveEmployee() {
+            const user = CloudStore.getCurrentUser();
+            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
+                'You don\'t have permission to add employees.'); return; }
+            const id = document.getElementById('editEmployeeId').value;
+            const empId = document.getElementById('empEmployeeId').value.trim();
+            const name = document.getElementById('empName').value.trim();
+            const email = document.getElementById('empEmail').value.trim();
+            const mobile = document.getElementById('empMobile').value.trim();
+            const branch = document.getElementById('empBranch').value;
+            const desig = document.getElementById('empDesignation').value.trim();
+            const role = document.getElementById('empRole').value;
+            const un = document.getElementById('empUsername').value.trim();
+            const pw = document.getElementById('empPassword').value;
+            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { showToast('warning',
+                    'Please fill all required fields'); return; }
+            showLoading(true);
+            try {
+                if (id) {
+                    // Update employee - this will also sync user branch via CloudStore.updateEmployee
+                    await CloudStore.updateEmployee(id, {
+                        employeeId: empId,
+                        name,
+                        email,
+                        mobile,
+                        branch,
+                        designation: desig,
+                        role,
+                        updatedAt: new Date().toISOString()
+                    });
+                    showToast('success', 'Employee updated. Branch synced to user account.');
+                } else {
+                    if (!pw || pw.length < 6) { showToast('warning', 'Password must be at least 6 characters');
+                        showLoading(false); return; }
+                    await CloudStore.addUser({ username: un, password: pw, fullName: name, role, branch,
+                        employeeId: empId, createdAt: new Date().toISOString() });
+                    await CloudStore.addEmployee({ employeeId: empId, name, email, mobile, branch,
+                        designation: desig, role, isActive: true, createdAt: new Date().toISOString() });
+                    showToast('success', 'Employee added. User account created.');
+                }
+                bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
+                await CloudStore.addAuditLog({ action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', entityType: 'Employee',
+                    entityId: name });
+            } catch (err) { showToast('danger', 'Failed to save: ' + err.message); }
+            showLoading(false);
+        }
+
+        // ======================================================================
+        // OTHER LOAD FUNCTIONS (removed duplicates for brevity)
+        // ======================================================================
         function loadAdvances() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'viewAdvances')) { document.getElementById('advancesBody').innerHTML =
@@ -3195,7 +3384,7 @@
         }
 
         // ======================================================================
-        // SAVE FUNCTIONS
+        // SAVE FUNCTIONS (other save functions remain the same)
         // ======================================================================
         async function saveAdvance() {
             const user = CloudStore.getCurrentUser();
@@ -3374,44 +3563,6 @@
                 await CloudStore.addAuditLog({ action: 'CREATE_CARD', entityType: 'Card', entityId: cardNumber });
                 bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
                 showToast('success', `Card added for ${branch} with limit ₹${limit.toLocaleString()}`);
-            } catch (err) { showToast('danger', 'Failed: ' + err.message); }
-            showLoading(false);
-        }
-
-        async function saveEmployee() {
-            const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { showToast('warning',
-                'You don\'t have permission to add employees.'); return; }
-            const id = document.getElementById('editEmployeeId').value;
-            const empId = document.getElementById('empEmployeeId').value.trim();
-            const name = document.getElementById('empName').value.trim();
-            const email = document.getElementById('empEmail').value.trim();
-            const mobile = document.getElementById('empMobile').value.trim();
-            const branch = document.getElementById('empBranch').value;
-            const desig = document.getElementById('empDesignation').value.trim();
-            const role = document.getElementById('empRole').value;
-            const un = document.getElementById('empUsername').value.trim();
-            const pw = document.getElementById('empPassword').value;
-            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { showToast('warning',
-                    'Please fill all required fields'); return; }
-            showLoading(true);
-            try {
-                if (id) {
-                    await CloudStore.updateEmployee(id, { employeeId: empId, name, email, mobile, branch,
-                        designation: desig, role, updatedAt: new Date().toISOString() });
-                    showToast('success', 'Employee updated');
-                } else {
-                    if (!pw || pw.length < 6) { showToast('warning', 'Password must be at least 6 characters');
-                        showLoading(false); return; }
-                    await CloudStore.addUser({ username: un, password: pw, fullName: name, role, branch,
-                        employeeId: empId, createdAt: new Date().toISOString() });
-                    await CloudStore.addEmployee({ employeeId: empId, name, email, mobile, branch,
-                        designation: desig, role, isActive: true, createdAt: new Date().toISOString() });
-                    showToast('success', 'Employee added');
-                }
-                bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();
-                await CloudStore.addAuditLog({ action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', entityType: 'Employee',
-                    entityId: name });
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
             showLoading(false);
         }
@@ -3665,11 +3816,10 @@
         }
 
         initializeApp();
-        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Monthly Tracking');
+        console.log('🏗️ Project Fund Management System - Card-Based Allocation with Branch Sync');
         console.log('✅ Funds are allocated directly to SBI Visa Cards');
+        console.log('✅ Employee branch changes automatically sync to user accounts');
         console.log('✅ Monthly refill and allocation tracking with proper filtering');
-        console.log('✅ Filter by year, month, and transaction type');
-        console.log('✅ Transaction sequence with running balance');
         console.log('🔑 First user registration becomes Super Admin');
         console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
