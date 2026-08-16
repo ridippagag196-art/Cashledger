@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Fund Management System - Complete</title>
+    <title>Project Fund Pro — Complete System</title>
 
     <!-- Bootstrap + FontAwesome + Chart.js + Firebase -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -31,12 +31,299 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gray-100); min-height: 100vh; }
 
-        /* ===== MOBILE RESPONSIVENESS FIXES ===== */
+        /* ===== LOGIN SCREEN STYLES (New UI) ===== */
+        .login-wrapper {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 40px;
+            padding: 40px 32px;
+            box-shadow: 0 25px 60px rgba(0, 20, 50, 0.20),
+                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-card:hover {
+            box-shadow: 0 30px 70px rgba(0, 20, 50, 0.25);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand .icon-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4e73df, #6a8cff);
+            border-radius: 24px;
+            color: white;
+            font-size: 2.2rem;
+            box-shadow: 0 8px 20px rgba(78, 115, 223, 0.35);
+            margin-bottom: 16px;
+        }
+
+        .brand h3 {
+            font-weight: 700;
+            font-size: 1.9rem;
+            letter-spacing: -0.5px;
+            color: #1a2639;
+            margin-bottom: 4px;
+        }
+
+        .brand p {
+            color: #5b6f87;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #2d3748;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .connection-status .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            background: #f6c23e;
+        }
+
+        .connection-status.online .dot { background: #1cc88a; }
+        .connection-status.offline .dot { background: #e74a3b; }
+        .connection-status.connecting .dot { background: #f6c23e; animation: pulse-dot 1.2s infinite; }
+
+        @keyframes pulse-dot {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .input-group-text {
+            background: transparent;
+            border: none;
+            padding-right: 8px;
+            color: #8a9bb5;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 0;
+            padding: 12px 4px 8px 4px;
+            background: transparent;
+            font-weight: 500;
+            transition: border-color 0.25s ease;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus {
+            border-bottom-color: #4e73df;
+            background: transparent;
+        }
+
+        .form-control::placeholder {
+            color: #b0c0d0;
+            font-weight: 400;
+        }
+
+        .input-group {
+            border-bottom: 2px solid #e2e8f0;
+            transition: border-color 0.25s ease;
+        }
+
+        .input-group:focus-within {
+            border-bottom-color: #4e73df;
+        }
+
+        .input-group .form-control {
+            border-bottom: none !important;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #4e73df, #6a8cff);
+            border: none;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.25s ease;
+            box-shadow: 0 6px 18px rgba(78, 115, 223, 0.35);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(78, 115, 223, 0.45);
+            color: white;
+            background: linear-gradient(135deg, #3b5fd9, #5a7cf5);
+        }
+
+        .btn-login:active {
+            transform: scale(0.97);
+        }
+
+        .btn-outline-primary {
+            border-radius: 60px;
+            border-color: #4e73df;
+            color: #4e73df;
+            font-weight: 600;
+            padding: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: #4e73df;
+            color: white;
+            border-color: #4e73df;
+        }
+
+        .btn-success {
+            border-radius: 60px;
+            padding: 12px;
+            font-weight: 600;
+            background: #1cc88a;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-success:hover {
+            background: #17a673;
+            transform: translateY(-1px);
+        }
+
+        .btn-link {
+            color: #6a7f9b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-link:hover {
+            color: #4e73df;
+            text-decoration: underline;
+        }
+
+        .setup-info {
+            background: rgba(78, 115, 223, 0.04);
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-top: 24px;
+            border: 1px dashed rgba(78, 115, 223, 0.20);
+        }
+
+        .setup-info h6 {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1a2639;
+            margin-bottom: 6px;
+        }
+
+        .setup-info small {
+            color: #5b6f87;
+            display: block;
+            margin-bottom: 14px;
+            font-size: 0.85rem;
+        }
+
+        #registrationForm {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 2px solid rgba(0, 0, 0, 0.04);
+        }
+
+        #registrationForm h6 {
+            font-weight: 700;
+            color: #1a2639;
+        }
+
+        .registration-fields .form-control-sm {
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+
+        .registration-fields .form-control-sm:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+        }
+
+        .registration-fields .form-select-sm {
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+
+        .registration-fields .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4a5a72;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 18px;
+                border-radius: 30px;
+            }
+            .brand h3 {
+                font-size: 1.6rem;
+            }
+            .brand .icon-wrap {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeUp 0.4s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== DASHBOARD STYLES (from original) ===== */
         .navbar-toggler { border: none; color: white; font-size: 1.5rem; padding: 0.5rem; }
         .navbar-toggler:focus { box-shadow: none; }
-        
+
         @media (max-width: 768px) {
-            .sidebar { 
+            .sidebar {
                 position: fixed !important;
                 top: 0;
                 left: -300px;
@@ -60,8 +347,8 @@
                 z-index: 9998;
             }
             .sidebar-overlay.show { display: block; }
-            .main-content { 
-                padding: 15px; 
+            .main-content {
+                padding: 15px;
                 margin-left: 0 !important;
                 max-height: none;
                 overflow-y: auto;
@@ -222,7 +509,6 @@
             font-size: 0.85rem;
         }
 
-        /* ===== NOTIFICATION DROPDOWN ===== */
         .notification-dropdown {
             position: absolute;
             top: 40px;
@@ -274,11 +560,10 @@
         .sync-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
         .sync-badge.synced { background: #1cc88a; color: white; }
         .sync-badge.outdated { background: #f6c23e; color: #333; }
-        
+
         .table-wrapper { overflow-x: auto; }
         .table-responsive-stack { display: block; width: 100%; overflow-x: auto; }
         .alert-action-btn { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-left: 5px; }
-        .fade-in { animation: fadeIn 0.4s ease; }
 
         .company-header {
             display: flex;
@@ -291,6 +576,31 @@
         .company-header small { font-size: 0.85rem; }
 
         @media print { .no-print { display: none !important; } .main-content { max-height: none !important; overflow: visible !important; } .stat-card { box-shadow: none !important; border: 1px solid #ddd; } }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f4ff 0%, #d9e2f0 100%);
+            padding: 20px;
+        }
+        .custom-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+            z-index: 9999;
+            max-width: 90%;
+            text-align: center;
+            animation: fadeUp 0.35s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
@@ -308,96 +618,105 @@
     <!-- ===== APP ===== -->
     <div id="app">
 
-        <!-- ===== LOGIN ===== -->
+        <!-- ===== LOGIN SCREEN ===== -->
         <div id="loginScreen" class="login-container">
-            <div class="login-card">
-                <div class="brand">
-                    <i class="fas fa-project-diagram"></i>
-                    <h3>Project Fund Pro</h3>
-                    <p>Complete Project Fund Management</p>
-                    <span class="cloud-badge connection-status connecting" id="connectionStatus">
-                        <i class="fas fa-circle"></i> Connecting...
-                    </span>
-                </div>
-                <form id="loginForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Username / Employee ID</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-id-badge"></i></span>
-                            <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-login w-100" id="loginBtn">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login
-                    </button>
-                    <div class="setup-info mt-3">
-                        <h6><i class="fas fa-info-circle me-2"></i>First Time Setup</h6>
-                        <small>No default accounts. The first user to register becomes the <strong>Super Admin</strong>.</small>
-                        <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="showRegistration()">
-                            <i class="fas fa-user-plus me-2"></i>Register New Account
-                        </button>
-                    </div>
-                </form>
+            <div class="login-wrapper">
+                <div class="login-card fade-in">
 
-                <div id="registrationForm" style="display:none; margin-top:20px;">
-                    <hr>
-                    <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Employee Registration</h6>
-                    <form id="registerForm">
-                        <div class="mb-2">
-                            <label class="form-label small">Employee ID *</label>
-                            <input type="text" class="form-control form-control-sm" id="regEmployeeId" placeholder="e.g., EMP001" required>
+                    <div class="brand">
+                        <div class="icon-wrap">
+                            <i class="fas fa-project-diagram"></i>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Full Name *</label>
-                            <input type="text" class="form-control form-control-sm" id="regFullName" placeholder="John Doe" required>
+                        <h3>Project Fund Pro</h3>
+                        <p>Complete Project Fund Management</p>
+                        <span class="connection-status connecting" id="connectionStatus">
+                            <span class="dot"></span> Connecting...
+                        </span>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="mb-4">
+                            <label class="form-label">Username / Employee ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username" required />
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Email *</label>
-                            <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="john@company.com" required>
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required />
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Mobile Number *</label>
-                            <input type="tel" class="form-control form-control-sm" id="regMobile" placeholder="+91 9876543210" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Branch/Camp *</label>
-                            <select class="form-select form-select-sm" id="regBranch" required>
-                                <option value="">Select Branch/Camp</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Designation *</label>
-                            <input type="text" class="form-control form-control-sm" id="regDesignation" placeholder="e.g., Software Engineer" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Username *</label>
-                            <input type="text" class="form-control form-control-sm" id="regUsername" placeholder="Choose a username" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small">Password *</label>
-                            <input type="password" class="form-control form-control-sm" id="regPassword" placeholder="Min 6 characters" required minlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-success btn-sm w-100" id="registerBtn">
-                            <i class="fas fa-cloud-upload-alt me-2"></i>Register
+                        <button type="submit" class="btn btn-login w-100" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
                         </button>
-                        <button type="button" class="btn btn-link btn-sm w-100 mt-1" onclick="hideRegistration()">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Login
-                        </button>
+
+                        <div class="setup-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>First Time Setup</h6>
+                            <small>No default accounts. The first user to register becomes the <strong>Super Admin</strong>.</small>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="showRegistration()">
+                                <i class="fas fa-user-plus me-2"></i>Register New Account
+                            </button>
+                        </div>
                     </form>
+
+                    <div id="registrationForm" style="display: none;">
+                        <h6 class="text-center mb-3"><i class="fas fa-user-plus me-2"></i>Employee Registration</h6>
+                        <form id="registerForm" class="registration-fields">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <label class="form-label">Employee ID *</label>
+                                    <input type="text" class="form-control form-control-sm" id="regEmployeeId" placeholder="e.g., EMP001" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control form-control-sm" id="regFullName" placeholder="John Doe" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="john@company.com" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Mobile Number *</label>
+                                    <input type="tel" class="form-control form-control-sm" id="regMobile" placeholder="+91 9876543210" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Branch/Camp *</label>
+                                    <select class="form-select form-select-sm" id="regBranch" required>
+                                        <option value="">Select Branch/Camp</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Designation *</label>
+                                    <input type="text" class="form-control form-control-sm" id="regDesignation" placeholder="e.g., Software Engineer" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Username *</label>
+                                    <input type="text" class="form-control form-control-sm" id="regUsername" placeholder="Choose a username" required />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control form-control-sm" id="regPassword" placeholder="Min 6 characters" required minlength="6" />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100 mt-3" id="registerBtn">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>Register
+                            </button>
+                            <button type="button" class="btn btn-link btn-sm w-100 mt-1" onclick="hideRegistration()">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Login
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- ===== DASHBOARD SCREEN ===== -->
         <div id="dashboardScreen" style="display:none;">
-            
+
             <!-- ===== MOBILE HEADER ===== -->
             <div class="mobile-header no-print">
                 <div class="d-flex align-items-center">
@@ -504,12 +823,10 @@
                                 <div>
                                     <small id="currentDateTime" class="text-muted"></small>
                                     <span class="badge bg-success ms-2" id="liveIndicator"><i class="fas fa-circle"></i> Live</span>
-                                    <!-- ===== NOTIFICATION BELL ===== -->
                                     <span class="position-relative ms-3 no-print" style="display:inline-block;cursor:pointer;" onclick="toggleNotifications()">
                                         <i class="fas fa-bell fa-lg text-secondary"></i>
                                         <span class="notification-badge" id="desktopNotificationBadge">0</span>
                                     </span>
-                                    <!-- ===== NOTIFICATION DROPDOWN ===== -->
                                     <div class="notification-dropdown" id="notificationDropdown">
                                         <div class="notification-header">
                                             <span>Notifications</span>
@@ -1728,12 +2045,18 @@
         const storage = firebase.storage();
         db.enablePersistence({ synchronizeTabs: true })
             .then(() => {
-                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color:#1cc88a;"></i> Online';
-                document.getElementById('connectionStatus').className = 'cloud-badge connection-status online';
+                const status = document.getElementById('connectionStatus');
+                if (status) {
+                    status.innerHTML = '<span class="dot"></span> Online';
+                    status.className = 'connection-status online';
+                }
             })
             .catch(() => {
-                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-circle" style="color:#f6c23e;"></i> Offline Mode';
-                document.getElementById('connectionStatus').className = 'cloud-badge connection-status offline';
+                const status = document.getElementById('connectionStatus');
+                if (status) {
+                    status.innerHTML = '<span class="dot"></span> Offline Mode';
+                    status.className = 'connection-status offline';
+                }
             });
 
         // ======================================================================
@@ -1856,7 +2179,7 @@
                 }
                 this._refreshCallbacks.forEach(cb => cb(u));
             },
-            
+
             onUserRefresh(cb) {
                 this._refreshCallbacks.push(cb);
             },
@@ -1872,7 +2195,7 @@
             },
 
             _setupListener(query, cb) {
-                const l = query.onSnapshot(snap => { 
+                const l = query.onSnapshot(snap => {
                     const arr = [];
                     snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
                     cb(arr);
@@ -2012,21 +2335,21 @@
                 return { id: r.id, ...data };
             },
 
-            async addBranch(d) { 
-                const r = await this.branchesCollection.add(d); 
-                return { id: r.id, ...d }; 
+            async addBranch(d) {
+                const r = await this.branchesCollection.add(d);
+                return { id: r.id, ...d };
             },
-            
+
             async updateBranch(id, d) {
                 await this.branchesCollection.doc(id).update(d);
                 return { id, ...d };
             },
 
-            async addProject(d) { 
-                const r = await this.projectsCollection.add(d); 
-                return { id: r.id, ...d }; 
+            async addProject(d) {
+                const r = await this.projectsCollection.add(d);
+                return { id: r.id, ...d };
             },
-            
+
             async updateProject(id, d) {
                 await this.projectsCollection.doc(id).update(d);
                 return { id, ...d };
@@ -2039,25 +2362,25 @@
 
             async updateEmployee(id, d) {
                 console.log('🔄 Updating employee:', id, d);
-                
+
                 const docRef = this.employeesCollection.doc(id);
                 const doc = await docRef.get();
                 if (!doc.exists) {
                     throw new Error('Employee document not found in database.');
                 }
-                
+
                 const oldData = doc.data();
                 const updateData = {
                     ...d,
                     updatedAt: new Date().toISOString()
                 };
                 await docRef.update(updateData);
-                
+
                 const updatedDoc = await docRef.get();
                 if (!updatedDoc.exists) throw new Error('Employee not found after update');
                 const empData = updatedDoc.data();
                 const updatedEmployee = { id: updatedDoc.id, ...empData };
-                
+
                 // Update user account
                 let userUpdated = false;
                 try {
@@ -2073,21 +2396,21 @@
                         if (d.designation) userUpdateData.designation = d.designation;
                         if (d.isActive !== undefined) userUpdateData.isActive = d.isActive;
                         userUpdateData.updatedAt = new Date().toISOString();
-                        
+
                         await userDoc.ref.update(userUpdateData);
                         userUpdated = true;
-                        
+
                         if (this.currentUser && this.currentUser.id === userDoc.id) {
                             const updatedUserData = await userDoc.ref.get();
                             const updatedUser = { id: userDoc.id, ...updatedUserData.data() };
                             this.setCurrentUser(updatedUser);
-                            
+
                             // Update UI
                             updateUserUI(updatedUser);
                             applyPermissions();
-                            
+
                             showToast('success', '🔐 Your role/permissions have been updated. Refreshing UI...');
-                            
+
                             const currentPage = document.querySelector('.page-content:not([style*="display: none"])')?.id?.replace('page-', '');
                             if (currentPage) {
                                 setTimeout(() => showPage(currentPage), 300);
@@ -2097,7 +2420,7 @@
                 } catch (userErr) {
                     console.error('Error updating user account:', userErr);
                 }
-                
+
                 // Update local state
                 const localIndex = appState.employees.findIndex(e => e.id === id);
                 if (localIndex !== -1) {
@@ -2105,14 +2428,14 @@
                 } else {
                     appState.employees.push(updatedEmployee);
                 }
-                
+
                 await this.addAuditLog({
                     action: 'UPDATE_EMPLOYEE',
                     entityType: 'Employee',
                     entityId: id,
                     details: `Updated employee ${empData.name || 'N/A'} (${empData.employeeId}) - Branch: ${d.branch || 'unchanged'}, Role: ${d.role || 'unchanged'}`
                 });
-                
+
                 this._refreshCallbacks.forEach(fn => fn(this.getCurrentUser()));
                 return updatedEmployee;
             },
@@ -2133,12 +2456,12 @@
                 });
                 return { id: r.id, ...d };
             },
-            
-            async updateAdvance(id, d) { 
-                await this.advancesCollection.doc(id).update(d); 
+
+            async updateAdvance(id, d) {
+                await this.advancesCollection.doc(id).update(d);
                 const idx = appState.advances.findIndex(a => a.id === id);
                 if (idx !== -1) appState.advances[idx] = { ...appState.advances[idx], ...d };
-                return { id, ...d }; 
+                return { id, ...d };
             },
 
             async addExpense(d) {
@@ -2157,35 +2480,35 @@
                 });
                 return { id: r.id, ...d };
             },
-            
-            async updateExpense(id, d) { 
+
+            async updateExpense(id, d) {
                 await this.expensesCollection.doc(id).update(d);
                 const idx = appState.expenses.findIndex(e => e.id === id);
                 if (idx !== -1) appState.expenses[idx] = { ...appState.expenses[idx], ...d };
-                return { id, ...d }; 
+                return { id, ...d };
             },
 
-            async addCard(d) { 
-                const r = await this.cardsCollection.add(d); 
-                return { id: r.id, ...d }; 
+            async addCard(d) {
+                const r = await this.cardsCollection.add(d);
+                return { id: r.id, ...d };
             },
-            
-            async updateCard(id, d) { 
+
+            async updateCard(id, d) {
                 await this.cardsCollection.doc(id).update(d);
                 const idx = appState.cards.findIndex(c => c.id === id);
                 if (idx !== -1) appState.cards[idx] = { ...appState.cards[idx], ...d };
-                return { id, ...d }; 
+                return { id, ...d };
             },
 
-            async addNotification(d) { 
-                const r = await this.notificationsCollection.add(d); 
-                return { id: r.id, ...d }; 
+            async addNotification(d) {
+                const r = await this.notificationsCollection.add(d);
+                return { id: r.id, ...d };
             },
-            
+
             async markNotificationRead(id) {
                 await this.notificationsCollection.doc(id).update({ read: true, readAt: new Date().toISOString() });
             },
-            
+
             async markAllNotificationsRead(userId) {
                 const snap = await this.notificationsCollection.where('userId', '==', userId).where('read', '==', false).get();
                 const batch = db.batch();
@@ -2207,7 +2530,7 @@
                 return { id: d.id, ...d.data() };
             },
 
-            async addUser(d) { 
+            async addUser(d) {
                 const r = await this.usersCollection.add(d);
                 const empSnap = await this.employeesCollection.where('employeeId', '==', d.employeeId).get();
                 if (empSnap.empty) {
@@ -2237,7 +2560,7 @@
                 }
             },
 
-            cleanup() { 
+            cleanup() {
                 this.listeners.forEach(l => l());
                 this.listeners = [];
             }
@@ -2308,20 +2631,20 @@
         async function loadNotifications() {
             const user = CloudStore.getCurrentUser();
             if (!user) return;
-            
+
             try {
                 const snap = await CloudStore.notificationsCollection
                     .where('userId', '==', user.id)
                     .where('read', '==', false)
                     .orderBy('createdAt', 'desc')
                     .get();
-                
+
                 const count = snap.size;
-                
+
                 // Update both badges
                 const desktopBadge = document.getElementById('desktopNotificationBadge');
                 const mobileBadge = document.getElementById('mobileNotificationBadge');
-                
+
                 if (desktopBadge) {
                     desktopBadge.textContent = count;
                     desktopBadge.style.display = count > 0 ? 'inline' : 'none';
@@ -2330,20 +2653,20 @@
                     mobileBadge.textContent = count;
                     mobileBadge.style.display = count > 0 ? 'inline' : 'none';
                 }
-                
+
                 // Build notification list
                 const container = document.getElementById('notificationList');
                 if (!container) return;
-                
+
                 if (count === 0) {
                     container.innerHTML = '<div class="text-center text-muted py-3">No new notifications</div>';
                     return;
                 }
-                
+
                 let html = '';
                 snap.forEach(doc => {
                     const n = doc.data();
-                    const severityColor = n.severity === 'danger' ? 'danger' : 
+                    const severityColor = n.severity === 'danger' ? 'danger' :
                                         n.severity === 'warning' ? 'warning' : 'info';
                     const iconMap = {
                         'ADVANCE_APPROVED': 'fa-check-circle text-success',
@@ -2354,7 +2677,7 @@
                         'SYSTEM': 'fa-cog text-primary'
                     };
                     const icon = iconMap[n.type] || 'fa-bell text-secondary';
-                    
+
                     html += `
                         <div class="notification-item unread" onclick="markNotificationRead('${doc.id}')">
                             <div class="d-flex justify-content-between align-items-start">
@@ -2491,15 +2814,15 @@
             const urls = [];
             const progressBar = document.getElementById('uploadProgressBar');
             const progressContainer = document.getElementById('uploadProgress');
-            
+
             if (progressContainer) progressContainer.style.display = 'block';
-            
+
             for (let i = 0; i < files.length; i++) {
                 const f = files[i];
                 try {
                     const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
                     const uploadTask = ref.put(f.file || f);
-                    
+
                     await new Promise((resolve, reject) => {
                         uploadTask.on('state_changed',
                             (snapshot) => {
@@ -2513,12 +2836,12 @@
                             resolve
                         );
                     });
-                    
+
                     const url = await ref.getDownloadURL();
-                    urls.push({ 
-                        name: f.name, 
-                        url: url, 
-                        type: f.type, 
+                    urls.push({
+                        name: f.name,
+                        url: url,
+                        type: f.type,
                         size: f.size,
                         uploadedAt: new Date().toISOString()
                     });
@@ -2527,13 +2850,13 @@
                     showToast('warning', `Failed to upload ${f.name}`);
                 }
             }
-            
+
             if (progressContainer) progressContainer.style.display = 'none';
             if (progressBar) {
                 progressBar.style.width = '0%';
                 progressBar.textContent = '0%';
             }
-            
+
             return urls;
         }
 
@@ -2542,13 +2865,13 @@
         // ======================================================================
         function updateUserUI(user) {
             if (!user) return;
-            
+
             const nameEl = document.getElementById('userNameDisplay');
             const deptEl = document.getElementById('userDeptDisplay');
             const roleEl = document.getElementById('userRoleBadge');
             const empIdEl = document.getElementById('userEmpIdDisplay');
             const branchSync = document.getElementById('branchSyncStatus');
-            
+
             if (nameEl) nameEl.textContent = user.fullName || user.name || 'User';
             if (deptEl) deptEl.textContent = user.branch || 'No Branch';
             if (roleEl) {
@@ -2556,7 +2879,7 @@
                 roleEl.className = `role-badge ${user.role || 'employee'}`;
             }
             if (empIdEl) empIdEl.textContent = user.employeeId || 'N/A';
-            
+
             if (branchSync) {
                 if (user.branch) {
                     branchSync.textContent = `✅ Branch: ${user.branch}`;
@@ -2607,11 +2930,16 @@
             document.getElementById('loginForm').reset();
         }
 
-        function showRegistration() { document.querySelector('#loginForm').style.display = 'none';
-            document.getElementById('registrationForm').style.display = 'block'; }
+        function showRegistration() {
+            document.querySelector('#loginForm').style.display = 'none';
+            document.getElementById('registrationForm').style.display = 'block';
+            populateBranchSelect();
+        }
 
-        function hideRegistration() { document.querySelector('#loginForm').style.display = 'block';
-            document.getElementById('registrationForm').style.display = 'none'; }
+        function hideRegistration() {
+            document.querySelector('#loginForm').style.display = 'block';
+            document.getElementById('registrationForm').style.display = 'none';
+        }
 
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -2722,7 +3050,7 @@
                 addBranchBtn: perms.addBranch, addProjectBtn: perms.addProject, addEmployeeBtn: perms.addEmployee };
             Object.keys(addBtns).forEach(id => { const el = document.getElementById(id); if (el) el.style.display =
                     addBtns[id] ? 'inline-block' : 'none'; });
-            
+
             updateUserUI(user);
         }
 
@@ -2733,14 +3061,14 @@
             const user = CloudStore.getCurrentUser();
             if (!user) return;
             CloudStore.cleanup();
-            
+
             CloudStore.onUserRefresh((updatedUser) => {
                 if (updatedUser) {
                     updateUserUI(updatedUser);
                     applyPermissions();
                 }
             });
-            
+
             CloudStore.listenToBranches((b) => { appState.branches = b;
                 updateDashboard();
                 populateBranchSelectors();
@@ -2754,7 +3082,7 @@
                 loadProjects();
                 generateReports();
                 populateAllocSelect(); });
-            CloudStore.listenToEmployees((e) => { 
+            CloudStore.listenToEmployees((e) => {
                 appState.employees = e;
                 updateDashboard();
                 loadEmployees();
@@ -2870,17 +3198,17 @@
             const user = CloudStore.getCurrentUser();
             const c = document.getElementById('attentionList');
             const alerts = [];
-            
+
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
-                const missingBills = appState.expenses.filter(e => 
-                    (e.status === 'approved' || e.status === 'completed') && 
+                const missingBills = appState.expenses.filter(e =>
+                    (e.status === 'approved' || e.status === 'completed') &&
                     (!e.files || e.files.length === 0)
                 );
                 if (missingBills.length > 0) {
-                    alerts.push({ 
-                        type: 'danger', 
-                        icon: 'fa-file-invoice', 
-                        title: `${missingBills.length} Bill${missingBills.length > 1 ? 's' : ''} Missing`, 
+                    alerts.push({
+                        type: 'danger',
+                        icon: 'fa-file-invoice',
+                        title: `${missingBills.length} Bill${missingBills.length > 1 ? 's' : ''} Missing`,
                         message: 'Expenses approved without bill attachments',
                         action: 'viewMissingBills',
                         data: missingBills,
@@ -2888,51 +3216,51 @@
                     });
                 }
             }
-            
+
             const thirty = new Date();
             thirty.setDate(thirty.getDate() - 30);
-            const overdue = appState.advances.filter(a => 
+            const overdue = appState.advances.filter(a =>
                 a.status === 'issued' && new Date(a.createdAt) < thirty
             );
             if (overdue.length > 0) {
-                alerts.push({ 
-                    type: 'danger', 
-                    icon: 'fa-clock', 
-                    title: `${overdue.length} Advance${overdue.length > 1 ? 's' : ''} Overdue`, 
+                alerts.push({
+                    type: 'danger',
+                    icon: 'fa-clock',
+                    title: `${overdue.length} Advance${overdue.length > 1 ? 's' : ''} Overdue`,
                     message: 'Advances not settled for more than 30 days',
                     action: 'viewOverdueAdvances',
                     data: overdue,
                     count: overdue.length
                 });
             }
-            
+
             const empOut = appState.employees.filter(emp => {
-                const ea = appState.advances.filter(a => 
+                const ea = appState.advances.filter(a =>
                     a.employeeId === emp.id && a.status === 'issued'
                 );
                 return ea.reduce((s, a) => s + (a.remainingAmount || a.amount || 0), 0) > 0;
             });
             if (empOut.length > 0) {
-                alerts.push({ 
-                    type: 'warning', 
-                    icon: 'fa-user', 
-                    title: `${empOut.length} Employee${empOut.length > 1 ? 's' : ''} with Outstanding`, 
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fa-user',
+                    title: `${empOut.length} Employee${empOut.length > 1 ? 's' : ''} with Outstanding`,
                     message: 'Employees holding company cash',
                     action: 'viewEmployeesWithOutstanding',
                     data: empOut,
                     count: empOut.length
                 });
             }
-            
+
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
-                const high = appState.cards.filter(c => 
+                const high = appState.cards.filter(c =>
                     c.limit > 0 && (c.utilized / c.limit) > 0.8
                 );
                 if (high.length > 0) {
-                    alerts.push({ 
-                        type: 'warning', 
-                        icon: 'fa-credit-card', 
-                        title: `${high.length} Card${high.length > 1 ? 's' : ''} Above 80% Utilization`, 
+                    alerts.push({
+                        type: 'warning',
+                        icon: 'fa-credit-card',
+                        title: `${high.length} Card${high.length > 1 ? 's' : ''} Above 80% Utilization`,
                         message: 'Card utilization exceeding recommended limit',
                         action: 'viewHighUtilizationCards',
                         data: high,
@@ -2940,41 +3268,41 @@
                     });
                 }
             }
-            
+
             const campFunds = appState.funds.filter(f => f.camp !== '__main__');
             const lowFunds = campFunds.filter(f => f.balance < 5000);
             if (lowFunds.length > 0) {
-                alerts.push({ 
-                    type: 'warning', 
-                    icon: 'fa-exclamation-triangle', 
-                    title: `${lowFunds.length} Camp${lowFunds.length > 1 ? 's' : ''} Low on Funds`, 
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fa-exclamation-triangle',
+                    title: `${lowFunds.length} Camp${lowFunds.length > 1 ? 's' : ''} Low on Funds`,
                     message: 'Camp funds below ₹5,000',
                     action: 'viewLowFunds',
                     data: lowFunds,
                     count: lowFunds.length
                 });
             }
-            
+
             const pendingAdvances = appState.advances.filter(a => a.status === 'pending');
             const pendingExpenses = appState.expenses.filter(e => e.status === 'pending');
             const totalPending = pendingAdvances.length + pendingExpenses.length;
             if (totalPending > 0 && (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts')) {
-                alerts.push({ 
-                    type: 'info', 
-                    icon: 'fa-clock', 
-                    title: `${totalPending} Pending Approval${totalPending > 1 ? 's' : ''}`, 
+                alerts.push({
+                    type: 'info',
+                    icon: 'fa-clock',
+                    title: `${totalPending} Pending Approval${totalPending > 1 ? 's' : ''}`,
                     message: `${pendingAdvances.length} advance${pendingAdvances.length > 1 ? 's' : ''} and ${pendingExpenses.length} expense${pendingExpenses.length > 1 ? 's' : ''} pending approval`,
                     action: 'viewPendingApprovals',
                     data: { advances: pendingAdvances, expenses: pendingExpenses },
                     count: totalPending
                 });
             }
-            
-            if (alerts.length === 0) { 
-                c.innerHTML = `<div class="text-center text-muted py-3">✅ All clear! No pending items.</div>`; 
-                return; 
+
+            if (alerts.length === 0) {
+                c.innerHTML = `<div class="text-center text-muted py-3">✅ All clear! No pending items.</div>`;
+                return;
             }
-            
+
             c.innerHTML = alerts.map(a => {
                 let badge = '';
                 if (a.count > 0) {
@@ -2996,7 +3324,7 @@
                             </div>
                         </div>`;
             }).join('');
-            
+
             window._alertData = alerts;
         }
 
@@ -3016,8 +3344,8 @@
         // VIEW FUNCTIONS FOR ALERTS
         // ======================================================================
         function viewMissingBills() {
-            const missingBills = appState.expenses.filter(e => 
-                (e.status === 'approved' || e.status === 'completed') && 
+            const missingBills = appState.expenses.filter(e =>
+                (e.status === 'approved' || e.status === 'completed') &&
                 (!e.files || e.files.length === 0)
             );
             if (missingBills.length === 0) { showToast('info', 'No bills missing attachments'); return; }
@@ -3311,20 +3639,20 @@
             let branches = appState.branches;
             if (!perms.viewAllBranches && user?.branch) branches = branches.filter(b => b.name === user.branch);
             if (branches.length === 0) branches = [{ name: 'Main Branch', type: 'main' }];
-            
+
             const ids = ['regBranch', 'advBranch', 'expBranch', 'projectBranch', 'cardBranch', 'empBranch'];
             ids.forEach(id => {
                 const sel = document.getElementById(id);
                 if (!sel) return;
                 const cur = sel.value;
                 sel.innerHTML = '<option value="">Select Camp</option>';
-                
+
                 // Always add Main Branch option
                 const mainOption = document.createElement('option');
                 mainOption.value = 'Main Branch';
                 mainOption.textContent = 'Main Branch';
                 sel.appendChild(mainOption);
-                
+
                 branches.forEach(b => {
                     const option = document.createElement('option');
                     option.value = b.name;
@@ -3333,7 +3661,7 @@
                 });
                 if (cur && (cur === 'Main Branch' || branches.some(b => b.name === cur))) sel.value = cur;
             });
-            
+
             const mgr = document.getElementById('branchManager');
             if (mgr) {
                 const cur = mgr.value;
@@ -3346,7 +3674,7 @@
                 });
                 if (cur && appState.employees.some(e => e.id === cur)) mgr.value = cur;
             }
-            
+
             const pc = document.getElementById('projectCamps');
             if (pc) {
                 const curValues = Array.from(pc.selectedOptions).map(o => o.value);
@@ -3678,7 +4006,7 @@
                     CloudStore.setCurrentUser(updatedUser);
                     updateUserUI(updatedUser);
                     applyPermissions();
-                    
+
                     const branchSync = document.getElementById('branchSyncStatus');
                     if (updatedUser.branch) {
                         branchSync.textContent = `✅ Branch: ${updatedUser.branch}`;
@@ -3779,7 +4107,7 @@
             const tb = document.getElementById('auditBody');
             if (!logs || logs.length === 0) { tb.innerHTML =
                 `<tr><td colspan="5" class="text-center text-muted">No audit logs available</td></tr>`; return; }
-            
+
             const actionColors = {
                 'LOGIN': 'bg-success',
                 'LOGOUT': 'bg-warning',
@@ -3800,7 +4128,7 @@
                 'SEND_REMINDER': 'bg-warning',
                 'SEND_BULK_REMINDER': 'bg-warning'
             };
-            
+
             tb.innerHTML = logs.map(l => {
                 const color = actionColors[l.action] || 'bg-secondary';
                 const time = l.timestamp ? new Date(l.timestamp).toLocaleString() : 'N/A';
@@ -4319,12 +4647,12 @@
             }
             if (page === 'permissions' && role !== 'admin') { showToast('warning',
                 'Access denied. Only Admins can manage permissions.'); return; }
-            
+
             // Close mobile sidebar
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
-            
+
             document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
             const el = document.getElementById('page-' + page);
             if (el) { el.style.display = 'block';
@@ -4462,7 +4790,7 @@
             populateProjectSelectors();
             document.getElementById('advanceForm').reset();
             document.getElementById('editAdvanceId').value = '';
-            
+
             if (advanceId) {
                 const advance = appState.advances.find(a => a.id === advanceId);
                 if (advance) {
@@ -4474,10 +4802,10 @@
                     document.getElementById('advDescription').value = advance.description || '';
                 }
             }
-            
+
             new bootstrap.Modal(document.getElementById('advanceModal')).show();
         }
-        
+
         function editAdvance(id) { showAdvanceModal(id); }
 
         function showExpenseModal(expenseId = null) {
@@ -4490,7 +4818,7 @@
             displayFiles();
             document.getElementById('expenseForm').reset();
             document.getElementById('editExpenseId').value = '';
-            
+
             if (expenseId) {
                 const expense = appState.expenses.find(e => e.id === expenseId);
                 if (expense) {
@@ -4512,10 +4840,10 @@
                     }
                 }
             }
-            
+
             new bootstrap.Modal(document.getElementById('expenseModal')).show();
         }
-        
+
         function editExpense(id) { showExpenseModal(id); }
 
         function showBranchModal(branchId = null) {
@@ -4525,7 +4853,7 @@
             populateBranchSelectors();
             document.getElementById('branchForm').reset();
             document.getElementById('editBranchId').value = '';
-            
+
             if (branchId) {
                 const branch = appState.branches.find(b => b.id === branchId);
                 if (branch) {
@@ -4537,10 +4865,10 @@
                     document.getElementById('branchCardLimit').value = branch.cardLimit || '';
                 }
             }
-            
+
             new bootstrap.Modal(document.getElementById('branchModal')).show();
         }
-        
+
         function editBranch(id) { showBranchModal(id); }
 
         function showProjectModal(projectId = null) {
@@ -4550,7 +4878,7 @@
             populateBranchSelectors();
             document.getElementById('projectForm').reset();
             document.getElementById('editProjectId').value = '';
-            
+
             if (projectId) {
                 const project = appState.projects.find(p => p.id === projectId);
                 if (project) {
@@ -4567,10 +4895,10 @@
                     }
                 }
             }
-            
+
             new bootstrap.Modal(document.getElementById('projectModal')).show();
         }
-        
+
         function editProject(id) { showProjectModal(id); }
 
         function showCardModal(cardId = null) {
@@ -4582,7 +4910,7 @@
             populateCardHolder();
             document.getElementById('cardForm').reset();
             document.getElementById('editCardId').value = '';
-            
+
             if (cardId) {
                 const card = appState.cards.find(c => c.id === cardId);
                 if (card) {
@@ -4595,10 +4923,10 @@
                     document.getElementById('cardStatus').value = card.status || 'active';
                 }
             }
-            
+
             new bootstrap.Modal(document.getElementById('cardModal')).show();
         }
-        
+
         function editCard(id) { showCardModal(id); }
 
         function populateCardHolder() {
@@ -4621,19 +4949,19 @@
         async function saveAdvance() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addAdvance')) { showToast('warning', 'Permission denied'); return; }
-            
+
             const id = document.getElementById('editAdvanceId').value;
             const branch = document.getElementById('advBranch').value;
             const project = document.getElementById('advProject').value;
             const amount = parseFloat(document.getElementById('advAmount').value);
             const purpose = document.getElementById('advPurpose').value.trim();
             const description = document.getElementById('advDescription').value.trim();
-            
+
             if (!branch || !project || !amount || !purpose) {
                 showToast('warning', 'Please fill all required fields');
                 return;
             }
-            
+
             showLoading(true);
             try {
                 const data = {
@@ -4647,7 +4975,7 @@
                     status: 'pending',
                     createdAt: new Date().toISOString()
                 };
-                
+
                 if (id) {
                     await CloudStore.updateAdvance(id, { ...data, updatedAt: new Date().toISOString() });
                     showToast('success', 'Advance updated successfully');
@@ -4670,7 +4998,7 @@
                     }
                     loadNotifications();
                 }
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('advanceModal')).hide();
                 loadAdvances();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
@@ -4680,7 +5008,7 @@
         async function saveExpense() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addExpense')) { showToast('warning', 'Permission denied'); return; }
-            
+
             const id = document.getElementById('editExpenseId').value;
             const branch = document.getElementById('expBranch').value;
             const project = document.getElementById('expProject').value;
@@ -4692,12 +5020,12 @@
             const vendor = document.getElementById('expVendor').value.trim();
             const billNo = document.getElementById('expBillNo').value.trim();
             const remarks = document.getElementById('expRemarks').value.trim();
-            
+
             if (!branch || !project || !category || !paymentMethod || !amount) {
                 showToast('warning', 'Please fill all required fields');
                 return;
             }
-            
+
             showLoading(true);
             try {
                 let uploadedUrls = [];
@@ -4710,7 +5038,7 @@
                     const existingFiles = uploadedFiles.filter(f => f.url);
                     uploadedUrls = [...uploadedUrls, ...existingFiles];
                 }
-                
+
                 const data = {
                     employeeId: user.id,
                     employeeName: user.fullName || user.name,
@@ -4728,7 +5056,7 @@
                     status: 'pending',
                     createdAt: new Date().toISOString()
                 };
-                
+
                 if (id) {
                     await CloudStore.updateExpense(id, { ...data, updatedAt: new Date().toISOString() });
                     showToast('success', 'Expense updated successfully');
@@ -4751,7 +5079,7 @@
                     }
                     loadNotifications();
                 }
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('expenseModal')).hide();
                 loadExpenses();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
@@ -4761,21 +5089,21 @@
         async function saveBranch() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addBranch')) { showToast('warning', 'Permission denied'); return; }
-            
+
             const id = document.getElementById('editBranchId').value;
             const name = document.getElementById('branchName').value.trim();
             const type = document.getElementById('branchType').value;
             const location = document.getElementById('branchLocation').value.trim();
             const managerId = document.getElementById('branchManager').value;
             const cardLimit = parseFloat(document.getElementById('branchCardLimit').value) || 0;
-            
+
             if (!name || !location) {
                 showToast('warning', 'Please fill all required fields');
                 return;
             }
-            
+
             const manager = appState.employees.find(e => e.id === managerId);
-            
+
             showLoading(true);
             try {
                 const data = {
@@ -4787,7 +5115,7 @@
                     cardLimit: cardLimit,
                     updatedAt: new Date().toISOString()
                 };
-                
+
                 if (id) {
                     await CloudStore.updateBranch(id, data);
                     showToast('success', 'Branch updated successfully');
@@ -4795,7 +5123,7 @@
                     await CloudStore.addBranch(data);
                     showToast('success', 'Branch added successfully');
                 }
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('branchModal')).hide();
                 loadBranches();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
@@ -4805,19 +5133,19 @@
         async function saveProject() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addProject')) { showToast('warning', 'Permission denied'); return; }
-            
+
             const id = document.getElementById('editProjectId').value;
             const name = document.getElementById('projectName').value.trim();
             const description = document.getElementById('projectDescription').value.trim();
             const status = document.getElementById('projectStatus').value;
             const campsSelect = document.getElementById('projectCamps');
             const camps = Array.from(campsSelect.selectedOptions).map(opt => opt.value);
-            
+
             if (!name || camps.length === 0) {
                 showToast('warning', 'Please fill all required fields and select at least one camp');
                 return;
             }
-            
+
             showLoading(true);
             try {
                 const data = {
@@ -4827,7 +5155,7 @@
                     status: status,
                     updatedAt: new Date().toISOString()
                 };
-                
+
                 if (id) {
                     await CloudStore.updateProject(id, data);
                     showToast('success', 'Project updated successfully');
@@ -4835,7 +5163,7 @@
                     await CloudStore.addProject(data);
                     showToast('success', 'Project added successfully');
                 }
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
                 loadProjects();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
@@ -4845,7 +5173,7 @@
         async function saveCard() {
             const user = CloudStore.getCurrentUser();
             if (!hasPermission(user?.role, 'addCard')) { showToast('warning', 'Permission denied'); return; }
-            
+
             const id = document.getElementById('editCardId').value;
             const cardNumber = document.getElementById('cardNumber').value.trim();
             const branch = document.getElementById('cardBranch').value;
@@ -4853,14 +5181,14 @@
             const holderId = document.getElementById('cardHolder').value;
             const limit = parseFloat(document.getElementById('cardLimit').value);
             const status = document.getElementById('cardStatus').value;
-            
+
             if (!cardNumber || !branch || !project || !holderId || !limit) {
                 showToast('warning', 'Please fill all required fields');
                 return;
             }
-            
+
             const holder = appState.employees.find(e => e.id === holderId);
-            
+
             showLoading(true);
             try {
                 const data = {
@@ -4874,7 +5202,7 @@
                     status: status,
                     updatedAt: new Date().toISOString()
                 };
-                
+
                 if (id) {
                     await CloudStore.updateCard(id, data);
                     showToast('success', 'Card updated successfully');
@@ -4882,7 +5210,7 @@
                     await CloudStore.addCard(data);
                     showToast('success', 'Card added successfully');
                 }
-                
+
                 bootstrap.Modal.getInstance(document.getElementById('cardModal')).hide();
                 loadCards();
             } catch (err) { showToast('danger', 'Failed: ' + err.message); }
@@ -4893,13 +5221,13 @@
         // DELETE FUNCTIONS
         // ======================================================================
         async function deleteEmployee(id) {
-            if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteEmployee')) { 
-                showToast('warning', 'Permission denied'); 
-                return; 
+            if (!hasPermission(CloudStore.getCurrentUser()?.role, 'deleteEmployee')) {
+                showToast('warning', 'Permission denied');
+                return;
             }
             if (!confirm('Are you sure you want to delete this employee? This will also delete their user account.')) return;
             showLoading(true);
-            try { 
+            try {
                 const doc = await CloudStore.employeesCollection.doc(id).get();
                 if (!doc.exists) { showToast('danger', 'Employee not found'); showLoading(false); return; }
                 const empData = doc.data();
@@ -4918,7 +5246,7 @@
                 await CloudStore.addAuditLog({ action: 'DELETE_EMPLOYEE', entityType: 'Employee', entityId: empData.employeeId,
                     details: `Deleted employee: ${empData.name} (${empData.employeeId})` });
                 showToast('success', 'Employee deleted successfully');
-                loadEmployees(); 
+                loadEmployees();
             } catch (e) { showToast('danger', 'Failed to delete: ' + e.message); }
             showLoading(false);
         }
@@ -5022,7 +5350,7 @@
             document.getElementById('aprAmount').textContent = '₹' + (item.amount || 0).toLocaleString();
             document.getElementById('aprPurpose').textContent = isAdvance ? (item.purpose || 'N/A') : (item.category || 'N/A');
             document.getElementById('aprDescription').textContent = item.description || 'No description';
-            
+
             // Show attachments
             const attachments = document.getElementById('aprAttachments');
             if (item.files && item.files.length > 0) {
@@ -5030,7 +5358,7 @@
             } else {
                 attachments.textContent = 'No attachments';
             }
-            
+
             document.getElementById('aprRemarks').value = '';
             document.getElementById('aprDecision').value = 'approved';
             document.getElementById('approvalModal').dataset.txnId = id;
@@ -5050,11 +5378,11 @@
                 if (isAdvance) {
                     const adv = appState.advances.find(a => a.id === id);
                     if (!adv) throw new Error('Not found');
-                    const update = { status: decision === 'approved' ? 'issued' : decision === 'rejected' ? 'rejected' : 'send_back', 
+                    const update = { status: decision === 'approved' ? 'issued' : decision === 'rejected' ? 'rejected' : 'send_back',
                         approvedBy: user.username, approvalDate: new Date().toISOString(), remarks, updatedAt: new Date().toISOString() };
                     if (decision === 'approved') update.remainingAmount = adv.amount;
                     await CloudStore.updateAdvance(id, update);
-                    await CloudStore.addNotification({ userId: adv.employeeId, type: 'ADVANCE_' + decision.toUpperCase(), 
+                    await CloudStore.addNotification({ userId: adv.employeeId, type: 'ADVANCE_' + decision.toUpperCase(),
                         title: `Advance ${decision}`, message: `Your advance for ₹${(adv.amount||0).toLocaleString()} was ${decision}`,
                         entityId: id, severity: decision === 'approved' ? 'success' : 'danger', read: false, createdAt: new Date().toISOString() });
                     await CloudStore.addAuditLog({ action: 'APPROVE_ADVANCE', entityType: 'Advance', entityId: id,
@@ -5063,10 +5391,10 @@
                 } else {
                     const exp = appState.expenses.find(e => e.id === id);
                     if (!exp) throw new Error('Not found');
-                    const update = { status: decision === 'approved' ? 'approved' : decision === 'rejected' ? 'rejected' : 'send_back', 
+                    const update = { status: decision === 'approved' ? 'approved' : decision === 'rejected' ? 'rejected' : 'send_back',
                         approvedBy: user.username, approvalDate: new Date().toISOString(), remarks, updatedAt: new Date().toISOString() };
                     await CloudStore.updateExpense(id, update);
-                    await CloudStore.addNotification({ userId: exp.employeeId, type: 'EXPENSE_' + decision.toUpperCase(), 
+                    await CloudStore.addNotification({ userId: exp.employeeId, type: 'EXPENSE_' + decision.toUpperCase(),
                         title: `Expense ${decision}`, message: `Your expense of ₹${(exp.amount||0).toLocaleString()} was ${decision}`,
                         entityId: id, severity: decision === 'approved' ? 'success' : 'danger', read: false, createdAt: new Date().toISOString() });
                     await CloudStore.addAuditLog({ action: 'APPROVE_EXPENSE', entityType: 'Expense', entityId: id,
@@ -5083,8 +5411,8 @@
         function viewApproval(id, isAdvance) {
             const item = isAdvance ? appState.advances.find(a => a.id === id) : appState.expenses.find(e => e.id === id);
             if (!item) return;
-            const attachments = item.files && item.files.length > 0 ? 
-                item.files.map(f => `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-file"></i> ${f.name}</a>`).join('') : 
+            const attachments = item.files && item.files.length > 0 ?
+                item.files.map(f => `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-file"></i> ${f.name}</a>`).join('') :
                 'No attachments';
             const details =
                 `<div class="row small"><div class="col-5"><strong>ID:</strong></div><div class="col-7">${id}</div><div class="col-5"><strong>Type:</strong></div><div class="col-7">${isAdvance?'Advance':'Expense'}</div><div class="col-5"><strong>Employee:</strong></div><div class="col-7">${item.employeeName||'N/A'}</div><div class="col-5"><strong>Camp:</strong></div><div class="col-7">${item.branch||'N/A'}</div><div class="col-5"><strong>Project:</strong></div><div class="col-7">${item.projectName||'N/A'}</div><div class="col-5"><strong>Amount:</strong></div><div class="col-7">₹${(item.amount||0).toLocaleString()}</div><div class="col-5"><strong>Status:</strong></div><div class="col-7"><span class="status-badge status-${item.status||'pending'}">${(item.status||'pending').replace('_',' ')}</span></div><div class="col-5"><strong>Approved By:</strong></div><div class="col-7">${item.approvedBy||'N/A'}</div><div class="col-5"><strong>Approval Date:</strong></div><div class="col-7">${item.approvalDate?new Date(item.approvalDate).toLocaleString():'N/A'}</div><div class="col-5"><strong>Remarks:</strong></div><div class="col-7">${item.remarks||'No remarks'}</div><div class="col-5"><strong>Attachments:</strong></div><div class="col-7">${attachments}</div></div>`;
@@ -5096,11 +5424,11 @@
         // ======================================================================
         function showEmployeeModal(employeeId = null) {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { 
-                showToast('warning', 'You don\'t have permission to add employees.'); 
-                return; 
+            if (!hasPermission(user?.role, 'addEmployee')) {
+                showToast('warning', 'You don\'t have permission to add employees.');
+                return;
             }
-            
+
             if (appState.branches.length === 0) {
                 showToast('info', 'Loading branches data...');
                 const checkBranches = setInterval(() => {
@@ -5111,9 +5439,9 @@
                 }, 500);
                 return;
             }
-            
+
             populateBranchSelectors();
-            
+
             document.getElementById('employeeForm').reset();
             document.getElementById('editEmployeeId').value = '';
             document.getElementById('employeeModalTitle').textContent = 'Add Employee';
@@ -5123,7 +5451,7 @@
             document.getElementById('empUsername').disabled = false;
             document.getElementById('empEmployeeId').disabled = false;
             document.getElementById('passwordHint').textContent = 'Min 6 characters for new employee';
-            
+
             if (employeeId) {
                 const emp = appState.employees.find(e => e.id === employeeId);
                 if (emp) {
@@ -5132,7 +5460,7 @@
                     modal.show();
                     return;
                 }
-                
+
                 showToast('info', 'Loading employee data...');
                 CloudStore.employeesCollection.doc(employeeId).get().then((doc) => {
                     if (doc.exists) {
@@ -5151,23 +5479,23 @@
                 });
                 return;
             }
-            
+
             const modal = new bootstrap.Modal(document.getElementById('employeeModal'));
             modal.show();
         }
 
         function populateEmployeeForm(emp) {
             console.log('Populating form with employee:', emp);
-            
+
             populateBranchSelectors();
-            
+
             document.getElementById('employeeModalTitle').textContent = `Edit Employee: ${emp.name || 'N/A'}`;
             document.getElementById('editEmployeeId').value = emp.id || '';
             document.getElementById('empEmployeeId').value = emp.employeeId || '';
             document.getElementById('empName').value = emp.name || '';
             document.getElementById('empEmail').value = emp.email || '';
             document.getElementById('empMobile').value = emp.mobile || '';
-            
+
             const branchSelect = document.getElementById('empBranch');
             if (branchSelect) {
                 let branchExists = false;
@@ -5185,7 +5513,7 @@
                 }
                 branchSelect.value = emp.branch || '';
             }
-            
+
             document.getElementById('empDesignation').value = emp.designation || '';
             document.getElementById('empRole').value = emp.role || 'employee';
             document.getElementById('empStatus').value = emp.isActive !== false ? 'true' : 'false';
@@ -5201,13 +5529,13 @@
         function editEmployee(id) {
             console.log('Edit employee called with ID:', id);
             if (!id) { showToast('danger', 'No employee ID provided'); return; }
-            
+
             const emp = appState.employees.find(e => e.id === id);
             if (emp) {
                 showEmployeeModal(id);
                 return;
             }
-            
+
             showToast('info', 'Loading employee data...');
             CloudStore.employeesCollection.doc(id).get().then((doc) => {
                 if (doc.exists) {
@@ -5228,11 +5556,11 @@
         // ======================================================================
         async function saveEmployee() {
             const user = CloudStore.getCurrentUser();
-            if (!hasPermission(user?.role, 'addEmployee')) { 
-                showToast('warning', 'You don\'t have permission to add employees.'); 
-                return; 
+            if (!hasPermission(user?.role, 'addEmployee')) {
+                showToast('warning', 'You don\'t have permission to add employees.');
+                return;
             }
-            
+
             const id = document.getElementById('editEmployeeId').value;
             const empId = document.getElementById('empEmployeeId').value.trim();
             const name = document.getElementById('empName').value.trim();
@@ -5244,25 +5572,25 @@
             const status = document.getElementById('empStatus').value === 'true';
             const un = document.getElementById('empUsername').value.trim();
             const pw = document.getElementById('empPassword').value;
-            
+
             console.log('Saving employee with ID:', id);
             console.log('Branch value:', branch);
             console.log('Role value:', role);
             console.log('Status:', status);
-            
-            if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
-                showToast('warning', 'Please fill all required fields'); 
-                return; 
+
+            if (!empId || !name || !email || !mobile || !branch || !desig || !un) {
+                showToast('warning', 'Please fill all required fields');
+                return;
             }
-            
+
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('warning', 'Please enter a valid email address');
                 return;
             }
-            
+
             showLoading(true);
-            
+
             try {
                 if (id) {
                     // UPDATE EXISTING EMPLOYEE
@@ -5273,9 +5601,9 @@
                         showLoading(false);
                         return;
                     }
-                    
+
                     const currentData = doc.data();
-                    
+
                     // Update ALL fields
                     const updateData = {
                         employeeId: empId,
@@ -5288,10 +5616,10 @@
                         isActive: status,
                         updatedAt: new Date().toISOString()
                     };
-                    
+
                     console.log('Updating with data:', updateData);
                     await docRef.update(updateData);
-                    
+
                     // CRITICAL: Update user account with new branch and role
                     let userUpdated = false;
                     try {
@@ -5307,38 +5635,38 @@
                             };
                             if (un) userUpdateData.username = un;
                             if (pw && pw.length >= 6) userUpdateData.password = pw;
-                            
+
                             await userDoc.ref.update(userUpdateData);
                             userUpdated = true;
-                            
+
                             // Check if this is the current user
                             if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
                                 const updatedUserData = await userDoc.ref.get();
                                 const updatedUser = { id: userDoc.id, ...updatedUserData.data() };
                                 CloudStore.setCurrentUser(updatedUser);
                                 localStorage.setItem('pf_user_data', JSON.stringify(updatedUser));
-                                
+
                                 updateUserUI(updatedUser);
                                 applyPermissions();
-                                
+
                                 const branchSync = document.getElementById('branchSyncStatus');
                                 if (updatedUser.branch) {
                                     branchSync.textContent = `✅ Branch: ${updatedUser.branch}`;
                                     branchSync.className = 'sync-badge synced';
                                 }
-                                
+
                                 showToast('success', `🔐 Your role/permissions have been updated automatically!`);
-                                
+
                                 const currentPage = document.querySelector('.page-content:not([style*="display: none"])')?.id?.replace('page-', '');
                                 if (currentPage) {
                                     setTimeout(() => showPage(currentPage), 300);
                                 }
                             }
                         }
-                    } catch (userErr) { 
-                        console.warn('Could not update user account:', userErr); 
+                    } catch (userErr) {
+                        console.warn('Could not update user account:', userErr);
                     }
-                    
+
                     // Update local state
                     const localEmp = appState.employees.find(e => e.id === id);
                     if (localEmp) {
@@ -5352,78 +5680,78 @@
                         localEmp.isActive = status;
                         localEmp.updatedAt = new Date().toISOString();
                     }
-                    
+
                     showToast('success', `Employee updated successfully! Branch: ${branch}, Role: ${role}${userUpdated ? ' (User account also updated)' : ''}`);
-                    
+
                 } else {
                     // ADD NEW EMPLOYEE
-                    if (!pw || pw.length < 6) { 
+                    if (!pw || pw.length < 6) {
                         showToast('warning', 'Password must be at least 6 characters');
-                        showLoading(false); 
-                        return; 
+                        showLoading(false);
+                        return;
                     }
-                    
+
                     const existingUser = await CloudStore.getUserByUsername(un);
                     if (existingUser) {
                         showToast('warning', 'Username already exists. Please choose a different username.');
                         showLoading(false);
                         return;
                     }
-                    
+
                     const empSnap = await CloudStore.employeesCollection.where('employeeId', '==', empId).get();
                     if (!empSnap.empty) {
                         showToast('warning', 'Employee ID already exists. Please use a unique ID.');
                         showLoading(false);
                         return;
                     }
-                    
+
                     // Create user account
-                    await CloudStore.addUser({ 
-                        username: un, 
-                        password: pw, 
-                        fullName: name, 
-                        role: role, 
-                        branch: branch, 
-                        employeeId: empId, 
+                    await CloudStore.addUser({
+                        username: un,
+                        password: pw,
+                        fullName: name,
+                        role: role,
+                        branch: branch,
+                        employeeId: empId,
                         isActive: true,
-                        createdAt: new Date().toISOString() 
+                        createdAt: new Date().toISOString()
                     });
-                    
+
                     // Create employee record
-                    await CloudStore.addEmployee({ 
-                        employeeId: empId, 
-                        name: name, 
-                        email: email, 
-                        mobile: mobile, 
-                        branch: branch, 
-                        designation: desig, 
-                        role: role, 
-                        isActive: true, 
-                        createdAt: new Date().toISOString() 
+                    await CloudStore.addEmployee({
+                        employeeId: empId,
+                        name: name,
+                        email: email,
+                        mobile: mobile,
+                        branch: branch,
+                        designation: desig,
+                        role: role,
+                        isActive: true,
+                        createdAt: new Date().toISOString()
                     });
-                    
+
                     showToast('success', 'Employee added successfully. User account created.');
                 }
-                
+
                 const modalEl = document.getElementById('employeeModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
-                
-                await CloudStore.addAuditLog({ 
-                    action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
-                    entityType: 'Employee', 
+
+                await CloudStore.addAuditLog({
+                    action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE',
+                    entityType: 'Employee',
                     entityId: name,
                     details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId}) with branch: ${branch}, role: ${role}, status: ${status}`
                 });
-                
+
                 // Refresh employee list
                 loadEmployees();
-                
-            } catch (err) { 
+
+            } catch (err) {
                 console.error('Save employee error:', err);
-                showToast('danger', 'Failed to save: ' + err.message); 
+                showToast('danger', 'Failed to save: ' + err.message);
             }
-            
+
             showLoading(false);
         }
 
@@ -5442,6 +5770,24 @@
                 }
             }
         });
+
+        // ======================================================================
+        // POPULATE BRANCH SELECT (for registration)
+        // ======================================================================
+        function populateBranchSelect() {
+            const sel = document.getElementById('regBranch');
+            if (!sel) return;
+            const current = sel.value;
+            const branches = ['Main Branch', 'Raipur Camp', 'Bhilai Camp', 'Korba Camp', 'Jagdalpur Camp'];
+            sel.innerHTML = '<option value="">Select Branch/Camp</option>';
+            branches.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                sel.appendChild(opt);
+            });
+            if (branches.includes(current)) sel.value = current;
+        }
 
         // ======================================================================
         // INIT
