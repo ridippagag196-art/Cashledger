@@ -2296,61 +2296,711 @@
             document.getElementById('monthNet').textContent = '₹' + (totalRefills - totalAllocations - monthExpenses)
                 .toLocaleString();
 
-            updateAttentionList();
-
-            let acts = [...advances, ...expenses];
-            if (user?.role === 'employee') acts = acts.filter(i => i.employeeId === user.id);
-            else if (user?.role === 'manager') {
-                const emp = employees.find(e => e.id === user.id);
-                if (emp) acts = acts.filter(i => i.branch === emp.branch);
-            }
-            acts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            acts = acts.slice(0, 10);
-            const tb = document.getElementById('recentActivityBody');
-            if (acts.length === 0) tb.innerHTML =
-                `<tr><td colspan="5" class="text-center text-muted">No recent activity</td></tr>`;
-            else tb.innerHTML = acts.map(i =>
-                `<tr><td>${i.createdAt?new Date(i.createdAt).toLocaleDateString():'N/A'}</td><td>${i.employeeName||i.name||'N/A'}</td><td>${i.type||'Transaction'}</td><td>₹${(i.amount||0).toLocaleString()}</td><td><span class="status-badge status-${i.status||'pending'}">${(i.status||'pending').replace('_',' ')}</span></td></tr>`
-                ).join('');
-        }
-
+                    // ======================================================================
+        // UPDATE ATTENTION LIST - WITH CLICKABLE ALERTS
+        // ======================================================================
         function updateAttentionList() {
             const user = CloudStore.getCurrentUser();
             const c = document.getElementById('attentionList');
             const alerts = [];
+            
+            // Check for bills missing attachments (Expenses approved without bills)
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
-                const missing = appState.expenses.filter(e => (e.status === 'approved' || e.status === 'completed') && (!e
-                    .files || e.files.length === 0));
-                if (missing.length > 0) alerts.push({ type: 'danger', icon: 'fa-file-invoice', title: `${missing.length} Bills Missing`,
-                    message: 'Expenses approved without bill attachments' });
+                const missingBills = appState.expenses.filter(e => 
+                    (e.status === 'approved' || e.status === 'completed') && 
+                    (!e.files || e.files.length === 0)
+                );
+                if (missingBills.length > 0) {
+                    alerts.push({ 
+                        type: 'danger', 
+                        icon: 'fa-file-invoice', 
+                        title: `${missingBills.length} Bills Missing`, 
+                        message: 'Expenses approved without bill attachments',
+                        action: 'viewMissingBills',
+                        data: missingBills
+                    });
+                }
             }
+            
+            // Check for overdue advances
             const thirty = new Date();
             thirty.setDate(thirty.getDate() - 30);
-            const overdue = appState.advances.filter(a => a.status === 'issued' && new Date(a.createdAt) < thirty);
-            if (overdue.length > 0) alerts.push({ type: 'danger', icon: 'fa-clock', title: `${overdue.length} Advances Overdue`,
-                message: 'Advances not settled for more than 30 days' });
+            const overdue = appState.advances.filter(a => 
+                a.status === 'issued' && new Date(a.createdAt) < thirty
+            );
+            if (overdue.length > 0) {
+                alerts.push({ 
+                    type: 'danger', 
+                    icon: 'fa-clock', 
+                    title: `${overdue.length} Advances Overdue`, 
+                    message: 'Advances not settled for more than 30 days',
+                    action: 'viewOverdueAdvances',
+                    data: overdue
+                });
+            }
+            
+            // Check for employees with outstanding advances
             const empOut = appState.employees.filter(emp => {
-                const ea = appState.advances.filter(a => a.employeeId === emp.id && a.status === 'issued');
+                const ea = appState.advances.filter(a => 
+                    a.employeeId === emp.id && a.status === 'issued'
+                );
                 return ea.reduce((s, a) => s + (a.remainingAmount || a.amount || 0), 0) > 0;
             });
-            if (empOut.length > 0) alerts.push({ type: 'warning', icon: 'fa-user', title: `${empOut.length} Employees with Outstanding`,
-                message: 'Employees holding company cash' });
-            if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
-                const high = appState.cards.filter(c => c.limit > 0 && (c.utilized / c.limit) > 0.8);
-                if (high.length > 0) alerts.push({ type: 'warning', icon: 'fa-credit-card',
-                    title: `${high.length} Cards Above 80% Utilization`, message: 'Card utilization exceeding recommended limit' });
+            if (empOut.length > 0) {
+                alerts.push({ 
+                    type: 'warning', 
+                    icon: 'fa-user', 
+                    title: `${empOut.length} Employees with Outstanding`, 
+                    message: 'Employees holding company cash',
+                    action: 'viewEmployeesWithOutstanding',
+                    data: empOut
+                });
             }
+            
+            // Check for cards with high utilization
+            if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
+                const high = appState.cards.filter(c => 
+                    c.limit > 0 && (c.utilized / c.limit) > 0.8
+                );
+                if (high.length > 0) {
+                    alerts.push({ 
+                        type: 'warning', 
+                        icon: 'fa-credit-card', 
+                        title: `${high.length} Cards Above 80% Utilization`, 
+                        message: 'Card utilization exceeding recommended limit',
+                        action: 'viewHighUtilizationCards',
+                        data: high
+                    });
+                }
+            }
+            
+            // Check for low camp funds
             const campFunds = appState.funds.filter(f => f.camp !== '__main__');
             const lowFunds = campFunds.filter(f => f.balance < 5000);
-            if (lowFunds.length > 0) alerts.push({ type: 'warning', icon: 'fa-exclamation-triangle',
-                title: `${lowFunds.length} Camps Low on Funds`, message: 'Camp funds below ₹5,000' });
-            if (alerts.length === 0) { c.innerHTML =
-                `<div class="text-center text-muted py-3">✅ All clear! No pending items.</div>`; return; }
-            c.innerHTML = alerts.map(a =>
-                `<div class="alert-card ${a.type}"><div class="d-flex align-items-center"><i class="fas ${a.icon} me-2"></i><div><strong>${a.title}</strong><div class="small">${a.message}</div></div></div></div>`
-                ).join('');
+            if (lowFunds.length > 0) {
+                alerts.push({ 
+                    type: 'warning', 
+                    icon: 'fa-exclamation-triangle', 
+                    title: `${lowFunds.length} Camps Low on Funds`, 
+                    message: 'Camp funds below ₹5,000',
+                    action: 'viewLowFunds',
+                    data: lowFunds
+                });
+            }
+            
+            // Check for pending approvals
+            const pendingAdvances = appState.advances.filter(a => a.status === 'pending');
+            const pendingExpenses = appState.expenses.filter(e => e.status === 'pending');
+            const totalPending = pendingAdvances.length + pendingExpenses.length;
+            if (totalPending > 0 && (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts')) {
+                alerts.push({ 
+                    type: 'info', 
+                    icon: 'fa-clock', 
+                    title: `${totalPending} Pending Approvals`, 
+                    message: `${pendingAdvances.length} advances and ${pendingExpenses.length} expenses pending approval`,
+                    action: 'viewPendingApprovals',
+                    data: { advances: pendingAdvances, expenses: pendingExpenses }
+                });
+            }
+            
+            if (alerts.length === 0) { 
+                c.innerHTML = `<div class="text-center text-muted py-3">✅ All clear! No pending items.</div>`; 
+                return; 
+            }
+            
+            c.innerHTML = alerts.map(a => {
+                let badge = '';
+                if (a.data && Array.isArray(a.data) && a.data.length > 0) {
+                    badge = `<span class="badge bg-secondary ms-2">${a.data.length}</span>`;
+                }
+                return `<div class="alert-card ${a.type}" style="cursor:pointer;" onclick="handleAlertClick('${a.action}', '${a.type}')">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="fas ${a.icon} me-2"></i>
+                            <div>
+                                <strong>${a.title}</strong>
+                                <div class="small">${a.message}</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${badge}
+                            <i class="fas fa-chevron-right text-muted ms-2"></i>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            // Store alert data for reference
+            window._alertData = alerts;
         }
 
+        // ======================================================================
+        // HANDLE ALERT CLICKS
+        // ======================================================================
+        function handleAlertClick(action, type) {
+            switch(action) {
+                case 'viewMissingBills':
+                    viewMissingBills();
+                    break;
+                case 'viewEmployeesWithOutstanding':
+                    viewEmployeesWithOutstanding();
+                    break;
+                case 'viewOverdueAdvances':
+                    viewOverdueAdvances();
+                    break;
+                case 'viewHighUtilizationCards':
+                    viewHighUtilizationCards();
+                    break;
+                case 'viewLowFunds':
+                    viewLowFunds();
+                    break;
+                case 'viewPendingApprovals':
+                    viewPendingApprovals();
+                    break;
+                default:
+                    showToast('info', 'Feature coming soon...');
+            }
+        }
+
+        // ======================================================================
+        // VIEW FUNCTIONS FOR EACH ALERT TYPE
+        // ======================================================================
+
+        // 1. View Bills Missing Attachments
+        function viewMissingBills() {
+            const missingBills = appState.expenses.filter(e => 
+                (e.status === 'approved' || e.status === 'completed') && 
+                (!e.files || e.files.length === 0)
+            );
+            
+            if (missingBills.length === 0) {
+                showToast('info', 'No bills missing attachments');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>${missingBills.length}</strong> expenses approved without bill attachments
+                    </div>
+                    <p class="text-muted small">Click on any expense to view details</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Employee</th>
+                                <th>Camp</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${missingBills.map((e, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${e.employeeName || 'N/A'}</td>
+                                    <td>${e.branch || 'N/A'}</td>
+                                    <td>${e.category || 'N/A'}</td>
+                                    <td class="text-danger">₹${(e.amount || 0).toLocaleString()}</td>
+                                    <td>${e.date || new Date(e.createdAt).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewExpense('${e.id}')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="addBillAttachment('${e.id}')">
+                                            <i class="fas fa-upload"></i> Add Bill
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            showCustomModal('📄 Bills Missing Attachments', content);
+        }
+
+        // 2. View Employees with Outstanding
+        function viewEmployeesWithOutstanding() {
+            const empOut = appState.employees.filter(emp => {
+                const ea = appState.advances.filter(a => 
+                    a.employeeId === emp.id && a.status === 'issued'
+                );
+                return ea.reduce((s, a) => s + (a.remainingAmount || a.amount || 0), 0) > 0;
+            });
+            
+            if (empOut.length === 0) {
+                showToast('info', 'No employees with outstanding');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>${empOut.length}</strong> employees holding company cash
+                    </div>
+                    <p class="text-muted small">Click on any employee to view their ledger</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Employee</th>
+                                <th>Camp</th>
+                                <th>Designation</th>
+                                <th>Outstanding Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${empOut.map((emp, i) => {
+                                const advs = appState.advances.filter(a => 
+                                    a.employeeId === emp.id && a.status === 'issued'
+                                );
+                                const total = advs.reduce((s, a) => s + (a.remainingAmount || a.amount || 0), 0);
+                                return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td><strong>${emp.name}</strong></td>
+                                        <td>${emp.branch || 'N/A'}</td>
+                                        <td>${emp.designation || 'N/A'}</td>
+                                        <td class="text-danger fw-bold">₹${total.toLocaleString()}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info" onclick="viewEmployeeLedger('${emp.id}')">
+                                                <i class="fas fa-book"></i> Ledger
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="contactEmployee('${emp.id}')">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            showCustomModal('👥 Employees with Outstanding', content);
+        }
+
+        // 3. View Overdue Advances
+        function viewOverdueAdvances() {
+            const thirty = new Date();
+            thirty.setDate(thirty.getDate() - 30);
+            const overdue = appState.advances.filter(a => 
+                a.status === 'issued' && new Date(a.createdAt) < thirty
+            );
+            
+            if (overdue.length === 0) {
+                showToast('info', 'No overdue advances');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>${overdue.length}</strong> advances overdue (>30 days)
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Employee</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Date</th>
+                                <th>Days Overdue</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${overdue.map((a, i) => {
+                                const days = Math.floor((new Date() - new Date(a.createdAt)) / (1000 * 60 * 60 * 24));
+                                return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>${a.employeeName || 'N/A'}</td>
+                                        <td>₹${(a.amount || 0).toLocaleString()}</td>
+                                        <td class="text-warning">₹${(a.remainingAmount || a.amount || 0).toLocaleString()}</td>
+                                        <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                                        <td class="text-danger fw-bold">${days} days</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="sendReminder('${a.id}')">
+                                                <i class="fas fa-bell"></i> Remind
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            showCustomModal('⏰ Overdue Advances', content);
+        }
+
+        // 4. View High Utilization Cards
+        function viewHighUtilizationCards() {
+            const high = appState.cards.filter(c => 
+                c.limit > 0 && (c.utilized / c.limit) > 0.8
+            );
+            
+            if (high.length === 0) {
+                showToast('info', 'No cards with high utilization');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>${high.length}</strong> cards above 80% utilization
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Card</th>
+                                <th>Camp</th>
+                                <th>Holder</th>
+                                <th>Limit</th>
+                                <th>Utilized</th>
+                                <th>% Used</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${high.map((c, i) => {
+                                const pct = ((c.utilized / c.limit) * 100).toFixed(0);
+                                return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>XXXX ${c.cardNumber}</td>
+                                        <td>${c.branch}</td>
+                                        <td>${c.holderName}</td>
+                                        <td>₹${(c.limit || 0).toLocaleString()}</td>
+                                        <td>₹${(c.utilized || 0).toLocaleString()}</td>
+                                        <td>
+                                            <div class="progress" style="width:80px;height:15px;">
+                                                <div class="progress-bar bg-danger" style="width:${Math.min(pct, 100)}%">${pct}%</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="showAllocateToCardModalFor('${c.id}')">
+                                                <i class="fas fa-plus"></i> Top Up
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            showCustomModal('💳 High Utilization Cards', content);
+        }
+
+        // 5. View Low Funds
+        function viewLowFunds() {
+            const campFunds = appState.funds.filter(f => f.camp !== '__main__');
+            const lowFunds = campFunds.filter(f => f.balance < 5000);
+            
+            if (lowFunds.length === 0) {
+                showToast('info', 'All camps have sufficient funds');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>${lowFunds.length}</strong> camps with low funds (< ₹5,000)
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Camp</th>
+                                <th>Current Balance</th>
+                                <th>Cards Active</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lowFunds.map((f, i) => {
+                                const cards = appState.cards.filter(c => c.branch === f.camp);
+                                return `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td><strong>${f.camp}</strong></td>
+                                        <td class="text-danger">₹${(f.balance || 0).toLocaleString()}</td>
+                                        <td>${cards.length}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success" onclick="showAllocateToCardModal()">
+                                                <i class="fas fa-credit-card"></i> Allocate Funds
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            showCustomModal('💰 Low Fund Camps', content);
+        }
+
+        // 6. View Pending Approvals
+        function viewPendingApprovals() {
+            const pendingAdvances = appState.advances.filter(a => a.status === 'pending');
+            const pendingExpenses = appState.expenses.filter(e => e.status === 'pending');
+            
+            if (pendingAdvances.length === 0 && pendingExpenses.length === 0) {
+                showToast('info', 'No pending approvals');
+                return;
+            }
+            
+            const content = `
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <i class="fas fa-clock me-2"></i>
+                        <strong>${pendingAdvances.length}</strong> advances and <strong>${pendingExpenses.length}</strong> expenses pending approval
+                    </div>
+                </div>
+                ${pendingAdvances.length > 0 ? `
+                    <h6 class="mt-3">📋 Pending Advances</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr><th>Employee</th><th>Camp</th><th>Amount</th><th>Purpose</th><th>Action</th></tr>
+                            </thead>
+                            <tbody>
+                                ${pendingAdvances.map(a => `
+                                    <tr>
+                                        <td>${a.employeeName}</td>
+                                        <td>${a.branch}</td>
+                                        <td>₹${(a.amount || 0).toLocaleString()}</td>
+                                        <td>${a.purpose}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="showApprovalModal('${a.id}', true)">
+                                                <i class="fas fa-check"></i> Review
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : ''}
+                ${pendingExpenses.length > 0 ? `
+                    <h6 class="mt-3">📄 Pending Expenses</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr><th>Employee</th><th>Camp</th><th>Category</th><th>Amount</th><th>Action</th></tr>
+                            </thead>
+                            <tbody>
+                                ${pendingExpenses.map(e => `
+                                    <tr>
+                                        <td>${e.employeeName}</td>
+                                        <td>${e.branch}</td>
+                                        <td>${e.category}</td>
+                                        <td>₹${(e.amount || 0).toLocaleString()}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="showApprovalModal('${e.id}', false)">
+                                                <i class="fas fa-check"></i> Review
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : ''}
+            `;
+            
+            showCustomModal('📋 Pending Approvals', content);
+        }
+
+        // ======================================================================
+        // ADD BILL ATTACHMENT
+        // ======================================================================
+        function addBillAttachment(expenseId) {
+            const expense = appState.expenses.find(e => e.id === expenseId);
+            if (!expense) {
+                showToast('danger', 'Expense not found');
+                return;
+            }
+            
+            // Open expense modal in edit mode for adding attachments
+            showExpenseModal();
+            
+            // Pre-fill expense data
+            document.getElementById('expBranch').value = expense.branch || '';
+            document.getElementById('expProject').value = expense.projectName || '';
+            document.getElementById('expCategory').value = expense.category || '';
+            document.getElementById('expPaymentMethod').value = expense.paymentMethod || '';
+            document.getElementById('expAmount').value = expense.amount || '';
+            document.getElementById('expDate').value = expense.date || '';
+            document.getElementById('expDescription').value = expense.description || '';
+            document.getElementById('expVendor').value = expense.vendor || '';
+            document.getElementById('expBillNo').value = expense.billNo || '';
+            document.getElementById('expRemarks').value = expense.remarks || '';
+            
+            // Store the expense ID to update after file upload
+            document.getElementById('expenseForm').dataset.editId = expenseId;
+            
+            showToast('info', 'Upload bill attachments for this expense');
+        }
+
+        // ======================================================================
+        // SEND REMINDER TO EMPLOYEE
+        // ======================================================================
+        async function sendReminder(advanceId) {
+            const advance = appState.advances.find(a => a.id === advanceId);
+            if (!advance) {
+                showToast('danger', 'Advance not found');
+                return;
+            }
+            
+            const employee = appState.employees.find(e => e.id === advance.employeeId);
+            if (!employee) {
+                showToast('danger', 'Employee not found');
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                // Add notification
+                await CloudStore.addNotification({
+                    userId: advance.employeeId,
+                    type: 'REMINDER',
+                    title: '⚠️ Advance Settlement Reminder',
+                    message: `Your advance of ₹${(advance.amount || 0).toLocaleString()} (${advance.purpose || 'N/A'}) is overdue. Please settle at the earliest.`,
+                    entityId: advanceId,
+                    severity: 'warning',
+                    read: false,
+                    createdAt: new Date().toISOString()
+                });
+                
+                // Add audit log
+                await CloudStore.addAuditLog({
+                    action: 'SEND_REMINDER',
+                    entityType: 'Advance',
+                    entityId: advanceId,
+                    details: `Reminder sent to ${employee.name} for advance of ₹${(advance.amount || 0).toLocaleString()}`
+                });
+                
+                showToast('success', `Reminder sent to ${employee.name}`);
+            } catch (err) {
+                showToast('danger', 'Failed to send reminder: ' + err.message);
+            }
+            showLoading(false);
+        }
+
+        // ======================================================================
+        // CONTACT EMPLOYEE
+        // ======================================================================
+        function contactEmployee(employeeId) {
+            const employee = appState.employees.find(e => e.id === employeeId);
+            if (!employee) {
+                showToast('danger', 'Employee not found');
+                return;
+            }
+            
+            const content = `
+                <div class="text-center">
+                    <h5>${employee.name}</h5>
+                    <p class="text-muted">${employee.designation || 'N/A'} | ${employee.branch || 'N/A'}</p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-primary w-100 mb-2" onclick="window.location.href='mailto:${employee.email}'">
+                                <i class="fas fa-envelope"></i> Email
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-success w-100 mb-2" onclick="window.location.href='tel:${employee.mobile}'">
+                                <i class="fas fa-phone"></i> Call
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-warning w-100" onclick="sendReminderToEmployee('${employee.id}')">
+                                <i class="fas fa-bell"></i> Send Reminder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showCustomModal(`📞 Contact ${employee.name}`, content);
+        }
+
+        // ======================================================================
+        // SEND REMINDER TO EMPLOYEE (from contact modal)
+        // ======================================================================
+        async function sendReminderToEmployee(employeeId) {
+            const employee = appState.employees.find(e => e.id === employeeId);
+            if (!employee) return;
+            
+            const advances = appState.advances.filter(a => 
+                a.employeeId === employeeId && a.status === 'issued'
+            );
+            
+            if (advances.length === 0) {
+                showToast('info', 'No outstanding advances for this employee');
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                for (const advance of advances) {
+                    await CloudStore.addNotification({
+                        userId: employeeId,
+                        type: 'REMINDER',
+                        title: '⚠️ Advance Settlement Reminder',
+                        message: `Your advance of ₹${(advance.amount || 0).toLocaleString()} (${advance.purpose || 'N/A'}) needs settlement.`,
+                        entityId: advance.id,
+                        severity: 'warning',
+                        read: false,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+                
+                await CloudStore.addAuditLog({
+                    action: 'SEND_BULK_REMINDER',
+                    entityType: 'Employee',
+                    entityId: employeeId,
+                    details: `Sent ${advances.length} reminders to ${employee.name}`
+                });
+                
+                showToast('success', `${advances.length} reminder(s) sent to ${employee.name}`);
+            } catch (err) {
+                showToast('danger', 'Failed to send reminders: ' + err.message);
+            }
+            showLoading(false);
+        }
         // ======================================================================
         // MY DASHBOARD
         // ======================================================================
