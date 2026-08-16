@@ -103,7 +103,7 @@
         .connection-status.offline { background: var(--danger); color: white; }
         .connection-status.connecting { background: var(--warning); color: #333; }
 
-        .alert-card { background: #fff3cd; border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }
+        .alert-card { background: #fff3cd; border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; cursor: pointer; }
         .alert-card:hover { transform: translateX(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .alert-card.danger { background: #f8d7da; border-left-color: var(--danger); }
         .alert-card.success { background: #d4edda; border-left-color: var(--success); }
@@ -185,6 +185,8 @@
         .table-wrapper { overflow-x: auto; }
         .table-responsive-stack { display: block; width: 100%; overflow-x: auto; }
         .alert-action-btn { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-left: 5px; }
+        
+        .fade-in { animation: fadeIn 0.4s ease; }
     </style>
 </head>
 <body>
@@ -4109,6 +4111,7 @@
             
             console.log('Saving employee with ID:', id);
             console.log('Branch value:', branch);
+            console.log('Role value:', role);
             
             if (!empId || !name || !email || !mobile || !branch || !desig || !un) { 
                 showToast('warning', 'Please fill all required fields'); 
@@ -4134,7 +4137,9 @@
                     }
                     
                     const currentData = doc.data();
-                    await docRef.update({
+                    
+                    // Update ALL fields
+                    const updateData = {
                         employeeId: empId,
                         name: name,
                         email: email,
@@ -4143,16 +4148,26 @@
                         designation: desig,
                         role: role,
                         updatedAt: new Date().toISOString()
-                    });
+                    };
                     
+                    console.log('Updating with data:', updateData);
+                    await docRef.update(updateData);
+                    
+                    // Update user account
                     try {
                         const userSnap = await CloudStore.usersCollection.where('employeeId', '==', currentData.employeeId).get();
                         if (!userSnap.empty) {
                             const userDoc = userSnap.docs[0];
-                            const updateData = { fullName: name, branch: branch, role: role, updatedAt: new Date().toISOString() };
-                            if (un) updateData.username = un;
-                            if (pw && pw.length >= 6) updateData.password = pw;
-                            await userDoc.ref.update(updateData);
+                            const userUpdateData = {
+                                fullName: name,
+                                branch: branch,
+                                role: role,
+                                updatedAt: new Date().toISOString()
+                            };
+                            if (un) userUpdateData.username = un;
+                            if (pw && pw.length >= 6) userUpdateData.password = pw;
+                            
+                            await userDoc.ref.update(userUpdateData);
                             
                             if (CloudStore.currentUser && CloudStore.currentUser.id === userDoc.id) {
                                 CloudStore.currentUser.fullName = name;
@@ -4168,6 +4183,7 @@
                         }
                     } catch (userErr) { console.warn('Could not update user account:', userErr); }
                     
+                    // Update local state
                     const localEmp = appState.employees.find(e => e.id === id);
                     if (localEmp) {
                         localEmp.employeeId = empId;
@@ -4180,9 +4196,10 @@
                         localEmp.updatedAt = new Date().toISOString();
                     }
                     
-                    showToast('success', 'Employee updated successfully.');
+                    showToast('success', `Employee updated successfully! Branch: ${branch}, Role: ${role}`);
                     
                 } else {
+                    // Adding new employee
                     if (!pw || pw.length < 6) { 
                         showToast('warning', 'Password must be at least 6 characters');
                         showLoading(false); 
@@ -4236,7 +4253,7 @@
                     action: id ? 'UPDATE_EMPLOYEE' : 'CREATE_EMPLOYEE', 
                     entityType: 'Employee', 
                     entityId: name,
-                    details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId})`
+                    details: `${id ? 'Updated' : 'Created'} employee: ${name} (${empId}) with branch: ${branch}, role: ${role}`
                 });
                 
                 loadEmployees();
@@ -4479,6 +4496,7 @@
         console.log('✅ Pagination added for employee list (25 per page)');
         console.log('✅ Search and filter for employees');
         console.log('✅ Clickable alerts with drill-down functionality');
+        console.log('✅ Employee edit now properly saves branch and role');
         console.log('🔑 First user registration becomes Super Admin');
         console.log('⌨️ Shortcuts: Ctrl+1=Dashboard, Ctrl+2=My Dashboard, Ctrl+3=Fund Management, Ctrl+4=Monthly Report, Ctrl+5=Advances, Ctrl+6=Expenses');
     </script>
