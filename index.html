@@ -643,6 +643,19 @@
         .upload-status-badge {
             font-size: 0.75rem;
         }
+        
+        /* File upload status */
+        .file-upload-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .file-upload-status.pending { background: #ffc107; color: #333; }
+        .file-upload-status.uploading { background: #17a2b8; color: white; }
+        .file-upload-status.done { background: #28a745; color: white; }
+        .file-upload-status.error { background: #dc3545; color: white; }
     </style>
 </head>
 <body>
@@ -1604,7 +1617,7 @@
     </div><!-- end app -->
 
 
-    <!-- ===== MODALS (Condensed for length) ===== -->
+    <!-- ===== MODALS ===== -->
     <!-- Branch Modal -->
     <div class="modal fade" id="branchModal" tabindex="-1">
         <div class="modal-dialog">
@@ -2093,7 +2106,7 @@
         </div>
     </div>
 
-    <!-- Missing Bills Modal with Upload Feature -->
+    <!-- Missing Bills Modal with Upload Feature - FIXED -->
     <div class="modal fade" id="missingBillsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -2129,7 +2142,7 @@
                             <h6>Map Files to Expenses</h6>
                             <p class="text-muted small">For each file, select the expense it belongs to.</p>
                             <div id="fileMappingList"></div>
-                            <button class="btn btn-success mt-3" onclick="processBulkUpload()">
+                            <button class="btn btn-success mt-3" id="uploadMappedBtn" onclick="processBulkUpload()">
                                 <i class="fas fa-upload me-2"></i>Upload Mapped Bills
                             </button>
                         </div>
@@ -2944,7 +2957,10 @@
                                     progressBar.textContent = Math.round(progress) + '%';
                                 }
                             },
-                            reject,
+                            (error) => {
+                                console.error('Upload error:', error);
+                                reject(error);
+                            },
                             resolve
                         );
                     });
@@ -2958,8 +2974,8 @@
                         uploadedAt: new Date().toISOString()
                     });
                 } catch (err) {
-                    console.error('Upload failed:', err);
-                    showToast('warning', `Failed to upload ${f.name}`);
+                    console.error('Upload failed for', f.name, ':', err);
+                    showToast('warning', `Failed to upload ${f.name}: ${err.message}`);
                 }
             }
 
@@ -3512,6 +3528,8 @@
             document.getElementById('bulkUploadSection').style.display = 'block';
             document.getElementById('bulkUploadProgress').style.display = 'none';
             document.getElementById('uploadStatusText').textContent = '';
+            document.getElementById('uploadMappedBtn').disabled = false;
+            document.getElementById('uploadMappedBtn').innerHTML = '<i class="fas fa-upload me-2"></i>Upload Mapped Bills';
             
             // Load missing bills
             const missingBills = appState.expenses.filter(e =>
@@ -3566,23 +3584,24 @@
             const dropArea = document.getElementById('bulkDropArea');
             const fileInput = document.getElementById('bulkFileInput');
             
-            if (dropArea) {
-                dropArea.addEventListener('dragover', e => { e.preventDefault();
-                    dropArea.classList.add('dragover'); });
-                dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
-                dropArea.addEventListener('drop', e => { e.preventDefault();
-                    dropArea.classList.remove('dragover');
-                    handleBulkFiles(e.dataTransfer.files); });
-            }
-            if (fileInput) fileInput.addEventListener('change', e => handleBulkFiles(e.target.files));
+            // Remove old listeners by cloning
+            const newDropArea = dropArea.cloneNode(true);
+            dropArea.parentNode.replaceChild(newDropArea, dropArea);
+            const newFileInput = fileInput.cloneNode(true);
+            fileInput.parentNode.replaceChild(newFileInput, fileInput);
+            
+            newDropArea.addEventListener('dragover', e => { e.preventDefault();
+                newDropArea.classList.add('dragover'); });
+            newDropArea.addEventListener('dragleave', () => newDropArea.classList.remove('dragover'));
+            newDropArea.addEventListener('drop', e => { e.preventDefault();
+                newDropArea.classList.remove('dragover');
+                handleBulkFiles(e.dataTransfer.files); });
+            newDropArea.addEventListener('click', () => newFileInput.click());
+            newFileInput.addEventListener('change', e => handleBulkFiles(e.target.files));
         }
 
         function handleBulkFiles(files) {
             const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-            const missingBills = appState.expenses.filter(e =>
-                (e.status === 'approved' || e.status === 'completed') &&
-                (!e.files || e.files.length === 0)
-            );
             
             for (let f of files) {
                 if (f.size > 5 * 1024 * 1024) { 
@@ -3593,13 +3612,18 @@
                     showToast('warning', `File ${f.name} not supported`); 
                     continue; 
                 }
-                bulkUploadFiles.push({ 
-                    name: f.name, 
-                    size: f.size, 
-                    type: f.type, 
-                    file: f,
-                    selectedExpenseId: null
-                });
+                // Check if file already exists
+                const exists = bulkUploadFiles.some(existing => existing.name === f.name && existing.size === f.size);
+                if (!exists) {
+                    bulkUploadFiles.push({ 
+                        name: f.name, 
+                        size: f.size, 
+                        type: f.type, 
+                        file: f,
+                        selectedExpenseId: null,
+                        uploadStatus: 'pending'
+                    });
+                }
             }
             displayBulkFiles();
             generateFileMapping();
@@ -3613,23 +3637,34 @@
                 document.getElementById('fileMappingContainer').style.display = 'none';
                 return; 
             }
-            c.innerHTML = bulkUploadFiles.map((f, i) =>
-                `<div class="file-item" id="bulkFile_${i}">
+            c.innerHTML = bulkUploadFiles.map((f, i) => {
+                const statusClass = f.uploadStatus === 'done' ? 'success' : 
+                                   f.uploadStatus === 'uploading' ? 'info' :
+                                   f.uploadStatus === 'error' ? 'danger' : 'secondary';
+                const statusText = f.uploadStatus === 'done' ? '✅ Uploaded' : 
+                                  f.uploadStatus === 'uploading' ? '⏳ Uploading' :
+                                  f.uploadStatus === 'error' ? '❌ Failed' : '📤 Pending';
+                return `<div class="file-item" id="bulkFile_${i}">
                     <div>
                         <span class="file-icon"><i class="fas ${f.type.includes('pdf')?'fa-file-pdf':f.type.includes('image')?'fa-file-image':'fa-file'}"></i></span>
                         <span class="file-name">${f.name}</span>
                         <span class="file-size">(${(f.size/1024).toFixed(1)} KB)</span>
+                        <span class="badge bg-${statusClass} ms-2">${statusText}</span>
                     </div>
-                    <button class="btn btn-sm btn-danger" onclick="removeBulkFile(${i})"><i class="fas fa-times"></i></button>
-                </div>`
-            ).join('');
+                    ${f.uploadStatus === 'pending' ? `<button class="btn btn-sm btn-danger" onclick="removeBulkFile(${i})"><i class="fas fa-times"></i></button>` : ''}
+                </div>`;
+            }).join('');
             document.getElementById('fileMappingContainer').style.display = 'block';
         }
 
         function removeBulkFile(i) {
-            bulkUploadFiles.splice(i, 1);
-            displayBulkFiles();
-            generateFileMapping();
+            if (bulkUploadFiles[i] && bulkUploadFiles[i].uploadStatus === 'pending') {
+                bulkUploadFiles.splice(i, 1);
+                displayBulkFiles();
+                generateFileMapping();
+            } else {
+                showToast('warning', 'Cannot remove file that is already uploaded or in progress.');
+            }
         }
 
         function generateFileMapping() {
@@ -3641,13 +3676,17 @@
                 (!e.files || e.files.length === 0)
             );
             
-            if (bulkUploadFiles.length === 0 || missingBills.length === 0) {
-                container.innerHTML = '';
+            const pendingFiles = bulkUploadFiles.filter(f => f.uploadStatus === 'pending');
+            
+            if (pendingFiles.length === 0 || missingBills.length === 0) {
+                container.innerHTML = pendingFiles.length === 0 ? 
+                    '<div class="text-muted">All files have been uploaded.</div>' :
+                    '<div class="text-muted">No missing bills to map to.</div>';
                 return;
             }
             
             let html = '';
-            bulkUploadFiles.forEach((f, idx) => {
+            pendingFiles.forEach((f, idx) => {
                 html += `
                     <div class="row align-items-center mb-2 p-2 border rounded">
                         <div class="col-md-4">
@@ -3672,7 +3711,7 @@
         }
 
         function updateMapping(index, expenseId) {
-            if (bulkUploadFiles[index]) {
+            if (bulkUploadFiles[index] && bulkUploadFiles[index].uploadStatus === 'pending') {
                 bulkUploadFiles[index].selectedExpenseId = expenseId;
                 const badge = document.getElementById(`mappingBadge_${index}`);
                 if (badge) {
@@ -3686,19 +3725,25 @@
         // PROCESS BULK UPLOAD - FIXED WITH PROPER STATUS AND DISPLAY
         // ======================================================================
         async function processBulkUpload() {
-            // Check if all files are mapped
-            const unmapped = bulkUploadFiles.filter(f => !f.selectedExpenseId);
+            const pendingFiles = bulkUploadFiles.filter(f => f.uploadStatus === 'pending');
+            
+            if (pendingFiles.length === 0) {
+                showToast('warning', 'No pending files to upload.');
+                return;
+            }
+            
+            // Check if all pending files are mapped
+            const unmapped = pendingFiles.filter(f => !f.selectedExpenseId);
             if (unmapped.length > 0) {
-                showToast('warning', `Please map all files to expenses. ${unmapped.length} file(s) unmapped.`);
+                showToast('warning', `Please map all pending files to expenses. ${unmapped.length} file(s) unmapped.`);
                 return;
             }
             
-            if (bulkUploadFiles.length === 0) {
-                showToast('warning', 'No files to upload.');
-                return;
-            }
+            // Disable the upload button
+            const btn = document.getElementById('uploadMappedBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
             
-            showLoading(true);
             const progressContainer = document.getElementById('bulkUploadProgress');
             const progressBar = document.getElementById('bulkUploadProgressBar');
             const statusText = document.getElementById('uploadStatusText');
@@ -3708,18 +3753,18 @@
             
             try {
                 let uploaded = 0;
-                const total = bulkUploadFiles.length;
-                const results = [];
+                const total = pendingFiles.length;
                 
                 // Group files by expense
                 const expenseMap = {};
-                bulkUploadFiles.forEach(f => {
+                pendingFiles.forEach(f => {
                     if (!expenseMap[f.selectedExpenseId]) expenseMap[f.selectedExpenseId] = [];
                     expenseMap[f.selectedExpenseId].push(f);
                 });
                 
                 const expenseIds = Object.keys(expenseMap);
                 let completed = 0;
+                let hasError = false;
                 
                 for (const expenseId of expenseIds) {
                     const expense = appState.expenses.find(e => e.id === expenseId);
@@ -3733,6 +3778,10 @@
                     
                     for (const f of files) {
                         try {
+                            // Update status to uploading
+                            f.uploadStatus = 'uploading';
+                            displayBulkFiles();
+                            
                             if (statusText) statusText.textContent = `Uploading ${f.name}...`;
                             
                             const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
@@ -3748,7 +3797,10 @@
                                             progressBar.textContent = Math.round(Math.min(overallProgress, 100)) + '%';
                                         }
                                     },
-                                    reject,
+                                    (error) => {
+                                        console.error('Upload error:', error);
+                                        reject(error);
+                                    },
                                     resolve
                                 );
                             });
@@ -3761,15 +3813,21 @@
                                 size: f.size,
                                 uploadedAt: new Date().toISOString()
                             });
+                            
+                            f.uploadStatus = 'done';
                             uploaded++;
                             completed++;
                             
                             if (statusText) statusText.textContent = `Uploaded ${uploaded}/${total} files`;
+                            displayBulkFiles();
                             
                         } catch (err) {
-                            console.error('Upload failed:', err);
-                            showToast('warning', `Failed to upload ${f.name}`);
+                            console.error('Upload failed for', f.name, ':', err);
+                            f.uploadStatus = 'error';
+                            hasError = true;
                             completed++;
+                            showToast('danger', `Failed to upload ${f.name}: ${err.message}`);
+                            displayBulkFiles();
                         }
                     }
                     
@@ -3782,7 +3840,6 @@
                             updatedAt: new Date().toISOString() 
                         });
                         
-                        // Show success for this expense
                         showToast('success', `✅ Added ${uploadedUrls.length} bill(s) to expense ${expenseId.slice(0, 8)}`);
                     }
                 }
@@ -3791,19 +3848,29 @@
                     progressBar.style.width = '100%';
                     progressBar.textContent = '100%';
                 }
-                if (statusText) statusText.textContent = '✅ Upload complete!';
                 
-                showToast('success', `✅ Successfully uploaded ${uploaded} bill(s) and attached to expenses.`);
+                if (hasError) {
+                    if (statusText) statusText.textContent = '⚠️ Upload completed with some errors.';
+                    showToast('warning', `Uploaded ${uploaded}/${total} files. Some files failed.`);
+                } else {
+                    if (statusText) statusText.textContent = '✅ All files uploaded successfully!';
+                    showToast('success', `✅ Successfully uploaded ${uploaded} bill(s) and attached to expenses.`);
+                }
                 
-                // Refresh data
-                setTimeout(() => {
-                    bootstrap.Modal.getInstance(document.getElementById('missingBillsModal')).hide();
-                    updateDashboard();
-                    loadExpenses();
-                    loadApprovals();
-                    // Show the updated expenses with bills
-                    showToast('info', '📎 Bills are now attached to expenses. Check the Expenses page to view them.');
-                }, 1500);
+                // Refresh the file mapping to show only pending files
+                generateFileMapping();
+                
+                // Check if there are still pending files
+                const remainingPending = bulkUploadFiles.filter(f => f.uploadStatus === 'pending');
+                if (remainingPending.length === 0) {
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('missingBillsModal')).hide();
+                        updateDashboard();
+                        loadExpenses();
+                        loadApprovals();
+                        showToast('info', '📎 Bills are now attached to expenses. Check the Expenses page to view them.');
+                    }, 1500);
+                }
                 
             } catch (err) {
                 console.error('Bulk upload failed:', err);
@@ -3818,9 +3885,9 @@
                     progressBar.style.width = '0%';
                     progressBar.textContent = '0%';
                 }
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Mapped Bills';
             }, 3000);
-            
-            showLoading(false);
         }
 
         // ======================================================================
@@ -6051,8 +6118,10 @@
         console.log('📎 NEW: View Missing Bills with Bulk Upload feature added!');
         console.log('📎 Click on "Bill Missing" alert to open the missing bills modal.');
         console.log('📎 Upload files, map them to expenses, and submit to attach bills.');
-        console.log('✅ FIXED: Upload now shows proper progress and status.');
+        console.log('✅ FIXED: Upload now shows proper progress and status with error handling.');
+        console.log('✅ FIXED: Files show upload status (Pending, Uploading, Done, Error).');
         console.log('✅ FIXED: Bills are displayed in Expense details after upload.');
+        console.log('✅ FIXED: Better error handling for Firebase Storage issues.');
     </script>
 </body>
 </html>
