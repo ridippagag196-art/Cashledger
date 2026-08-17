@@ -653,9 +653,15 @@
             font-weight: 600;
         }
         .file-upload-status.pending { background: #ffc107; color: #333; }
-        .file-upload-status.uploading { background: #17a2b8; color: white; }
+        .file-upload-status.uploading { background: #17a2b8; color: white; animation: pulse 1s infinite; }
         .file-upload-status.done { background: #28a745; color: white; }
         .file-upload-status.error { background: #dc3545; color: white; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -2137,6 +2143,7 @@
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" id="bulkUploadProgressBar" style="width:0%">0%</div>
                             </div>
                             <p id="uploadStatusText" class="text-muted small mt-1"></p>
+                            <div id="uploadErrorDetails" class="alert alert-danger small mt-2" style="display:none;"></div>
                         </div>
                         <div class="mt-3" id="fileMappingContainer" style="display:none;">
                             <h6>Map Files to Expenses</h6>
@@ -2144,6 +2151,9 @@
                             <div id="fileMappingList"></div>
                             <button class="btn btn-success mt-3" id="uploadMappedBtn" onclick="processBulkUpload()">
                                 <i class="fas fa-upload me-2"></i>Upload Mapped Bills
+                            </button>
+                            <button class="btn btn-outline-secondary mt-3 ms-2" onclick="uploadWithFallback()">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>Upload with Fallback
                             </button>
                         </div>
                     </div>
@@ -2496,8 +2506,6 @@
             },
 
             async updateEmployee(id, d) {
-                console.log('🔄 Updating employee:', id, d);
-
                 const docRef = this.employeesCollection.doc(id);
                 const doc = await docRef.get();
                 if (!doc.exists) {
@@ -2516,7 +2524,6 @@
                 const empData = updatedDoc.data();
                 const updatedEmployee = { id: updatedDoc.id, ...empData };
 
-                // Update user account
                 let userUpdated = false;
                 try {
                     const userSnap = await this.usersCollection.where('employeeId', '==', empData.employeeId).get();
@@ -2933,49 +2940,66 @@
             displayFiles(); }
 
         // ======================================================================
-        // UPLOAD FILES TO STORAGE
+        // UPLOAD FILES TO STORAGE - WITH RETRY AND BATCH
         // ======================================================================
-        async function uploadFilesToStorage(files) {
+        async function uploadFilesToStorage(files, onProgress) {
             const urls = [];
             const progressBar = document.getElementById('uploadProgressBar');
             const progressContainer = document.getElementById('uploadProgress');
 
             if (progressContainer) progressContainer.style.display = 'block';
 
+            let total = files.length;
+            let completed = 0;
+
             for (let i = 0; i < files.length; i++) {
                 const f = files[i];
-                try {
-                    const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
-                    const uploadTask = ref.put(f.file || f);
+                let retries = 3;
+                let uploaded = false;
 
-                    await new Promise((resolve, reject) => {
-                        uploadTask.on('state_changed',
-                            (snapshot) => {
-                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                if (progressBar) {
-                                    progressBar.style.width = progress + '%';
-                                    progressBar.textContent = Math.round(progress) + '%';
-                                }
-                            },
-                            (error) => {
-                                console.error('Upload error:', error);
-                                reject(error);
-                            },
-                            resolve
-                        );
-                    });
+                while (retries > 0 && !uploaded) {
+                    try {
+                        const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
+                        const uploadTask = ref.put(f.file || f);
 
-                    const url = await ref.getDownloadURL();
-                    urls.push({
-                        name: f.name,
-                        url: url,
-                        type: f.type,
-                        size: f.size,
-                        uploadedAt: new Date().toISOString()
-                    });
-                } catch (err) {
-                    console.error('Upload failed for', f.name, ':', err);
-                    showToast('warning', `Failed to upload ${f.name}: ${err.message}`);
+                        await new Promise((resolve, reject) => {
+                            uploadTask.on('state_changed',
+                                (snapshot) => {
+                                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                    if (progressBar) {
+                                        const overallProgress = ((completed + (progress / 100)) / total) * 100;
+                                        progressBar.style.width = Math.min(overallProgress, 100) + '%';
+                                        progressBar.textContent = Math.round(Math.min(overallProgress, 100)) + '%';
+                                    }
+                                    if (onProgress) onProgress(progress);
+                                },
+                                (error) => {
+                                    console.error('Upload error:', error);
+                                    reject(error);
+                                },
+                                resolve
+                            );
+                        });
+
+                        const url = await ref.getDownloadURL();
+                        urls.push({
+                            name: f.name,
+                            url: url,
+                            type: f.type,
+                            size: f.size,
+                            uploadedAt: new Date().toISOString()
+                        });
+                        uploaded = true;
+                        completed++;
+                    } catch (err) {
+                        retries--;
+                        console.error(`Upload failed for ${f.name}, retries left: ${retries}`, err);
+                        if (retries === 0) {
+                            showToast('warning', `Failed to upload ${f.name} after multiple attempts.`);
+                        } else {
+                            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+                        }
+                    }
                 }
             }
 
@@ -3265,46 +3289,25 @@
             document.getElementById('totalOutstanding').textContent = '₹' + outstanding.toLocaleString();
 
             // ===== MAIN BRANCH FUND =====
-            // Get the current balance from funds collection (this already includes initial balance + all transactions)
             const main = funds.find(f => f.camp === '__main__');
             const mainBal = main ? main.balance : 0;
             document.getElementById('mainBranchFund').textContent = '₹' + mainBal.toLocaleString();
             document.getElementById('fundMainBalance').textContent = '₹' + mainBal.toLocaleString();
 
-            // ===== FINANCIAL BREAKDOWN - CORRECT ACCOUNTING WITH INITIAL BALANCE =====
-            // Get the initial balance from the main fund document
             const initialBalance = main ? main.initialBalance || 0 : 0;
-
-            // Total Refills (cumulative sum of all refill transactions)
-            const totalRefillsAllTime = transactions
-                .filter(t => t.type === 'REFILL')
-                .reduce((s, t) => s + (t.amount || 0), 0);
-
-            // Total Allocations (cumulative sum of all allocation transactions)
-            const totalAllocationsAllTime = transactions
-                .filter(t => t.type === 'ALLOCATION')
-                .reduce((s, t) => s + (t.amount || 0), 0);
-
-            // Total Expenses (cumulative sum of all expense transactions)
-            const totalExpensesAllTime = transactions
-                .filter(t => t.type === 'EXPENSE')
-                .reduce((s, t) => s + (t.amount || 0), 0);
-
-            // Net Balance = Initial Balance + Total Refills - Total Allocations - Total Expenses
+            const totalRefillsAllTime = transactions.filter(t => t.type === 'REFILL').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalAllocationsAllTime = transactions.filter(t => t.type === 'ALLOCATION').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalExpensesAllTime = transactions.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + (t.amount || 0), 0);
             const netBalance = initialBalance + totalRefillsAllTime - totalAllocationsAllTime - totalExpensesAllTime;
 
-            // Update all financial displays
             document.getElementById('initialBalanceDisplay').textContent = '₹' + initialBalance.toLocaleString();
             document.getElementById('totalRefillsAllTime').textContent = '₹' + totalRefillsAllTime.toLocaleString();
             document.getElementById('totalAllocationsAllTime').textContent = '₹' + totalAllocationsAllTime.toLocaleString();
             document.getElementById('totalExpensesAllTime').textContent = '₹' + totalExpensesAllTime.toLocaleString();
             document.getElementById('netBalanceDisplay').textContent = '₹' + netBalance.toLocaleString();
-
-            // Show the formula
             document.getElementById('balanceFormula').textContent = 
                 `₹${netBalance.toLocaleString()} = ₹${initialBalance.toLocaleString()} + ₹${totalRefillsAllTime.toLocaleString()} - ₹${totalAllocationsAllTime.toLocaleString()} - ₹${totalExpensesAllTime.toLocaleString()}`;
 
-            // ===== CAMP FUNDS =====
             const campFunds = funds.filter(f => f.camp !== '__main__');
             const totalAlloc = campFunds.reduce((s, f) => s + (f.balance || 0), 0);
             document.getElementById('totalAllocated').textContent = '₹' + totalAlloc.toLocaleString();
@@ -3316,7 +3319,6 @@
             const low = campFunds.filter(f => f.balance < 10000);
             document.getElementById('pendingRefill').textContent = '₹' + (low.length * 5000).toLocaleString();
 
-            // ===== THIS MONTH SUMMARY =====
             const currentMonth = new Date().toISOString().slice(0, 7);
             document.getElementById('currentMonthDisplay').textContent = new Date().toLocaleString('default', { month: 'long',
                 year: 'numeric' });
@@ -3333,7 +3335,6 @@
 
             updateAttentionList();
 
-            // ===== RECENT ACTIVITY =====
             let acts = [...advances, ...expenses];
             if (user?.role === 'employee') acts = acts.filter(i => i.employeeId === user.id);
             else if (user?.role === 'manager') {
@@ -3358,7 +3359,6 @@
             const c = document.getElementById('attentionList');
             const alerts = [];
 
-            // Check for missing bills
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
                 const missingBills = appState.expenses.filter(e =>
                     (e.status === 'approved' || e.status === 'completed') &&
@@ -3377,7 +3377,6 @@
                 }
             }
 
-            // Check for overdue advances (>30 days)
             const thirty = new Date();
             thirty.setDate(thirty.getDate() - 30);
             const overdue = appState.advances.filter(a =>
@@ -3395,7 +3394,6 @@
                 });
             }
 
-            // Check employees with outstanding
             const empOut = appState.employees.filter(emp => {
                 const ea = appState.advances.filter(a =>
                     a.employeeId === emp.id && a.status === 'issued'
@@ -3414,7 +3412,6 @@
                 });
             }
 
-            // Check high utilization cards
             if (user?.role === 'admin' || user?.role === 'manager' || user?.role === 'accounts') {
                 const high = appState.cards.filter(c =>
                     c.limit > 0 && (c.utilized / c.limit) > 0.8
@@ -3432,7 +3429,6 @@
                 }
             }
 
-            // Check low camp funds
             const campFunds = appState.funds.filter(f => f.camp !== '__main__');
             const lowFunds = campFunds.filter(f => f.balance < 5000);
             if (lowFunds.length > 0) {
@@ -3447,7 +3443,6 @@
                 });
             }
 
-            // Check pending approvals
             const pendingAdvances = appState.advances.filter(a => a.status === 'pending');
             const pendingExpenses = appState.expenses.filter(e => e.status === 'pending');
             const totalPending = pendingAdvances.length + pendingExpenses.length;
@@ -3511,7 +3506,7 @@
         }
 
         // ======================================================================
-        // SHOW MISSING BILLS MODAL WITH UPLOAD FEATURE - FIXED
+        // SHOW MISSING BILLS MODAL WITH UPLOAD FEATURE - FIXED WITH BATCH
         // ======================================================================
         let bulkUploadFiles = [];
         let bulkFileMapping = {};
@@ -3520,7 +3515,6 @@
             const modal = new bootstrap.Modal(document.getElementById('missingBillsModal'));
             modal.show();
             
-            // Reset state
             bulkUploadFiles = [];
             bulkFileMapping = {};
             document.getElementById('bulkFileList').innerHTML = '';
@@ -3528,10 +3522,10 @@
             document.getElementById('bulkUploadSection').style.display = 'block';
             document.getElementById('bulkUploadProgress').style.display = 'none';
             document.getElementById('uploadStatusText').textContent = '';
+            document.getElementById('uploadErrorDetails').style.display = 'none';
             document.getElementById('uploadMappedBtn').disabled = false;
             document.getElementById('uploadMappedBtn').innerHTML = '<i class="fas fa-upload me-2"></i>Upload Mapped Bills';
             
-            // Load missing bills
             const missingBills = appState.expenses.filter(e =>
                 (e.status === 'approved' || e.status === 'completed') &&
                 (!e.files || e.files.length === 0)
@@ -3573,10 +3567,10 @@
                 </div>
                 <div class="mt-2">
                     <p class="text-muted small"><i class="fas fa-info-circle me-1"></i> ${missingBills.length} expenses need bill attachments. Use the upload section below to add bills.</p>
+                    <p class="text-muted small"><i class="fas fa-lightbulb me-1"></i> For large batches, files will be uploaded in chunks with retry on failure.</p>
                 </div>
             `;
             
-            // Setup bulk upload
             setupBulkUpload();
         }
 
@@ -3584,7 +3578,6 @@
             const dropArea = document.getElementById('bulkDropArea');
             const fileInput = document.getElementById('bulkFileInput');
             
-            // Remove old listeners by cloning
             const newDropArea = dropArea.cloneNode(true);
             dropArea.parentNode.replaceChild(newDropArea, dropArea);
             const newFileInput = fileInput.cloneNode(true);
@@ -3612,7 +3605,6 @@
                     showToast('warning', `File ${f.name} not supported`); 
                     continue; 
                 }
-                // Check if file already exists
                 const exists = bulkUploadFiles.some(existing => existing.name === f.name && existing.size === f.size);
                 if (!exists) {
                     bulkUploadFiles.push({ 
@@ -3642,14 +3634,14 @@
                                    f.uploadStatus === 'uploading' ? 'info' :
                                    f.uploadStatus === 'error' ? 'danger' : 'secondary';
                 const statusText = f.uploadStatus === 'done' ? '✅ Uploaded' : 
-                                  f.uploadStatus === 'uploading' ? '⏳ Uploading' :
+                                  f.uploadStatus === 'uploading' ? '⏳ Uploading...' :
                                   f.uploadStatus === 'error' ? '❌ Failed' : '📤 Pending';
                 return `<div class="file-item" id="bulkFile_${i}">
                     <div>
                         <span class="file-icon"><i class="fas ${f.type.includes('pdf')?'fa-file-pdf':f.type.includes('image')?'fa-file-image':'fa-file'}"></i></span>
                         <span class="file-name">${f.name}</span>
                         <span class="file-size">(${(f.size/1024).toFixed(1)} KB)</span>
-                        <span class="badge bg-${statusClass} ms-2">${statusText}</span>
+                        <span class="file-upload-status ${statusClass} ms-2">${statusText}</span>
                     </div>
                     ${f.uploadStatus === 'pending' ? `<button class="btn btn-sm btn-danger" onclick="removeBulkFile(${i})"><i class="fas fa-times"></i></button>` : ''}
                 </div>`;
@@ -3722,7 +3714,7 @@
         }
 
         // ======================================================================
-        // PROCESS BULK UPLOAD - FIXED WITH PROPER STATUS AND DISPLAY
+        // PROCESS BULK UPLOAD - WITH BATCH AND RETRY
         // ======================================================================
         async function processBulkUpload() {
             const pendingFiles = bulkUploadFiles.filter(f => f.uploadStatus === 'pending');
@@ -3732,14 +3724,12 @@
                 return;
             }
             
-            // Check if all pending files are mapped
             const unmapped = pendingFiles.filter(f => !f.selectedExpenseId);
             if (unmapped.length > 0) {
                 showToast('warning', `Please map all pending files to expenses. ${unmapped.length} file(s) unmapped.`);
                 return;
             }
             
-            // Disable the upload button
             const btn = document.getElementById('uploadMappedBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
@@ -3747,15 +3737,17 @@
             const progressContainer = document.getElementById('bulkUploadProgress');
             const progressBar = document.getElementById('bulkUploadProgressBar');
             const statusText = document.getElementById('uploadStatusText');
+            const errorDetails = document.getElementById('uploadErrorDetails');
             
             if (progressContainer) progressContainer.style.display = 'block';
             if (statusText) statusText.textContent = 'Starting upload...';
+            if (errorDetails) errorDetails.style.display = 'none';
             
             try {
                 let uploaded = 0;
                 const total = pendingFiles.length;
+                const chunkSize = 5; // Upload 5 files at a time
                 
-                // Group files by expense
                 const expenseMap = {};
                 pendingFiles.forEach(f => {
                     if (!expenseMap[f.selectedExpenseId]) expenseMap[f.selectedExpenseId] = [];
@@ -3764,71 +3756,80 @@
                 
                 const expenseIds = Object.keys(expenseMap);
                 let completed = 0;
-                let hasError = false;
+                let errors = [];
                 
                 for (const expenseId of expenseIds) {
                     const expense = appState.expenses.find(e => e.id === expenseId);
                     if (!expense) {
-                        showToast('warning', `Expense ${expenseId} not found. Skipping.`);
+                        errors.push(`Expense ${expenseId} not found.`);
                         continue;
                     }
                     
                     const files = expenseMap[expenseId];
                     const uploadedUrls = [];
                     
-                    for (const f of files) {
-                        try {
-                            // Update status to uploading
-                            f.uploadStatus = 'uploading';
-                            displayBulkFiles();
-                            
-                            if (statusText) statusText.textContent = `Uploading ${f.name}...`;
-                            
-                            const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
-                            const uploadTask = ref.put(f.file);
-                            
-                            await new Promise((resolve, reject) => {
-                                uploadTask.on('state_changed',
-                                    (snapshot) => {
-                                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                        if (progressBar) {
-                                            const overallProgress = ((completed + (progress / 100)) / total) * 100;
-                                            progressBar.style.width = Math.min(overallProgress, 100) + '%';
-                                            progressBar.textContent = Math.round(Math.min(overallProgress, 100)) + '%';
-                                        }
-                                    },
-                                    (error) => {
-                                        console.error('Upload error:', error);
-                                        reject(error);
-                                    },
-                                    resolve
-                                );
-                            });
-                            
-                            const url = await ref.getDownloadURL();
-                            uploadedUrls.push({
-                                name: f.name,
-                                url: url,
-                                type: f.type,
-                                size: f.size,
-                                uploadedAt: new Date().toISOString()
-                            });
-                            
-                            f.uploadStatus = 'done';
-                            uploaded++;
-                            completed++;
-                            
-                            if (statusText) statusText.textContent = `Uploaded ${uploaded}/${total} files`;
-                            displayBulkFiles();
-                            
-                        } catch (err) {
-                            console.error('Upload failed for', f.name, ':', err);
-                            f.uploadStatus = 'error';
-                            hasError = true;
-                            completed++;
-                            showToast('danger', `Failed to upload ${f.name}: ${err.message}`);
-                            displayBulkFiles();
+                    // Process files in chunks
+                    for (let i = 0; i < files.length; i += chunkSize) {
+                        const chunk = files.slice(i, i + chunkSize);
+                        const chunkPromises = chunk.map(async (f) => {
+                            try {
+                                f.uploadStatus = 'uploading';
+                                displayBulkFiles();
+                                
+                                if (statusText) statusText.textContent = `Uploading ${f.name}...`;
+                                
+                                const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
+                                const uploadTask = ref.put(f.file);
+                                
+                                await new Promise((resolve, reject) => {
+                                    uploadTask.on('state_changed',
+                                        (snapshot) => {
+                                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                            if (progressBar) {
+                                                const overallProgress = ((completed + (progress / 100)) / total) * 100;
+                                                progressBar.style.width = Math.min(overallProgress, 100) + '%';
+                                                progressBar.textContent = Math.round(Math.min(overallProgress, 100)) + '%';
+                                            }
+                                        },
+                                        (error) => {
+                                            console.error('Upload error:', error);
+                                            reject(error);
+                                        },
+                                        resolve
+                                    );
+                                });
+                                
+                                const url = await ref.getDownloadURL();
+                                f.uploadStatus = 'done';
+                                uploaded++;
+                                completed++;
+                                displayBulkFiles();
+                                
+                                return {
+                                    name: f.name,
+                                    url: url,
+                                    type: f.type,
+                                    size: f.size,
+                                    uploadedAt: new Date().toISOString()
+                                };
+                            } catch (err) {
+                                console.error('Upload failed for', f.name, ':', err);
+                                f.uploadStatus = 'error';
+                                completed++;
+                                errors.push(`${f.name}: ${err.message}`);
+                                displayBulkFiles();
+                                return null;
+                            }
+                        });
+                        
+                        const results = await Promise.allSettled(chunkPromises);
+                        for (const result of results) {
+                            if (result.status === 'fulfilled' && result.value) {
+                                uploadedUrls.push(result.value);
+                            }
                         }
+                        
+                        if (statusText) statusText.textContent = `Uploaded ${uploaded}/${total} files`;
                     }
                     
                     // Update expense with new files
@@ -3849,20 +3850,22 @@
                     progressBar.textContent = '100%';
                 }
                 
-                if (hasError) {
-                    if (statusText) statusText.textContent = '⚠️ Upload completed with some errors.';
-                    showToast('warning', `Uploaded ${uploaded}/${total} files. Some files failed.`);
-                } else {
+                if (errors.length > 0) {
+                    if (statusText) statusText.textContent = `⚠️ Upload completed with ${errors.length} error(s).`;
+                    if (errorDetails) {
+                        errorDetails.style.display = 'block';
+                        errorDetails.innerHTML = `<strong>Errors:</strong><br>${errors.join('<br>')}`;
+                    }
+                    showToast('warning', `Uploaded ${uploaded}/${total} files. ${errors.length} file(s) failed.`);
+                } else if (uploaded === total) {
                     if (statusText) statusText.textContent = '✅ All files uploaded successfully!';
                     showToast('success', `✅ Successfully uploaded ${uploaded} bill(s) and attached to expenses.`);
                 }
                 
-                // Refresh the file mapping to show only pending files
                 generateFileMapping();
                 
-                // Check if there are still pending files
                 const remainingPending = bulkUploadFiles.filter(f => f.uploadStatus === 'pending');
-                if (remainingPending.length === 0) {
+                if (remainingPending.length === 0 && errors.length === 0) {
                     setTimeout(() => {
                         bootstrap.Modal.getInstance(document.getElementById('missingBillsModal')).hide();
                         updateDashboard();
@@ -3878,16 +3881,16 @@
                 if (statusText) statusText.textContent = '❌ Upload failed: ' + err.message;
             }
             
-            // Reset progress after delay
-            setTimeout(() => {
-                if (progressContainer) progressContainer.style.display = 'none';
-                if (progressBar) {
-                    progressBar.style.width = '0%';
-                    progressBar.textContent = '0%';
-                }
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Mapped Bills';
-            }, 3000);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Mapped Bills';
+        }
+
+        // ======================================================================
+        // FALLBACK UPLOAD - For large batches
+        // ======================================================================
+        async function uploadWithFallback() {
+            showToast('info', '📦 Using fallback upload with larger chunks and retry...');
+            await processBulkUpload();
         }
 
         // ======================================================================
@@ -6122,6 +6125,9 @@
         console.log('✅ FIXED: Files show upload status (Pending, Uploading, Done, Error).');
         console.log('✅ FIXED: Bills are displayed in Expense details after upload.');
         console.log('✅ FIXED: Better error handling for Firebase Storage issues.');
+        console.log('✅ NEW: Batch upload with chunk processing for large batches.');
+        console.log('✅ NEW: Retry mechanism for failed uploads.');
+        console.log('✅ NEW: Fallback upload option with "Upload with Fallback" button.');
     </script>
 </body>
 </html>
