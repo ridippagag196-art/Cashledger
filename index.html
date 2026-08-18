@@ -916,7 +916,10 @@
 @media(max-width:1100px){.exec-stat-grid{grid-template-columns:repeat(3,1fr)}.exec-hero-grid{grid-template-columns:1fr 1fr}.exec-finance{grid-template-columns:1fr}.exec-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.exec-stat-grid{grid-template-columns:repeat(2,1fr)}.exec-hero-top{flex-direction:column}.exec-hero-grid{grid-template-columns:1fr}.branch-command{grid-template-columns:1fr}.exec-ring-wrap{flex-direction:column;text-align:center}.exec-stat .value{font-size:1rem}}
 
-    </style>
+    
+        /* V3 advanced command-centre enhancements */
+        .exec-grid-advanced{margin-top:14px}.control-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.control-check{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid #edf1f5;border-radius:12px;background:#fbfcfe}.control-check .check-icon{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto}.control-check.ok .check-icon{background:#ecfdf5;color:#059669}.control-check.warn .check-icon{background:#fffbeb;color:#d97706}.control-check.bad .check-icon{background:#fef2f2;color:#dc2626}.control-check strong{display:block;font-size:.72rem}.control-check span{display:block;font-size:.61rem;color:#94a3b8;margin-top:2px}.money-pipeline{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.pipeline-node{position:relative;padding:12px;border:1px solid #edf1f5;border-radius:12px;background:#fff}.pipeline-node small{display:block;text-transform:uppercase;font-size:.56rem;letter-spacing:.04em;color:#94a3b8}.pipeline-node strong{display:block;font-size:.92rem;margin-top:4px}.pipeline-node span{display:block;font-size:.6rem;color:#64748b;margin-top:3px}.dashboard-filter-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.dashboard-filter-grid label{display:block;font-size:.62rem;font-weight:700;color:#64748b;margin-bottom:4px}.branch-tile.attention{border-color:#fecaca;background:#fffafa}.branch-tile.watch{border-color:#fde68a;background:#fffdf5}.exec-live{white-space:nowrap}.exec-live i{font-size:.45rem}.upload-health{font-size:.65rem;color:#64748b}@media(max-width:900px){.control-check-grid,.money-pipeline,.dashboard-filter-grid{grid-template-columns:1fr}.money-pipeline{grid-template-columns:1fr 1fr}}
+</style>
 </head>
 <body>
 
@@ -1178,6 +1181,26 @@
                             <div class="exec-panel">
                                 <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-building"></i> Branch command centre</div><div class="exec-panel-sub">Compare fund health, card capacity and utilization without the old branch bars</div></div><div class="d-flex align-items-center gap-2"><small class="exec-panel-sub" id="branchCountLabel">0 branches</small><button class="btn btn-outline-primary btn-sm no-print" onclick="showPage('branches')">View all</button></div></div>
                                 <div id="branchFundOverviewList" class="branch-command"><div class="exec-empty">No branch data available</div></div>
+                            </div>
+
+                            <div class="exec-grid exec-grid-advanced">
+                                <div class="exec-panel">
+                                    <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-shield-halved"></i> Control &amp; reconciliation</div><div class="exec-panel-sub">Automated checks for balances, approvals and supporting documents</div></div><button class="btn btn-outline-primary btn-sm no-print" onclick="runDashboardControls()"><i class="fas fa-rotate me-1"></i> Recheck</button></div>
+                                    <div id="dashControlChecks" class="control-check-grid"><div class="exec-empty">Checking financial controls…</div></div>
+                                </div>
+                                <div class="exec-panel">
+                                    <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-diagram-project"></i> Money pipeline</div><div class="exec-panel-sub">Trace the fund position from central balance to outstanding employee money</div></div></div>
+                                    <div id="dashMoneyPipeline" class="money-pipeline"><div class="exec-empty">Calculating…</div></div>
+                                </div>
+                            </div>
+
+                            <div class="exec-panel">
+                                <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-filter"></i> Dashboard scope</div><div class="exec-panel-sub">Focus the command centre without changing the underlying data</div></div><button class="btn btn-outline-secondary btn-sm no-print" onclick="resetDashboardFilters()">Reset</button></div>
+                                <div class="dashboard-filter-grid no-print">
+                                    <div><label>Branch</label><select id="dashBranchFilter" class="form-select form-select-sm" onchange="updateDashboard()"><option value="">All visible branches</option></select></div>
+                                    <div><label>Period</label><select id="dashPeriodFilter" class="form-select form-select-sm" onchange="updateDashboard()"><option value="all">All time</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option></select></div>
+                                    <div><label>Branch sort</label><select id="dashBranchSort" class="form-select form-select-sm" onchange="updateDashboard()"><option value="attention">Attention first</option><option value="util">Highest utilization</option><option value="available">Lowest available</option><option value="name">Name</option></select></div>
+                                </div>
                             </div>
 
                             <div class="exec-panel">
@@ -1827,6 +1850,9 @@
             appId: "1:75148749502:web:41e46dc4da7169ded80cef",
             measurementId: "G-NPJ6KZYWP3"
         };
+
+        // SECURITY NOTE (V3): Firebase client configuration is not a secret, but Firestore/Storage Rules are the real security boundary.
+        // The legacy application still uses a custom users collection for username/password login. For production, migrate authentication to Firebase Authentication and enforce branch/role access in server-side rules.
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const storage = firebase.storage();
@@ -2201,7 +2227,28 @@
             setTimeout(() => t.remove(), 5000);
         }
 
-        function showLoading(show) { document.getElementById('spinnerOverlay').style.display = show ? 'flex' : 'none'; }
+        let loadingDepth = 0;
+        let loadingWatchdog = null;
+        function showLoading(show) {
+            const overlay = document.getElementById('spinnerOverlay');
+            if (!overlay) return;
+            if (show) {
+                loadingDepth++;
+                overlay.style.display = 'flex';
+                clearTimeout(loadingWatchdog);
+                loadingWatchdog = setTimeout(() => {
+                    loadingDepth = 0;
+                    overlay.style.display = 'none';
+                    showToast('warning', 'The operation is taking longer than expected. Check your connection and try again.');
+                }, 60000);
+            } else {
+                loadingDepth = Math.max(0, loadingDepth - 1);
+                if (loadingDepth === 0) {
+                    clearTimeout(loadingWatchdog);
+                    overlay.style.display = 'none';
+                }
+            }
+        }
 
         function showCustomModal(title, content) {
             const html =
@@ -2313,10 +2360,13 @@
 
         function handleFiles(files) {
             for (let f of files) {
-                if (f.size > 5 * 1024 * 1024) { showToast('warning', `${f.name} exceeds 5MB`); continue; }
-                if (!['image/jpeg', 'image/png', 'application/pdf'].includes(f.type)) { showToast('warning',
-                        `${f.name} not supported`); continue; }
-                uploadedFiles.push({ name: f.name, size: f.size, type: f.type, file: f });
+                try {
+                    validateBillFile(f);
+                    if (uploadedFiles.some(x => x.name === f.name && x.size === f.size)) {
+                        showToast('info', `${f.name} is already selected.`); continue;
+                    }
+                    uploadedFiles.push({ name: f.name, size: f.size, type: f.type, file: f });
+                } catch (e) { showToast('warning', `${f.name}: ${e.message}`); }
             }
             displayFiles();
         }
@@ -2333,31 +2383,80 @@
         function removeFile(i) { uploadedFiles.splice(i, 1);
             displayFiles(); }
 
+        const MAX_BILL_SIZE = 5 * 1024 * 1024;
+        const MAX_PROFILE_SIZE = 2 * 1024 * 1024;
+        const ALLOWED_BILL_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+        const ALLOWED_BILL_EXT = ['pdf', 'jpg', 'jpeg', 'png'];
+
+        function safeFileName(name) {
+            return String(name || 'file').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+        }
+
+        function fileExtension(name) {
+            const parts = String(name || '').toLowerCase().split('.');
+            return parts.length > 1 ? parts.pop() : '';
+        }
+
+        function validateBillFile(file) {
+            const ext = fileExtension(file.name);
+            if (!ALLOWED_BILL_TYPES.includes(file.type) || !ALLOWED_BILL_EXT.includes(ext)) {
+                throw new Error('Only PDF, JPG, JPEG and PNG files are allowed.');
+            }
+            if (file.size > MAX_BILL_SIZE) throw new Error('Maximum bill size is 5 MB.');
+            if (file.size === 0) throw new Error('The selected file is empty.');
+        }
+
+        function validateProfileFile(file) {
+            if (!file.type || !file.type.startsWith('image/')) throw new Error('Please select an image file.');
+            if (file.size > MAX_PROFILE_SIZE) throw new Error('Maximum profile photo size is 2 MB.');
+        }
+
+        function uploadWithTimeout(ref, file, onProgress, timeoutMs = 45000) {
+            return new Promise((resolve, reject) => {
+                let settled = false;
+                const finish = (fn, value) => { if (settled) return; settled = true; clearTimeout(timer); fn(value); };
+                const timer = setTimeout(() => finish(reject, new Error('Upload timed out after 45 seconds.')), timeoutMs);
+                let task;
+                try {
+                    task = ref.put(file, { contentType: file.type || undefined, cacheControl: 'public,max-age=3600' });
+                    task.on('state_changed', snap => {
+                        if (onProgress) onProgress(snap.bytesTransferred, snap.totalBytes);
+                    }, err => finish(reject, err), () => finish(resolve, task.snapshot));
+                } catch (err) { finish(reject, err); }
+            });
+        }
+
         async function uploadFilesToStorage(files) {
             const urls = [];
+            const failures = [];
             const bar = document.getElementById('uploadProgressBar');
             const container = document.getElementById('uploadProgress');
             if (container) container.style.display = 'block';
             for (let i = 0; i < files.length; i++) {
-                const f = files[i];
+                const item = files[i];
+                const f = item.file || item;
                 try {
-                    const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
-                    const task = ref.put(f.file || f);
-                    await new Promise((resolve, reject) => {
-                        task.on('state_changed',
-                            s => { if (bar) { const p = (s.bytesTransferred / s.totalBytes) * 100;
-                                    bar.style.width = p + '%';
-                                    bar.textContent = Math.round(p) + '%'; } },
-                            reject, resolve
-                        );
+                    validateBillFile(f);
+                    const unique = `${Date.now()}_${Math.random().toString(36).slice(2,10)}_${safeFileName(f.name)}`;
+                    const ref = storage.ref(`expenses/${unique}`);
+                    await uploadWithTimeout(ref, f, (done,total) => {
+                        if (bar && total) {
+                            const p = Math.round((done / total) * 100);
+                            bar.style.width = p + '%';
+                            bar.textContent = p + '%';
+                        }
                     });
                     const url = await ref.getDownloadURL();
-                    urls.push({ name: f.name, url, type: f.type, size: f.size, uploadedAt: new Date().toISOString() });
-                } catch (e) { showToast('warning', `Failed to upload ${f.name}`); }
+                    urls.push({ name: f.name, url, type: f.type, size: f.size, path: ref.fullPath, uploadedAt: new Date().toISOString() });
+                } catch (e) {
+                    failures.push({ name: f.name, error: e.message || 'Upload failed' });
+                    showToast('warning', `${f.name}: ${e.message || 'Upload failed'}`);
+                }
             }
             if (container) container.style.display = 'none';
-            if (bar) { bar.style.width = '0%';
-                bar.textContent = '0%'; }
+            if (bar) { bar.style.width = '0%'; bar.textContent = '0%'; }
+            if (failures.length) console.warn('Upload failures:', failures);
+            if (!urls.length && failures.length) throw new Error('No files were uploaded. Check Firebase Storage permissions and your internet connection.');
             return urls;
         }
 
@@ -2402,21 +2501,25 @@
             const file = event.target.files[0];
             if (!file) return;
             const user = CloudStore.getCurrentUser();
-            if (!user) { showToast('warning', 'Please login'); return; }
-            showLoading(true);
+            if (!user) { showToast('warning', 'Please login'); event.target.value = ''; return; }
             try {
+                validateProfileFile(file);
+                showLoading(true);
                 const ref = storage.ref(`profiles/${user.id}`);
-                await ref.put(file);
+                await uploadWithTimeout(ref, file, null, 45000);
                 const url = await ref.getDownloadURL();
                 const img = document.getElementById('profileAvatarImg');
                 const icon = document.getElementById('profileAvatarIcon');
-                img.src = url;
+                img.src = url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now();
                 img.style.display = 'block';
                 icon.style.display = 'none';
-                showToast('success', 'Profile photo updated!');
-            } catch (e) { showToast('danger', 'Failed: ' + e.message); }
-            showLoading(false);
-            event.target.value = '';
+                showToast('success', 'Profile photo updated successfully.');
+            } catch (e) {
+                showToast('danger', `Profile photo upload failed: ${e.message || 'Unknown error'}`);
+            } finally {
+                showLoading(false);
+                event.target.value = '';
+            }
         }
 
         // ======================================================================
@@ -2549,6 +2652,7 @@
             });
 
             CloudStore.listenToBranches((b) => { appState.branches = b;
+                populateDashboardFilters();
                 updateDashboard();
                 populateBranchSelectors();
                 loadBranches();
@@ -2598,59 +2702,113 @@
         // ======================================================================
         // UPDATE DASHBOARD (NEW)
         // ======================================================================
-        function updateDashboard() {
-            const { branches, projects, employees, advances, expenses, cards, funds, transactions } = appState;
+        function getDashboardScope() {
             const user = CloudStore.getCurrentUser();
-            const totalCardLimit = cards.reduce((s,c)=>s+(c.limit||0),0);
-            const totalCardUtil = cards.reduce((s,c)=>s+(c.utilized||0),0);
+            const branchFilter = document.getElementById('dashBranchFilter')?.value || '';
+            const days = document.getElementById('dashPeriodFilter')?.value || 'all';
+            const cutoff = days === 'all' ? null : Date.now() - Number(days) * 86400000;
+            const visibleBranches = appState.branches.filter(b => !branchFilter || b.name === branchFilter);
+            const inPeriod = item => !cutoff || new Date(item.createdAt || item.updatedAt || item.timestamp || 0).getTime() >= cutoff;
+            const branchAllowed = b => !branchFilter || b.branch === branchFilter || b.camp === branchFilter;
+            return { user, branchFilter, days, cutoff, visibleBranches, inPeriod, branchAllowed };
+        }
+
+        function populateDashboardFilters() {
+            const user = CloudStore.getCurrentUser();
+            const sel = document.getElementById('dashBranchFilter');
+            if (!sel) return;
+            const perms = getUserPermissions(user?.role);
+            let branches = appState.branches;
+            if (!perms.viewAllBranches && user?.branch) branches = branches.filter(b => b.name === user.branch);
+            const current = sel.value;
+            sel.innerHTML = '<option value="">All visible branches</option>' + branches.map(b => `<option value="${escapeHtml(b.name)}">${escapeHtml(b.name)}</option>`).join('');
+            if (current && branches.some(b => b.name === current)) sel.value = current;
+            else if (!perms.viewAllBranches && user?.branch) sel.value = user.branch;
+        }
+
+        function updateDashboard() {
+            populateDashboardFilters();
+            const { branches, employees, advances, expenses, cards, funds } = appState;
+            const { branchFilter, inPeriod } = getDashboardScope();
+            const scopedBranches = branches.filter(b => !branchFilter || b.name === branchFilter);
+            const scoped = arr => arr.filter(inPeriod).filter(x => !branchFilter || x.branch === branchFilter);
+            const scopedCards = cards.filter(c => !branchFilter || c.branch === branchFilter);
+            const scopedFunds = funds.filter(f => f.camp !== '__main__' && (!branchFilter || f.camp === branchFilter));
+            const scopedAdvances = scoped(advances);
+            const scopedExpenses = scoped(expenses);
+            const totalCardLimit = scopedCards.reduce((s,c)=>s+(c.limit||0),0);
+            const totalCardUtil = scopedCards.reduce((s,c)=>s+(c.utilized||0),0);
             const main = funds.find(f=>f.camp==='__main__');
-            const mainBal = main ? (main.balance||0) : 0;
-            const allocated = totalCardLimit + mainBal;
-            const spent = totalCardUtil;
+            const mainBal = branchFilter ? scopedFunds.reduce((s,f)=>s+(f.balance||0),0) : (main?.balance||0);
+            const branchCash = scopedFunds.reduce((s,f)=>s+(f.balance||0),0);
             const available = Math.max(totalCardLimit-totalCardUtil,0);
-            const cardBalance = available;
-            const cashHand = mainBal;
-            const pendingCount = advances.filter(a=>a.status==='pending').length + expenses.filter(e=>e.status==='pending').length;
-            const utilPct = allocated>0 ? Math.min((spent/allocated)*100,100) : 0;
+            const controlled = available + totalCardUtil + (branchFilter ? branchCash : mainBal);
+            const spent = totalCardUtil;
+            const utilPct = totalCardLimit > 0 ? Math.min((spent/totalCardLimit)*100,100) : 0;
+            const pendingCount = scopedAdvances.filter(a=>a.status==='pending').length + scopedExpenses.filter(e=>e.status==='pending').length;
             const money = v => '₹' + ((v||0)/100000).toFixed(1) + 'L';
             const moneyFull = v => '₹' + Math.round(v||0).toLocaleString('en-IN');
-
             const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
-            set('dashAllocated',money(allocated)); set('dashSpent',money(spent)); set('dashAvailable',money(available)); set('dashCardBalance',money(cardBalance)); set('dashCashHand',money(cashHand)); set('dashPending',pendingCount);
-            set('dashAllocatedHero',money(allocated)); set('dashAvailableHero',money(available)); set('dashUtilHero',utilPct.toFixed(1)+'%'); set('dashUtilHeroSub',money(spent)+' spent'); set('dashAvailableHeroSub',money(available)+' ready for deployment');
-            set('dashUtilPct',utilPct.toFixed(1)+'%'); set('dashUtilSpent',money(spent)); set('dashUtilAllocated',money(allocated)); set('dashFinanceRemaining',money(cardBalance)); set('dashUtilSummary',money(spent)+' spent from '+money(allocated));
+            set('dashAllocated',money(controlled)); set('dashSpent',money(spent)); set('dashAvailable',money(available)); set('dashCardBalance',money(available)); set('dashCashHand',money(branchFilter?branchCash:mainBal)); set('dashPending',pendingCount);
+            set('dashAllocatedHero',money(controlled)); set('dashAvailableHero',money(available+branchCash)); set('dashUtilHero',utilPct.toFixed(1)+'%'); set('dashUtilHeroSub',money(spent)+' card spend'); set('dashAvailableHeroSub',money(available+branchCash)+' deployable balance');
+            set('dashUtilPct',utilPct.toFixed(1)+'%'); set('dashUtilSpent',money(spent)); set('dashUtilAllocated',money(totalCardLimit)); set('dashFinanceRemaining',money(available)); set('dashUtilSummary',money(spent)+' card spend from '+money(totalCardLimit));
             const ring=document.getElementById('dashUtilRing'); if(ring) ring.style.setProperty('--pct',(utilPct*3.6)+'deg');
-            set('miniCardBal',money(cardBalance)); set('miniCashBal',money(cashHand));
-            const unreconciled=advances.filter(a=>a.status==='issued').reduce((s,a)=>s+(a.remainingAmount||a.amount||0),0); set('miniUnreconciled',money(unreconciled));
-            set('miniApproved',expenses.filter(e=>e.status==='approved'||e.status==='completed').length);
-            const billPending=expenses.filter(e=>e.status==='approved'&&(!e.files||e.files.length===0)); set('miniBillPending',billPending.length); set('miniVerification',expenses.filter(e=>e.status==='pending').length);
+            set('miniCardBal',money(available)); set('miniCashBal',money(branchFilter?branchCash:mainBal));
+            const unreconciled=scopedAdvances.filter(a=>a.status==='issued').reduce((s,a)=>s+(a.remainingAmount||a.amount||0),0); set('miniUnreconciled',money(unreconciled));
+            set('miniApproved',scopedExpenses.filter(e=>e.status==='approved'||e.status==='completed').length);
+            const billPending=scopedExpenses.filter(e=>(e.status==='approved'||e.status==='completed')&&(!e.files||e.files.length===0)); set('miniBillPending',billPending.length); set('miniVerification',scopedExpenses.filter(e=>e.status==='pending').length);
 
-            const branchList=document.getElementById('branchFundOverviewList'); set('branchCountLabel',branches.length+' branches');
+            const sort = document.getElementById('dashBranchSort')?.value || 'attention';
+            const branchList=document.getElementById('branchFundOverviewList'); set('branchCountLabel',scopedBranches.length+' branches');
             if(branchList){
-                if(!branches.length){branchList.innerHTML='<div class="exec-empty">No branch data available</div>';} else {
-                    const rows=branches.map(b=>{
+                if(!scopedBranches.length){branchList.innerHTML='<div class="exec-empty">No branch data available</div>';} else {
+                    const rows=scopedBranches.map(b=>{
                         const bc=cards.filter(c=>c.branch===b.name), lim=bc.reduce((s,c)=>s+(c.limit||0),0), ut=bc.reduce((s,c)=>s+(c.utilized||0),0), bal=Math.max(lim-ut,0), pct=lim?ut/lim*100:0;
-                        const emps=employees.filter(e=>e.branch===b.name).length, exps=expenses.filter(e=>e.branch===b.name), branchCash=funds.filter(f=>f.camp===b.name).reduce((s,f)=>s+(f.balance||0),0), pending=exps.filter(e=>e.status==='pending').length;
-                        const health=pct>=90?'danger':pct>=70?'warn':'good'; const initials=(b.name||'BR').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
-                        return {b,lim,ut,bal,pct,emps,branchCash,pending,health,initials};
-                    }).sort((a,b)=>b.pct-a.pct);
-                    branchList.innerHTML=rows.slice(0,12).map(d=>`<div class="branch-tile" onclick="showPage('branches')"><div class="branch-tile-top"><div class="branch-avatar">${d.initials}</div><div class="branch-title"><strong>${d.b.name}</strong><span>${d.emps} employee${d.emps===1?'':'s'} · ${d.pending} pending</span></div><span class="branch-score"><span class="health-dot health-${d.health}"></span>${d.pct.toFixed(0)}%</span></div><div class="branch-money"><div><small>Card limit</small><strong>${money(d.lim)}</strong></div><div><small>Used</small><strong class="text-danger">${money(d.ut)}</strong></div><div><small>Available</small><strong class="text-success">${money(d.bal)}</strong></div></div><div class="branch-health"><span><span class="health-dot health-${d.health}"></span>${d.health==='danger'?'Critical utilization':d.health==='warn'?'Watch utilization':'Healthy capacity'}</span><span>${money(d.branchCash)} cash</span></div></div>`).join('');
+                        const emps=employees.filter(e=>e.branch===b.name).length, exps=expenses.filter(e=>e.branch===b.name).filter(inPeriod), branchCashVal=funds.filter(f=>f.camp===b.name).reduce((s,f)=>s+(f.balance||0),0), pending=exps.filter(e=>e.status==='pending').length, outstanding=advances.filter(a=>a.branch===b.name&&a.status==='issued').reduce((s,a)=>s+(a.remainingAmount||a.amount||0),0);
+                        const health=pct>=90||bal<5000?'danger':pct>=70||pending>2?'warn':'good'; const initials=(b.name||'BR').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+                        return {b,lim,ut,bal,pct,emps,branchCashVal,pending,outstanding,health,initials};
+                    });
+                    rows.sort((a,b)=>sort==='name'?a.b.name.localeCompare(b.b.name):sort==='available'?a.bal-b.bal:sort==='util'?b.pct-a.pct:(b.pct-a.pct)+(b.pending-a.pending)*5);
+                    branchList.innerHTML=rows.slice(0,16).map(d=>`<div class="branch-tile ${d.health==='danger'?'attention':d.health==='warn'?'watch':''}" onclick="showPage('branches')"><div class="branch-tile-top"><div class="branch-avatar">${d.initials}</div><div class="branch-title"><strong>${escapeHtml(d.b.name)}</strong><span>${d.emps} employee${d.emps===1?'':'s'} · ${d.pending} pending · ${money(d.outstanding)} outstanding</span></div><span class="branch-score"><span class="health-dot health-${d.health}"></span>${d.pct.toFixed(0)}%</span></div><div class="branch-money"><div><small>Card limit</small><strong>${money(d.lim)}</strong></div><div><small>Used</small><strong class="text-danger">${money(d.ut)}</strong></div><div><small>Available</small><strong class="text-success">${money(d.bal)}</strong></div></div><div class="branch-health"><span><span class="health-dot health-${d.health}"></span>${d.health==='danger'?'Critical attention':d.health==='warn'?'Needs review':'Healthy capacity'}</span><span>${money(d.branchCashVal)} cash</span></div></div>`).join('');
                 }
             }
-            // Preserve the existing chart hook without bringing back the old branch-bar visualization.
-            updateDashBranchChart(branches,cards);
-
             const actionContainer=document.getElementById('dashActionRequired'); const alerts=[];
-            const lowBranches=branches.filter(b=>{const bc=cards.filter(c=>c.branch===b.name),lim=bc.reduce((s,c)=>s+(c.limit||0),0),ut=bc.reduce((s,c)=>s+(c.utilized||0),0);return lim>0&&(lim-ut)<5000});
+            const lowBranches=scopedBranches.filter(b=>{const bc=cards.filter(c=>c.branch===b.name),lim=bc.reduce((s,c)=>s+(c.limit||0),0),ut=bc.reduce((s,c)=>s+(c.utilized||0),0);return lim>0&&(lim-ut)<5000});
             if(lowBranches.length) alerts.push({type:'danger',icon:'fa-triangle-exclamation',text:`${lowBranches.length} branch(es) critically low on card balance`,sub:'Review branch funding or refill requirements'});
             if(billPending.length) alerts.push({type:'warning',icon:'fa-file-circle-exclamation',text:`${billPending.length} bill(s) missing`,sub:'Approved expenses require supporting documents',action:'showMissingBillsModal'});
-            const pendAdv=advances.filter(a=>a.status==='pending'),pendExp=expenses.filter(e=>e.status==='pending');
+            const pendAdv=scopedAdvances.filter(a=>a.status==='pending'),pendExp=scopedExpenses.filter(e=>e.status==='pending');
             if(pendAdv.length+pendExp.length) alerts.push({type:'info',icon:'fa-clock',text:`${pendAdv.length+pendExp.length} approval(s) pending`,sub:`${pendAdv.length} advance · ${pendExp.length} expense`,action:'showPage(\'approvals\')'});
-            if(!alerts.length) actionContainer.innerHTML='<div class="exec-action success"><div class="ico"><i class="fas fa-check"></i></div><div class="body"><strong>Everything is under control</strong><span>No urgent exceptions detected in the current data.</span></div></div>';
+            if(!alerts.length) actionContainer.innerHTML='<div class="exec-action success"><div class="ico"><i class="fas fa-check"></i></div><div class="body"><strong>Everything is under control</strong><span>No urgent exceptions detected in the current scope.</span></div></div>';
             else actionContainer.innerHTML=alerts.map(a=>`<div class="exec-action ${a.type}" ${a.action?`onclick="${a.action}()"`:''}><div class="ico"><i class="fas ${a.icon}"></i></div><div class="body"><strong>${a.text}</strong><span>${a.sub}</span></div>${a.action?'<i class="fas fa-chevron-right chev"></i>':''}</div>`).join('');
+            let recent=[...scopedAdvances.map(x=>({...x,_kind:'Advance'})),...scopedExpenses.map(x=>({...x,_kind:'Expense'}))]; recent.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)); recent=recent.slice(0,10);
+            const rb=document.getElementById('dashRecentBody'); if(rb) rb.innerHTML=recent.length?recent.map(r=>`<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString('en-IN'):'N/A'}</td><td>${escapeHtml(r.employeeName||'N/A')}</td><td><span class="badge bg-light text-dark border">${r._kind}</span></td><td class="amount">${moneyFull(r.amount)}</td><td><span class="status-badge status-${r.status||'pending'}">${(r.status||'pending').replaceAll('_',' ')}</span></td></tr>`).join(''):'<tr><td colspan="5" class="exec-empty">No recent activity</td></tr>';
+            runDashboardControls();
+            renderMoneyPipeline(totalCardLimit,totalCardUtil,available,branchCash,unreconciled,pendingCount,billPending.length);
+        }
 
-            let recent=[...advances.map(x=>({...x,_kind:'Advance'})),...expenses.map(x=>({...x,_kind:'Expense'}))]; recent.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)); recent=recent.slice(0,10);
-            const rb=document.getElementById('dashRecentBody'); if(rb) rb.innerHTML=recent.length?recent.map(r=>`<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString('en-IN'):'N/A'}</td><td>${r.employeeName||'N/A'}</td><td><span class="badge bg-light text-dark border">${r._kind}</span></td><td class="amount">${moneyFull(r.amount)}</td><td><span class="status-badge status-${r.status||'pending'}">${(r.status||'pending').replaceAll('_',' ')}</span></td></tr>`).join(''):'<tr><td colspan="5" class="exec-empty">No recent activity</td></tr>';
+        function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));}
+        function resetDashboardFilters(){['dashBranchFilter','dashPeriodFilter','dashBranchSort'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.value=i===0?'':i===1?'all':'attention';});updateDashboard();}
+        function renderMoneyPipeline(cardLimit,cardUtil,cardAvailable,cash,outstanding,pending,bills){
+            const el=document.getElementById('dashMoneyPipeline'); if(!el)return;
+            const node=(title,val,sub,cls='')=>`<div class="pipeline-node"><small>${title}</small><strong class="${cls}">${val}</strong><span>${sub}</span></div>`;
+            el.innerHTML=node('Card capacity','₹'+Math.round(cardLimit).toLocaleString('en-IN'),'Total active card limit')+node('Card used','₹'+Math.round(cardUtil).toLocaleString('en-IN'),`${cardLimit?((cardUtil/cardLimit)*100).toFixed(1):0}% utilized`,'text-danger')+node('Card available','₹'+Math.round(cardAvailable).toLocaleString('en-IN'),'Ready on cards','text-success')+node('Cash balance','₹'+Math.round(cash).toLocaleString('en-IN'),'Visible operating cash','text-warning')+node('Employee outstanding','₹'+Math.round(outstanding).toLocaleString('en-IN'),'Unreconciled issued advances','text-danger')+node('Workflow queue',pending,'Pending approvals')+node('Missing bills',bills,'Approved/completed expenses without files','text-warning');
+        }
+        function runDashboardControls(){
+            const el=document.getElementById('dashControlChecks'); if(!el)return;
+            const {branches,cards,funds,advances,expenses}=appState; const checks=[];
+            const negativeFunds=funds.filter(f=>(f.balance||0)<0).length, overCards=cards.filter(c=>(c.utilized||0)>(c.limit||0)).length;
+            const missingBills=expenses.filter(e=>(e.status==='approved'||e.status==='completed')&&(!e.files||!e.files.length)).length;
+            const pending=advances.filter(a=>a.status==='pending').length+expenses.filter(e=>e.status==='pending').length;
+            const orphanCards=cards.filter(c=>c.branch&&!branches.some(b=>b.name===c.branch)).length;
+            const noProjectExpenses=expenses.filter(e=>!e.projectName).length;
+            const add=(ok,title,detail)=>checks.push(`<div class="control-check ${ok?'ok':'bad'}"><div class="check-icon"><i class="fas ${ok?'fa-check':'fa-triangle-exclamation'}"></i></div><div><strong>${title}</strong><span>${detail}</span></div></div>`);
+            add(!negativeFunds,'Fund balances','No negative fund balances detected.');
+            add(!overCards,'Card limits','No card is utilized above its configured limit.');
+            add(!missingBills,'Supporting documents',missingBills?`${missingBills} approved/completed expense(s) have no bill attached.`:'All approved/completed expenses have supporting files.');
+            add(!orphanCards,'Branch mapping',orphanCards?`${orphanCards} card(s) point to a branch that is not in Branches/Camps.`:'All visible cards map to an existing branch.');
+            add(!noProjectExpenses,'Project tagging',noProjectExpenses?`${noProjectExpenses} expense(s) have no project recorded.`:'All expenses have a project reference.');
+            checks.push(`<div class="control-check ${pending?'warn':'ok'}"><div class="check-icon"><i class="fas ${pending?'fa-clock':'fa-check'}"></i></div><div><strong>Approval queue</strong><span>${pending?pending+' request(s) awaiting action.':'No pending approval requests.'}</span></div></div>`);
+            el.innerHTML=checks.join('');
         }
 
         function updateDashBranchChart(branches,cards){
@@ -4428,14 +4586,10 @@
                     const urls = [];
                     for (const f of files) {
                         try {
-                            const ref = storage.ref(`expenses/${Date.now()}_${f.name}`);
-                            const task = ref.put(f.file);
-                            await new Promise((resolve, reject) => {
-                                task.on('state_changed', s => { if (bar) { const p = (s.bytesTransferred /
-                                        s.totalBytes) * 100;
-                                        bar.style.width = p + '%';
-                                        bar.textContent = Math.round(p) + '%'; } }, reject, resolve);
-                            });
+                            validateBillFile(f.file);
+                            const unique = `${Date.now()}_${Math.random().toString(36).slice(2,10)}_${safeFileName(f.name)}`;
+                            const ref = storage.ref(`expenses/${unique}`);
+                            await uploadWithTimeout(ref, f.file, (done,total) => { if (bar && total) { const p = (done / total) * 100; bar.style.width = p + '%'; bar.textContent = Math.round(p) + '%'; } });
                             const url = await ref.getDownloadURL();
                             urls.push({ name: f.name, url, type: f.type, size: f.size, uploadedAt: new Date()
                                     .toISOString() });
