@@ -898,6 +898,24 @@
             border: 1px solid var(--gray-200);
         }
         .permission-card .permission-title { font-weight: 600; font-size: 0.85rem; }
+    
+/* ===== V2 EXECUTIVE DASHBOARD ===== */
+.exec-dashboard{display:flex;flex-direction:column;gap:18px}
+.exec-hero{background:linear-gradient(135deg,#0f172a 0%,#172554 58%,#1e40af 100%);color:#fff;border-radius:20px;padding:22px;box-shadow:0 18px 45px rgba(15,23,42,.16);position:relative;overflow:hidden}
+.exec-hero:after{content:"";position:absolute;width:320px;height:320px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-110px;top:-170px;box-shadow:0 0 0 40px rgba(255,255,255,.025),0 0 0 80px rgba(255,255,255,.018)}
+.exec-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;position:relative;z-index:1}
+.exec-eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:1.3px;opacity:.65;font-weight:700}.exec-hero h2{font-size:1.55rem;margin:.2rem 0 .25rem;font-weight:750}.exec-hero p{margin:0;color:rgba(255,255,255,.68);font-size:.82rem}
+.exec-live{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.09);font-size:.72rem;white-space:nowrap}.exec-live i{font-size:.45rem;color:#34d399}
+.exec-hero-grid{display:grid;grid-template-columns:1.35fr .85fr .85fr;gap:14px;margin-top:20px;position:relative;z-index:1}.hero-metric{padding:15px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.055);border-radius:14px}.hero-metric span{display:block;font-size:.68rem;color:rgba(255,255,255,.58);text-transform:uppercase;letter-spacing:.6px;font-weight:700}.hero-metric strong{display:block;font-size:1.45rem;margin-top:4px}.hero-metric small{display:block;margin-top:3px;color:rgba(255,255,255,.55);font-size:.7rem}
+.exec-stat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.exec-stat{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:14px;min-width:0;box-shadow:0 2px 8px rgba(15,23,42,.035)}.exec-stat .top{display:flex;justify-content:space-between;gap:8px}.exec-stat .label{font-size:.64rem;text-transform:uppercase;letter-spacing:.55px;color:#64748b;font-weight:700}.exec-stat .value{font-size:1.16rem;font-weight:750;margin-top:5px;white-space:nowrap}.exec-stat .icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#f1f5f9;color:#334155;font-size:.78rem}.exec-stat .sub{font-size:.67rem;color:#94a3b8;margin-top:5px}
+.exec-grid{display:grid;grid-template-columns:1.55fr .9fr;gap:16px}.exec-panel{background:#fff;border:1px solid #e5e7eb;border-radius:17px;padding:17px;box-shadow:0 2px 10px rgba(15,23,42,.035)}.exec-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.exec-panel-title{font-weight:750;font-size:.92rem;display:flex;align-items:center;gap:8px}.exec-panel-title i{color:#2563eb}.exec-panel-sub{font-size:.68rem;color:#94a3b8}
+.exec-finance{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.exec-ring-wrap{display:flex;align-items:center;gap:18px;padding:12px;background:#f8fafc;border:1px solid #eef2f7;border-radius:14px}.exec-ring{width:126px;height:126px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#2563eb var(--pct),#e5e7eb 0);flex:0 0 auto}.exec-ring:before{content:"";width:88px;height:88px;border-radius:50%;background:#fff;grid-area:1/1}.exec-ring span{grid-area:1/1;position:relative;font-weight:800;font-size:1.1rem}.exec-ring-copy strong{font-size:1rem}.exec-ring-copy p{font-size:.72rem;color:#64748b;margin:4px 0 10px}.exec-breakdown{display:grid;gap:8px}.exec-break-row{display:flex;justify-content:space-between;font-size:.74rem}.exec-break-row span:first-child{color:#64748b}.exec-break-row strong{font-weight:750}
+.exec-action{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid #eef2f7;border-radius:12px;margin-bottom:8px;background:#fff;cursor:pointer}.exec-action:last-child{margin-bottom:0}.exec-action .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:.72rem}.exec-action .body{flex:1;min-width:0}.exec-action .body strong{display:block;font-size:.75rem}.exec-action .body span{display:block;color:#94a3b8;font-size:.66rem;margin-top:2px}.exec-action .chev{color:#94a3b8;font-size:.65rem}.exec-action.danger .ico{background:#fee2e2;color:#dc2626}.exec-action.warning .ico{background:#fef3c7;color:#d97706}.exec-action.info .ico{background:#dbeafe;color:#2563eb}.exec-action.success .ico{background:#dcfce7;color:#16a34a}
+.branch-command{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.branch-tile{border:1px solid #e8edf3;border-radius:14px;padding:13px;background:#fff;transition:.2s;cursor:pointer}.branch-tile:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.07);border-color:#cbd5e1}.branch-tile-top{display:flex;align-items:center;gap:9px}.branch-avatar{width:34px;height:34px;border-radius:10px;background:#eff6ff;color:#2563eb;display:grid;place-items:center;font-weight:800;font-size:.72rem}.branch-title{flex:1;min-width:0}.branch-title strong{display:block;font-size:.77rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.branch-title span{display:block;font-size:.63rem;color:#94a3b8;margin-top:2px}.branch-score{font-size:.7rem;font-weight:800;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#475569}.branch-money{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}.branch-money div{padding:8px;background:#f8fafc;border-radius:9px}.branch-money small{display:block;font-size:.58rem;color:#94a3b8;text-transform:uppercase}.branch-money strong{display:block;font-size:.73rem;margin-top:2px}.branch-health{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px solid #f1f5f9}.branch-health span{font-size:.62rem;color:#64748b}.health-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}.health-good{background:#10b981}.health-warn{background:#f59e0b}.health-danger{background:#ef4444}
+.exec-table{font-size:.75rem}.exec-table th{font-size:.62rem!important}.exec-table td{padding-top:.72rem!important;padding-bottom:.72rem!important}.exec-table .amount{font-weight:750}.exec-empty{padding:28px 10px;text-align:center;color:#94a3b8;font-size:.75rem}.exec-quick{display:flex;gap:8px;flex-wrap:wrap}.exec-quick .btn{border-radius:10px;font-size:.7rem;font-weight:700;padding:.48rem .7rem}
+@media(max-width:1100px){.exec-stat-grid{grid-template-columns:repeat(3,1fr)}.exec-hero-grid{grid-template-columns:1fr 1fr}.exec-finance{grid-template-columns:1fr}.exec-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.exec-stat-grid{grid-template-columns:repeat(2,1fr)}.exec-hero-top{flex-direction:column}.exec-hero-grid{grid-template-columns:1fr}.branch-command{grid-template-columns:1fr}.exec-ring-wrap{flex-direction:column;text-align:center}.exec-stat .value{font-size:1rem}}
+
     </style>
 </head>
 <body>
@@ -1111,144 +1129,60 @@
                 <!-- ===== MAIN CONTENT ===== -->
                 <div class="main-content">
 
-                    <!-- ===== DASHBOARD ===== -->
+                    <!-- ===== EXECUTIVE DASHBOARD ===== -->
                     <div id="page-dashboard" class="page-content">
-                        <div class="page-header">
-                            <h4><i class="fas fa-tachometer-alt"></i> Dashboard</h4>
-                            <div class="d-flex align-items-center gap-3">
-                                <small class="text-muted" id="currentDateTime"></small>
-                                <span class="position-relative no-print" style="cursor:pointer;" onclick="toggleNotifications()">
-                                    <i class="fas fa-bell fa-lg text-secondary"></i>
-                                    <span class="notification-badge" id="desktopNotificationBadge">0</span>
-                                </span>
-                                <div class="notification-dropdown" id="notificationDropdown">
-                                    <div class="notif-header">
-                                        <span>Notifications</span>
-                                        <button class="btn btn-sm btn-link p-0" onclick="markAllNotificationsRead()">Mark all read</button>
-                                    </div>
-                                    <div id="notificationList">
-                                        <div class="text-center text-muted py-3">Loading...</div>
+                        <div class="exec-dashboard">
+                            <div class="exec-hero">
+                                <div class="exec-hero-top">
+                                    <div><div class="exec-eyebrow">Financial command centre</div><h2>Fund Control Dashboard</h2><p id="dashWelcomeText">Real-time overview of funding, cards, cash, expenses and branch health.</p></div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="exec-live"><i class="fas fa-circle"></i> Live sync</span>
+                                        <span class="position-relative no-print" style="cursor:pointer" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notification-badge" id="desktopNotificationBadge">0</span></span>
+                                        <small id="currentDateTime" class="d-none d-lg-inline" style="color:rgba(255,255,255,.6)"></small>
+                                        <div class="notification-dropdown" id="notificationDropdown"><div class="notif-header"><span>Notifications</span><button class="btn btn-sm btn-link p-0" onclick="markAllNotificationsRead()">Mark all read</button></div><div id="notificationList"><div class="text-center text-muted py-3">Loading...</div></div></div>
                                     </div>
                                 </div>
+                                <div class="exec-hero-grid">
+                                    <div class="hero-metric"><span>Total controlled funds</span><strong id="dashAllocatedHero">₹0</strong><small>Allocated + available operating cash</small></div>
+                                    <div class="hero-metric"><span>Available now</span><strong id="dashAvailableHero">₹0</strong><small id="dashAvailableHeroSub">Ready for deployment</small></div>
+                                    <div class="hero-metric"><span>Utilization</span><strong id="dashUtilHero">0%</strong><small id="dashUtilHeroSub">₹0 spent</small></div>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Stats -->
-                        <div class="stat-grid" id="dashStats">
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Allocated</div><div class="stat-value text-primary" id="dashAllocated">₹0</div></div>
-                                    <i class="fas fa-money-bill-wave stat-icon"></i>
-                                </div>
+                            <div class="exec-stat-grid" id="dashStats">
+                                <div class="exec-stat"><div class="top"><div><div class="label">Allocated</div><div class="value text-primary" id="dashAllocated">₹0</div></div><div class="icon"><i class="fas fa-layer-group"></i></div></div><div class="sub">Total controlled allocation</div></div>
+                                <div class="exec-stat"><div class="top"><div><div class="label">Spent</div><div class="value text-danger" id="dashSpent">₹0</div></div><div class="icon"><i class="fas fa-arrow-up"></i></div></div><div class="sub">Card utilization</div></div>
+                                <div class="exec-stat"><div class="top"><div><div class="label">Available</div><div class="value text-success" id="dashAvailable">₹0</div></div><div class="icon"><i class="fas fa-wallet"></i></div></div><div class="sub">Unutilized card capacity</div></div>
+                                <div class="exec-stat"><div class="top"><div><div class="label">Card Balance</div><div class="value text-info" id="dashCardBalance">₹0</div></div><div class="icon"><i class="fas fa-credit-card"></i></div></div><div class="sub">Across active cards</div></div>
+                                <div class="exec-stat"><div class="top"><div><div class="label">Cash in Hand</div><div class="value text-warning" id="dashCashHand">₹0</div></div><div class="icon"><i class="fas fa-coins"></i></div></div><div class="sub">Main fund balance</div></div>
+                                <div class="exec-stat"><div class="top"><div><div class="label">Pending</div><div class="value text-danger" id="dashPending">0</div></div><div class="icon"><i class="fas fa-hourglass-half"></i></div></div><div class="sub">Requests awaiting action</div></div>
                             </div>
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Spent</div><div class="stat-value text-danger" id="dashSpent">₹0</div></div>
-                                    <i class="fas fa-arrow-up stat-icon"></i>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Available</div><div class="stat-value text-success" id="dashAvailable">₹0</div></div>
-                                    <i class="fas fa-arrow-down stat-icon"></i>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Card Balance</div><div class="stat-value text-info" id="dashCardBalance">₹0</div></div>
-                                    <i class="fas fa-credit-card stat-icon"></i>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Cash in Hand</div><div class="stat-value text-warning" id="dashCashHand">₹0</div></div>
-                                    <i class="fas fa-coins stat-icon"></i>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div><div class="stat-label">Pending</div><div class="stat-value text-danger" id="dashPending">0</div></div>
-                                    <i class="fas fa-clock stat-icon"></i>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Utilization -->
-                        <div class="card-panel">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="card-title"><i class="fas fa-chart-pie"></i> Fund Utilization</span>
-                                <span id="dashUtilPct" class="fw-bold">0%</span>
+                            <div class="exec-grid">
+                                <div class="exec-panel">
+                                    <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-chart-line"></i> Financial position</div><div class="exec-panel-sub">Where the controlled money stands right now</div></div><div class="exec-quick no-print"><button class="btn btn-outline-primary btn-sm" onclick="showPage('fundManagement')">Manage funds</button></div></div>
+                                    <div class="exec-finance">
+                                        <div class="exec-ring-wrap">
+                                            <div class="exec-ring" id="dashUtilRing" style="--pct:0deg"><span id="dashUtilPct">0%</span></div>
+                                            <div class="exec-ring-copy"><strong>Overall utilization</strong><p id="dashUtilSummary">₹0 spent from ₹0 allocated</p><div class="exec-breakdown"><div class="exec-break-row"><span>Spent</span><strong class="text-danger" id="dashUtilSpent">0</strong></div><div class="exec-break-row"><span>Allocated</span><strong id="dashUtilAllocated">0</strong></div><div class="exec-break-row"><span>Remaining card capacity</span><strong class="text-success" id="dashFinanceRemaining">₹0</strong></div></div></div>
+                                        </div>
+                                        <div><div class="exec-panel-title mb-2" style="font-size:.8rem"><i class="fas fa-wallet"></i> Liquidity split</div><div class="exec-breakdown"><div class="exec-break-row"><span>Card balance</span><strong class="text-info" id="miniCardBal">₹0</strong></div><div class="exec-break-row"><span>Cash in hand</span><strong class="text-warning" id="miniCashBal">₹0</strong></div><div class="exec-break-row"><span>Unreconciled advances</span><strong class="text-danger" id="miniUnreconciled">₹0</strong></div><div class="exec-break-row"><span>Approved expenses</span><strong class="text-success" id="miniApproved">0</strong></div><div class="exec-break-row"><span>Bills pending</span><strong class="text-warning" id="miniBillPending">0</strong></div><div class="exec-break-row"><span>Under verification</span><strong class="text-info" id="miniVerification">0</strong></div></div></div>
+                                    </div>
+                                </div>
+                                <div class="exec-panel">
+                                    <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-bolt"></i> Action centre</div><div class="exec-panel-sub">Exceptions that need attention</div></div></div>
+                                    <div id="dashActionRequired"><div class="exec-empty">All clear!</div></div>
+                                </div>
                             </div>
-                            <div class="util-bar">
-                                <div class="fill" id="dashUtilBar" style="width:0%;background:var(--success);"></div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-1">
-                                <small class="text-muted">₹<span id="dashUtilSpent">0</span> spent</small>
-                                <small class="text-muted">₹<span id="dashUtilAllocated">0</span> allocated</small>
-                            </div>
-                        </div>
 
-                        <!-- Branch Overview + Chart -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <div class="card-panel" style="height:100%;">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="card-title"><i class="fas fa-building"></i> Branch Fund Overview</span>
-                                        <small class="text-muted" id="branchCountLabel">0 branches</small>
-                                    </div>
-                                    <div id="branchFundOverviewList">
-                                        <div class="text-muted text-center py-3">No branches</div>
-                                    </div>
-                                </div>
+                            <div class="exec-panel">
+                                <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-building"></i> Branch command centre</div><div class="exec-panel-sub">Compare fund health, card capacity and utilization without the old branch bars</div></div><div class="d-flex align-items-center gap-2"><small class="exec-panel-sub" id="branchCountLabel">0 branches</small><button class="btn btn-outline-primary btn-sm no-print" onclick="showPage('branches')">View all</button></div></div>
+                                <div id="branchFundOverviewList" class="branch-command"><div class="exec-empty">No branch data available</div></div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card-panel" style="height:100%;">
-                                    <span class="card-title"><i class="fas fa-chart-bar"></i> Utilization by Branch</span>
-                                    <canvas id="dashBranchChart" height="160"></canvas>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Action Required + Summary -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <div class="card-panel" style="height:100%;">
-                                    <span class="card-title"><i class="fas fa-exclamation-triangle"></i> Action Required</span>
-                                    <div id="dashActionRequired">
-                                        <div class="text-muted text-center py-3">All clear!</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card-panel" style="height:100%;">
-                                    <span class="card-title"><i class="fas fa-credit-card"></i> Card &amp; Cash</span>
-                                    <div class="mt-2">
-                                        <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted">Card Balance</span><span class="fw-bold text-info" id="miniCardBal">₹0</span></div>
-                                        <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted">Cash in Hand</span><span class="fw-bold text-warning" id="miniCashBal">₹0</span></div>
-                                        <div class="d-flex justify-content-between py-1"><span class="text-muted">Unreconciled</span><span class="fw-bold text-danger" id="miniUnreconciled">₹0</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card-panel" style="height:100%;">
-                                    <span class="card-title"><i class="fas fa-receipt"></i> Expense Status</span>
-                                    <div class="mt-2">
-                                        <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted">Approved</span><span class="fw-bold text-success" id="miniApproved">0</span></div>
-                                        <div class="d-flex justify-content-between py-1 border-bottom"><span class="text-muted">Bill Pending</span><span class="fw-bold text-warning" id="miniBillPending">0</span></div>
-                                        <div class="d-flex justify-content-between py-1"><span class="text-muted">Verification</span><span class="fw-bold text-info" id="miniVerification">0</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recent Transactions -->
-                        <div class="card-panel">
-                            <span class="card-title"><i class="fas fa-list"></i> Recent Activity</span>
-                            <div class="table-container">
-                                <table class="table table-hover table-sm">
-                                    <thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
-                                    <tbody id="dashRecentBody"></tbody>
-                                </table>
+                            <div class="exec-panel">
+                                <div class="exec-panel-head"><div><div class="exec-panel-title"><i class="fas fa-clock-rotate-left"></i> Recent activity</div><div class="exec-panel-sub">Latest advances and expenses across the visible scope</div></div><button class="btn btn-outline-primary btn-sm no-print" onclick="showPage('expenses')">Open expenses</button></div>
+                                <div class="table-container"><table class="table table-hover table-sm exec-table"><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody id="dashRecentBody"></tbody></table></div>
                             </div>
                         </div>
                     </div>
@@ -2667,138 +2601,62 @@
         function updateDashboard() {
             const { branches, projects, employees, advances, expenses, cards, funds, transactions } = appState;
             const user = CloudStore.getCurrentUser();
-
-            const totalCardLimit = cards.reduce((s, c) => s + (c.limit || 0), 0);
-            const totalCardUtil = cards.reduce((s, c) => s + (c.utilized || 0), 0);
-            const main = funds.find(f => f.camp === '__main__');
-            const mainBal = main ? main.balance : 0;
+            const totalCardLimit = cards.reduce((s,c)=>s+(c.limit||0),0);
+            const totalCardUtil = cards.reduce((s,c)=>s+(c.utilized||0),0);
+            const main = funds.find(f=>f.camp==='__main__');
+            const mainBal = main ? (main.balance||0) : 0;
             const allocated = totalCardLimit + mainBal;
             const spent = totalCardUtil;
-            const available = totalCardLimit - totalCardUtil;
-            const cardBalance = totalCardLimit - totalCardUtil;
+            const available = Math.max(totalCardLimit-totalCardUtil,0);
+            const cardBalance = available;
             const cashHand = mainBal;
-            const pendingCount = advances.filter(a => a.status === 'pending').length + expenses.filter(e => e.status === 'pending')
-                .length;
+            const pendingCount = advances.filter(a=>a.status==='pending').length + expenses.filter(e=>e.status==='pending').length;
+            const utilPct = allocated>0 ? Math.min((spent/allocated)*100,100) : 0;
+            const money = v => '₹' + ((v||0)/100000).toFixed(1) + 'L';
+            const moneyFull = v => '₹' + Math.round(v||0).toLocaleString('en-IN');
 
-            document.getElementById('dashAllocated').textContent = '₹' + (allocated / 100000).toFixed(1) + 'L';
-            document.getElementById('dashSpent').textContent = '₹' + (spent / 100000).toFixed(1) + 'L';
-            document.getElementById('dashAvailable').textContent = '₹' + (available / 100000).toFixed(1) + 'L';
-            document.getElementById('dashCardBalance').textContent = '₹' + (cardBalance / 100000).toFixed(1) + 'L';
-            document.getElementById('dashCashHand').textContent = '₹' + (cashHand / 100000).toFixed(1) + 'L';
-            document.getElementById('dashPending').textContent = pendingCount;
+            const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
+            set('dashAllocated',money(allocated)); set('dashSpent',money(spent)); set('dashAvailable',money(available)); set('dashCardBalance',money(cardBalance)); set('dashCashHand',money(cashHand)); set('dashPending',pendingCount);
+            set('dashAllocatedHero',money(allocated)); set('dashAvailableHero',money(available)); set('dashUtilHero',utilPct.toFixed(1)+'%'); set('dashUtilHeroSub',money(spent)+' spent'); set('dashAvailableHeroSub',money(available)+' ready for deployment');
+            set('dashUtilPct',utilPct.toFixed(1)+'%'); set('dashUtilSpent',money(spent)); set('dashUtilAllocated',money(allocated)); set('dashFinanceRemaining',money(cardBalance)); set('dashUtilSummary',money(spent)+' spent from '+money(allocated));
+            const ring=document.getElementById('dashUtilRing'); if(ring) ring.style.setProperty('--pct',(utilPct*3.6)+'deg');
+            set('miniCardBal',money(cardBalance)); set('miniCashBal',money(cashHand));
+            const unreconciled=advances.filter(a=>a.status==='issued').reduce((s,a)=>s+(a.remainingAmount||a.amount||0),0); set('miniUnreconciled',money(unreconciled));
+            set('miniApproved',expenses.filter(e=>e.status==='approved'||e.status==='completed').length);
+            const billPending=expenses.filter(e=>e.status==='approved'&&(!e.files||e.files.length===0)); set('miniBillPending',billPending.length); set('miniVerification',expenses.filter(e=>e.status==='pending').length);
 
-            const utilPct = allocated > 0 ? (spent / allocated) * 100 : 0;
-            document.getElementById('dashUtilPct').textContent = utilPct.toFixed(1) + '%';
-            const bar = document.getElementById('dashUtilBar');
-            bar.style.width = Math.min(utilPct, 100) + '%';
-            bar.style.background = utilPct > 80 ? 'var(--danger)' : utilPct > 50 ? 'var(--warning)' : 'var(--success)';
-            document.getElementById('dashUtilSpent').textContent = (spent / 100000).toFixed(1) + 'L';
-            document.getElementById('dashUtilAllocated').textContent = (allocated / 100000).toFixed(1) + 'L';
-
-            // Branch overview
-            const branchList = document.getElementById('branchFundOverviewList');
-            document.getElementById('branchCountLabel').textContent = branches.length + ' branches';
-            if (branches.length === 0) {
-                branchList.innerHTML = '<div class="text-muted text-center py-3">No branches</div>';
-            } else {
-                branchList.innerHTML = branches.slice(0, 8).map(b => {
-                    const bCards = cards.filter(c => c.branch === b.name);
-                    const bLimit = bCards.reduce((s, c) => s + (c.limit || 0), 0);
-                    const bUtil = bCards.reduce((s, c) => s + (c.utilized || 0), 0);
-                    const pct = bLimit > 0 ? (bUtil / bLimit) * 100 : 0;
-                    return `<div class="branch-fund-row"><span class="branch-name">${b.name}</span><span class="text-muted" style="font-size:0.7rem;">₹${(bLimit/100000).toFixed(1)}L</span><div class="branch-bar"><div class="fill" style="width:${Math.min(pct,100)}%;background:${pct>80?'var(--danger)':pct>50?'var(--warning)':'var(--success)'};"></div></div><span class="branch-pct">${pct.toFixed(0)}%</span></div>`;
-                }).join('');
+            const branchList=document.getElementById('branchFundOverviewList'); set('branchCountLabel',branches.length+' branches');
+            if(branchList){
+                if(!branches.length){branchList.innerHTML='<div class="exec-empty">No branch data available</div>';} else {
+                    const rows=branches.map(b=>{
+                        const bc=cards.filter(c=>c.branch===b.name), lim=bc.reduce((s,c)=>s+(c.limit||0),0), ut=bc.reduce((s,c)=>s+(c.utilized||0),0), bal=Math.max(lim-ut,0), pct=lim?ut/lim*100:0;
+                        const emps=employees.filter(e=>e.branch===b.name).length, exps=expenses.filter(e=>e.branch===b.name), branchCash=funds.filter(f=>f.camp===b.name).reduce((s,f)=>s+(f.balance||0),0), pending=exps.filter(e=>e.status==='pending').length;
+                        const health=pct>=90?'danger':pct>=70?'warn':'good'; const initials=(b.name||'BR').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+                        return {b,lim,ut,bal,pct,emps,branchCash,pending,health,initials};
+                    }).sort((a,b)=>b.pct-a.pct);
+                    branchList.innerHTML=rows.slice(0,12).map(d=>`<div class="branch-tile" onclick="showPage('branches')"><div class="branch-tile-top"><div class="branch-avatar">${d.initials}</div><div class="branch-title"><strong>${d.b.name}</strong><span>${d.emps} employee${d.emps===1?'':'s'} · ${d.pending} pending</span></div><span class="branch-score"><span class="health-dot health-${d.health}"></span>${d.pct.toFixed(0)}%</span></div><div class="branch-money"><div><small>Card limit</small><strong>${money(d.lim)}</strong></div><div><small>Used</small><strong class="text-danger">${money(d.ut)}</strong></div><div><small>Available</small><strong class="text-success">${money(d.bal)}</strong></div></div><div class="branch-health"><span><span class="health-dot health-${d.health}"></span>${d.health==='danger'?'Critical utilization':d.health==='warn'?'Watch utilization':'Healthy capacity'}</span><span>${money(d.branchCash)} cash</span></div></div>`).join('');
+                }
             }
+            // Preserve the existing chart hook without bringing back the old branch-bar visualization.
+            updateDashBranchChart(branches,cards);
 
-            updateDashBranchChart(branches, cards);
+            const actionContainer=document.getElementById('dashActionRequired'); const alerts=[];
+            const lowBranches=branches.filter(b=>{const bc=cards.filter(c=>c.branch===b.name),lim=bc.reduce((s,c)=>s+(c.limit||0),0),ut=bc.reduce((s,c)=>s+(c.utilized||0),0);return lim>0&&(lim-ut)<5000});
+            if(lowBranches.length) alerts.push({type:'danger',icon:'fa-triangle-exclamation',text:`${lowBranches.length} branch(es) critically low on card balance`,sub:'Review branch funding or refill requirements'});
+            if(billPending.length) alerts.push({type:'warning',icon:'fa-file-circle-exclamation',text:`${billPending.length} bill(s) missing`,sub:'Approved expenses require supporting documents',action:'showMissingBillsModal'});
+            const pendAdv=advances.filter(a=>a.status==='pending'),pendExp=expenses.filter(e=>e.status==='pending');
+            if(pendAdv.length+pendExp.length) alerts.push({type:'info',icon:'fa-clock',text:`${pendAdv.length+pendExp.length} approval(s) pending`,sub:`${pendAdv.length} advance · ${pendExp.length} expense`,action:'showPage(\'approvals\')'});
+            if(!alerts.length) actionContainer.innerHTML='<div class="exec-action success"><div class="ico"><i class="fas fa-check"></i></div><div class="body"><strong>Everything is under control</strong><span>No urgent exceptions detected in the current data.</span></div></div>';
+            else actionContainer.innerHTML=alerts.map(a=>`<div class="exec-action ${a.type}" ${a.action?`onclick="${a.action}()"`:''}><div class="ico"><i class="fas ${a.icon}"></i></div><div class="body"><strong>${a.text}</strong><span>${a.sub}</span></div>${a.action?'<i class="fas fa-chevron-right chev"></i>':''}</div>`).join('');
 
-            // Action Required
-            const actionContainer = document.getElementById('dashActionRequired');
-            const alerts = [];
-            const lowBranches = branches.filter(b => {
-                const bc = cards.filter(c => c.branch === b.name);
-                const lim = bc.reduce((s, c) => s + (c.limit || 0), 0);
-                const ut = bc.reduce((s, c) => s + (c.utilized || 0), 0);
-                return lim > 0 && (lim - ut) < 5000;
-            });
-            if (lowBranches.length) alerts.push({ type: 'danger', icon: 'fa-exclamation-circle',
-                text: `${lowBranches.length} branch(es) low balance` });
-            const billPending = expenses.filter(e => e.status === 'approved' && (!e.files || e.files.length === 0));
-            if (billPending.length) alerts.push({ type: 'warning', icon: 'fa-file-invoice',
-                text: `${billPending.length} bill(s) pending`, action: 'showMissingBillsModal' });
-            const pendAdv = advances.filter(a => a.status === 'pending');
-            const pendExp = expenses.filter(e => e.status === 'pending');
-            if (pendAdv.length + pendExp.length) alerts.push({ type: 'info', icon: 'fa-clock',
-                text: `${pendAdv.length + pendExp.length} approval(s) pending` });
-            if (alerts.length === 0) {
-                actionContainer.innerHTML = '<div class="text-muted text-center py-3">✅ All clear!</div>';
-            } else {
-                actionContainer.innerHTML = alerts.map(a =>
-                    `<div class="alert-card ${a.type} alert-clickable" ${a.action ? `onclick="${a.action}()"` : ''}><div class="d-flex align-items-center"><i class="fas ${a.icon} me-2"></i><span>${a.text}</span>${a.action ? `<i class="fas fa-chevron-right ms-auto alert-arrow"></i>` : ''}</div></div>`
-                    ).join('');
-            }
-
-            document.getElementById('miniCardBal').textContent = '₹' + (cardBalance / 100000).toFixed(1) + 'L';
-            document.getElementById('miniCashBal').textContent = '₹' + (cashHand / 100000).toFixed(1) + 'L';
-            const unreconciled = advances.filter(a => a.status === 'issued').reduce((s, a) => s + (a.remainingAmount || a
-                .amount || 0), 0);
-            document.getElementById('miniUnreconciled').textContent = '₹' + (unreconciled / 100000).toFixed(1) + 'L';
-            document.getElementById('miniApproved').textContent = expenses.filter(e => e.status === 'approved' || e.status ===
-                'completed').length;
-            document.getElementById('miniBillPending').textContent = billPending.length;
-            document.getElementById('miniVerification').textContent = expenses.filter(e => e.status === 'pending').length;
-
-            // Recent
-            let recent = [...advances, ...expenses];
-            recent.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            recent = recent.slice(0, 8);
-            const rb = document.getElementById('dashRecentBody');
-            if (recent.length === 0) {
-                rb.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No recent activity</td></tr>';
-            } else {
-                rb.innerHTML = recent.map(r =>
-                    `<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString():'N/A'}</td><td>${r.employeeName||'N/A'}</td><td><span class="badge ${r.amount?'bg-primary':'bg-secondary'}">${r.purpose||r.category||'Transaction'}</span></td><td>₹${(r.amount||0).toLocaleString()}</td><td><span class="status-badge status-${r.status||'pending'}">${(r.status||'pending').replace('_',' ')}</span></td></tr>`
-                    ).join('');
-            }
+            let recent=[...advances.map(x=>({...x,_kind:'Advance'})),...expenses.map(x=>({...x,_kind:'Expense'}))]; recent.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)); recent=recent.slice(0,10);
+            const rb=document.getElementById('dashRecentBody'); if(rb) rb.innerHTML=recent.length?recent.map(r=>`<tr><td>${r.createdAt?new Date(r.createdAt).toLocaleDateString('en-IN'):'N/A'}</td><td>${r.employeeName||'N/A'}</td><td><span class="badge bg-light text-dark border">${r._kind}</span></td><td class="amount">${moneyFull(r.amount)}</td><td><span class="status-badge status-${r.status||'pending'}">${(r.status||'pending').replaceAll('_',' ')}</span></td></tr>`).join(''):'<tr><td colspan="5" class="exec-empty">No recent activity</td></tr>';
         }
 
-        function updateDashBranchChart(branches, cards) {
-            const ctx = document.getElementById('dashBranchChart')?.getContext('2d');
-            if (!ctx) return;
-            if (dashBranchChartInstance) dashBranchChartInstance.destroy();
-
-            const data = branches.map(b => {
-                const bc = cards.filter(c => c.branch === b.name);
-                const lim = bc.reduce((s, c) => s + (c.limit || 0), 0);
-                const ut = bc.reduce((s, c) => s + (c.utilized || 0), 0);
-                return { name: b.name, limit: lim, utilized: ut, pct: lim > 0 ? (ut / lim) * 100 : 0 };
-            }).filter(d => d.limit > 0).slice(0, 6);
-
-            if (data.length === 0) {
-                dashBranchChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ['No Data'],
-                        datasets: [{ data: [0], backgroundColor: '#ddd' }] }, options: { responsive: true,
-                        plugins: { legend: { display: false } } } });
-                return;
-            }
-
-            dashBranchChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.map(d => d.name),
-                    datasets: [{ label: 'Limit', data: data.map(d => d.limit), backgroundColor: '#4e73df' },
-                    { label: 'Utilized', data: data.map(d => d.utilized), backgroundColor: '#ef4444' }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top', labels: { boxWidth: 12, fontSize: 10 } } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => '₹' + (v / 100000).toFixed(1) + 'L',
-                                font: { size: 9 } } },
-                        x: { ticks: { font: { size: 9 } } }
-                    }
-                }
-            });
+        function updateDashBranchChart(branches,cards){
+            // Intentionally unused in V2. The old branch bar chart has been removed in favor of the branch command centre tiles.
+            const canvas=document.getElementById('dashBranchChart'); if(canvas) canvas.style.display='none';
+            if(typeof dashBranchChartInstance!=='undefined' && dashBranchChartInstance){ try{dashBranchChartInstance.destroy();}catch(e){} dashBranchChartInstance=null; }
         }
 
         // ======================================================================
